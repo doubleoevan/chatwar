@@ -18,7 +18,7 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
     <section aria-labelledby={`provider-${provider.id}-heading`} className="mb-2">
       <Accordion type="single" collapsible>
         <AccordionItem value={provider.id} className="border-0">
-          <Card className="p-0 gap-0">
+          <Card className="p-0 gap-0 bg-muted/70 dark:bg-muted">
             <AccordionTrigger className="px-3 py-2 text-sm font-medium">
               <div className="flex items-center gap-2">
                 <Icon className="h-4 w-4 shrink-0 text-foreground" aria-hidden />
@@ -43,7 +43,14 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
                     type="password"
                     placeholder="Enter your API key"
                     name="apiKey"
-                    className="rounded-full"
+                    className="
+                      rounded-full
+                      bg-background
+                      border border-input
+                      focus-visible:outline-none
+                      focus-visible:ring-0
+                      focus-visible:border-ring
+                    "
                     autoComplete="off"
                     value={apiKey}
                     onChange={(event) => setApiKey(event.target.value)}
@@ -67,15 +74,15 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
                     →
                   </button>
                 </form>
+                <a
+                  href={provider.apiKeyUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block pt-2 px-1 pb-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Get your {provider.label} API key →
+                </a>
               </CardContent>
-              <a
-                href={provider.apiKeyUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="block pt-2 px-3 pb-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Get your {provider.label} API key →
-              </a>
             </AccordionContent>
           </Card>
         </AccordionItem>
