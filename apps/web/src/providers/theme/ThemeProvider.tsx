@@ -12,7 +12,9 @@ function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
       return { theme: action.theme };
 
     case "SYSTEM_THEME_UPDATED":
-      if (getUserTheme()) return state;
+      if (getUserTheme()) {
+        return state;
+      }
       return { theme: getTheme() };
 
     default:
@@ -28,23 +30,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [state.theme]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return;
+    }
 
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => dispatch({ type: "SYSTEM_THEME_UPDATED" });
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const onThemeChange = () => dispatch({ type: "SYSTEM_THEME_UPDATED" });
 
-    if (mql.addEventListener) {
-      mql.addEventListener("change", onChange);
-      return () => mql.removeEventListener("change", onChange);
+    if (systemTheme.addEventListener) {
+      systemTheme.addEventListener("change", onThemeChange);
+      return () => systemTheme.removeEventListener("change", onThemeChange);
     }
 
     // Safari fallback
-    mql.addListener(onChange);
-    return () => mql.removeListener(onChange);
+    systemTheme.addListener(onThemeChange);
+    return () => systemTheme.removeListener(onThemeChange);
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     const onStorageChange = (event: StorageEvent) => {
       if (event.key === "chatwar.theme") {
