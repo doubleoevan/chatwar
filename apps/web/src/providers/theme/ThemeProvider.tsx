@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
 import { useEffect, useReducer } from "react";
-import { applyTheme, getTheme, getUserTheme, saveTheme, type Theme } from "@/utils/theme";
+import {
+  applyTheme,
+  getTheme,
+  getUserTheme,
+  storeTheme,
+  type Theme,
+  THEME_STORAGE_KEY,
+} from "@/utils/theme";
 import { ThemeContext } from "@/providers/theme/ThemeContext";
 
 type ThemeState = { theme: Theme };
@@ -53,7 +60,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
 
     const onStorageChange = (event: StorageEvent) => {
-      if (event.key === "chatwar.theme") {
+      if (event.key === THEME_STORAGE_KEY) {
         dispatch({ type: "SYSTEM_THEME_UPDATED" });
       }
     };
@@ -63,7 +70,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setTheme = (theme: Theme) => {
-    saveTheme(theme);
+    storeTheme(theme);
     dispatch({ type: "SET_THEME", theme });
   };
 
