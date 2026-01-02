@@ -4,6 +4,7 @@ import { ChatPage } from "@/features/chat/ChatPage";
 import { AnalyticsPage } from "@/features/analytics/AnalyticsPage";
 import { ChatProvider } from "@/providers/chat";
 import { AnalyticsProvider } from "@/providers/analytics";
+import { ApiKeysProvider } from "@/providers/credentials/ApiKeysProvider";
 
 /** App routes */
 export default function App() {
@@ -14,9 +15,11 @@ export default function App() {
         <Route
           path="/chat"
           element={
-            <ChatProvider>
-              <ChatPage />
-            </ChatProvider>
+            <ApiKeysProvider>
+              <ChatProvider>
+                <ChatPage />
+              </ChatProvider>
+            </ApiKeysProvider>
           }
         />
         <Route
