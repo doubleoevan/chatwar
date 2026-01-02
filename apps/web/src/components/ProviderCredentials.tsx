@@ -21,7 +21,9 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
           <Card className="p-0 gap-0 bg-muted/70 dark:bg-muted">
             <AccordionTrigger className="px-3 py-2 text-sm font-medium">
               <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 shrink-0 text-foreground" aria-hidden />
+                <span aria-hidden>
+                  <Icon />
+                </span>
                 <h2 id={`provider-${provider.id}-heading`}>{provider.label}</h2>
               </div>
             </AccordionTrigger>
