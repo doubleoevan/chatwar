@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { useEffect, useReducer } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
 import {
   applyTheme,
   getTheme,
@@ -32,10 +31,12 @@ function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(themeReducer, { theme: getTheme() });
 
+  // apply the initial theme
   useEffect(() => {
     applyTheme(state.theme);
   }, [state.theme]);
 
+  // listen to system theme changes
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
       return;
@@ -54,6 +55,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => systemTheme.removeListener(onThemeChange);
   }, []);
 
+  // listen to local storage changes
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -69,14 +71,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorageChange);
   }, []);
 
-  const setTheme = (theme: Theme) => {
+  const setTheme = useCallback((theme: Theme) => {
     storeTheme(theme);
     dispatch({ type: "SET_THEME", theme });
-  };
+  }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme: state.theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+  // memoize context to avoid rerendering consumers
+  const value = useMemo(
+    () => ({
+      theme: state.theme,
+      setTheme,
+    }),
+    [state.theme, setTheme],
   );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
