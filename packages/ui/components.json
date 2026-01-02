@@ -4,17 +4,13 @@
   "rsc": false,
   "tsx": true,
   "tailwind": {
-    "config": "",
+    "config": "tailwind.config.ts",
     "css": "src/styles/globals.css",
     "baseColor": "slate",
     "cssVariables": true
   },
-  "iconLibrary": "lucide",
   "aliases": {
-    "components": "@chatwar/ui/components",
     "ui": "@chatwar/ui/components",
-    "lib": "@chatwar/ui/lib",
-    "utils": "@chatwar/ui/lib/utils",
-    "hooks": "@chatwar/ui/hooks"
+    "utils": "@chatwar/lib/utils"
   }
 }

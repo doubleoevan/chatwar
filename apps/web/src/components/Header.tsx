@@ -6,7 +6,7 @@ export function Header() {
   return (
     <header className="border-b">
       <nav
-        className="mx-auto flex h-14 items-center justify-between px-4"
+        className="mx-auto flex h-14 items-center justify-between px-4 pr-2"
         aria-label="Primary navigation"
       >
         {/* Left: Logo */}

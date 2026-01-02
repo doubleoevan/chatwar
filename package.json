@@ -13,8 +13,6 @@
     "clean": "pnpm -r clean",
     "dev:web": "pnpm --filter @chatwar/web dev",
     "dev:api": "pnpm --filter @chatwar/api dev",
-    "ui:add": "pnpm --filter @chatwar/web dlx shadcn@latest add",
-    "ui:init": "pnpm --filter @chatwar/web dlx shadcn@latest init",
     "prepare": "husky"
   },
   "devDependencies": {

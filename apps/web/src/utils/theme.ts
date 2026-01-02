@@ -13,13 +13,6 @@ export function saveTheme(theme: Theme) {
 }
 
 /**
- * Applies the app theme to the document
- */
-export function applyAppTheme() {
-  applyTheme(getTheme());
-}
-
-/**
  * Applies the theme to the document
  */
 export function applyTheme(theme: Theme) {

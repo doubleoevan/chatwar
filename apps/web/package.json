@@ -12,6 +12,7 @@
     "clean": "rm -rf dist node_modules/.vite"
   },
   "dependencies": {
+    "@chatwar/shared": "workspace:*",
     "@chatwar/ui": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -38,6 +39,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-svgr": "^4.5.0"
   }
 }
