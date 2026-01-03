@@ -38,7 +38,7 @@ export function ChatComposer({
     >
       <Textarea
         ref={textareaRef}
-        placeholder={isDisabled ? "Enter API key to chat" : "Ask anything"}
+        placeholder={isDisabled ? "Enter an API key to chat" : "Ask anything"}
         disabled={isDisabled}
         rows={1}
         className={cn(
