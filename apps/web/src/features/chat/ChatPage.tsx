@@ -38,7 +38,7 @@ export function ChatPage() {
       <Accordion
         type="multiple"
         className="pt-2"
-        value={Array.from(openProviderIds)}
+        value={[...openProviderIds]}
         onValueChange={(providerIds: ProviderId[]) => setOpenProviderIds(new Set([...providerIds]))}
       >
         {sortedProviders.map((provider) => {
@@ -51,7 +51,13 @@ export function ChatPage() {
               <Card className="p-0 gap-0 bg-muted/70 dark:bg-muted relative">
                 <header className="relative px-3 py-2">
                   <AccordionTrigger className="w-full p-0 text-sm font-medium">
-                    <ProviderIcon provider={provider} className="w-full" />
+                    <ProviderIcon
+                      provider={provider}
+                      className="w-full"
+                      onVoteResponse={(providerId) => {
+                        setOpenProviderIds(new Set([...openProviderIds, providerId]));
+                      }}
+                    />
                   </AccordionTrigger>
 
                   {apiKeys[provider.id] && (
@@ -59,15 +65,14 @@ export function ChatPage() {
                       <ProviderModelSelect
                         provider={provider}
                         className="absolute right-20 top-1/2 -translate-y-1/2 w-auto"
-                        onModelSelect={(providerId, modelId) => {
-                          console.log(modelId);
+                        onModelSelect={(providerId) => {
                           setOpenProviderIds(new Set([...openProviderIds, providerId]));
                         }}
                       />
                       <RemoveApiKeyButton
                         provider={provider}
                         className="
-                          absolute right-10 top-4.5 -translate-y-1/2
+                          absolute right-10 top-5 -translate-y-1/2
                           h-6 w-6
                         "
                         onApiKeyRemove={(providerId) => {
@@ -93,7 +98,7 @@ export function ChatPage() {
           );
         })}
       </Accordion>
-      <ChatComposer className="p-2 mb-2" />
+      <ChatComposer className="p-2 mb-3.5 mt-3" />
     </section>
   );
 }

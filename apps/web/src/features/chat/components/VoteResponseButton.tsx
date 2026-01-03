@@ -1,19 +1,16 @@
 import type { Provider, ProviderId } from "@chatwar/shared";
 import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
-import { MessageCircleOff } from "lucide-react";
-import { useApiKeys } from "@/providers/credentials";
+import { MessageCircleHeartIcon } from "lucide-react";
 
-export function RemoveApiKeyButton({
+export function VoteResponseButton({
   provider,
-  onApiKeyRemove,
   className,
+  onVoteResponse,
 }: {
   provider: Provider;
-  onApiKeyRemove?: (providerId: ProviderId) => void;
   className?: string;
+  onVoteResponse?: (providerId: ProviderId) => void;
 }) {
-  const { deleteApiKey } = useApiKeys();
-
   return (
     <TooltipProvider>
       <Tooltip>
@@ -31,18 +28,17 @@ export function RemoveApiKeyButton({
             `,
               className,
             )}
-            aria-label={`Remove API Key`}
+            aria-label="Vote for this response"
             onClick={() => {
-              deleteApiKey(provider.id);
-              onApiKeyRemove?.(provider.id);
+              onVoteResponse?.(provider.id);
             }}
           >
-            <MessageCircleOff />
+            <MessageCircleHeartIcon />
           </Button>
         </TooltipTrigger>
 
-        <TooltipContent side="bottom" align="end">
-          <span>Remove API Key</span>
+        <TooltipContent side="top" align="start">
+          <span>Vote for response</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
