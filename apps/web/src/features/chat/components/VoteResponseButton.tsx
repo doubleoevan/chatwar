@@ -1,5 +1,5 @@
 import type { Provider, ProviderId } from "@chatwar/shared";
-import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
+import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleHeartIcon } from "lucide-react";
 
 export function VoteResponseButton({
@@ -11,30 +11,47 @@ export function VoteResponseButton({
   className?: string;
   onVoteResponse?: (providerId: ProviderId) => void;
 }) {
+  const onVote = () => onVoteResponse?.(provider.id);
+
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label="Vote for this response"
+            onClick={(event) => {
+              event.stopPropagation();
+              onVote();
+            }}
+            onPointerDown={(event) => {
+              event.stopPropagation();
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                event.stopPropagation();
+                onVote();
+              }
+            }}
             className={cn(
               `
+              inline-flex items-center justify-center
+              rounded-md
               border border-input
               bg-background
-              hover:bg-primary
-              hover:text-primary-foreground
-              cursor-pointer
+              text-foreground
+              hover:bg-primary hover:text-primary-foreground
+              active:scale-95
+              cursor-pointer select-none
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
             `,
               className,
             )}
-            aria-label="Vote for this response"
-            onClick={() => {
-              onVoteResponse?.(provider.id);
-            }}
           >
-            <MessageCircleHeartIcon />
-          </Button>
+            <MessageCircleHeartIcon className="h-4 w-4" />
+          </span>
         </TooltipTrigger>
 
         <TooltipContent side="top" align="start">

@@ -4,7 +4,6 @@ import { Spinner } from "@/components/Spinner";
 import { useApiKeys } from "@/providers/credentials";
 import { MessageCircleHeartIcon } from "lucide-react";
 import { VoteResponseButton } from "@/features/chat/components/VoteResponseButton";
-import { StopPropagation } from "@/components/StopPropagation";
 
 export function ProviderIcon({
   provider,
@@ -42,13 +41,11 @@ export function ProviderIcon({
           <MessageCircleHeartIcon aria-label="Waiting for response" />
         </Spinner>
       ) : isVoting ? (
-        <StopPropagation>
-          <VoteResponseButton
-            provider={provider}
-            className="h-6 w-6"
-            onVoteResponse={onVoteResponse}
-          />
-        </StopPropagation>
+        <VoteResponseButton
+          provider={provider}
+          className="h-6 w-6"
+          onVoteResponse={onVoteResponse}
+        />
       ) : (
         <>
           <span aria-hidden>
