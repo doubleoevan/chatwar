@@ -8,6 +8,7 @@ import {
 import { ProviderId } from "@chatwar/shared";
 import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
 import { ApiKeysContext } from "@/providers/credentials/ApiKeysContext";
+import { randomDelay } from "@/mocks/latency";
 
 type ApiKeysState = { apiKeys: ProviderApiKeys; loadingProviderIds: Set<ProviderId> };
 type ApiKeysAction =
@@ -29,12 +30,12 @@ function apiKeysReducer(state: ApiKeysState, action: ApiKeysAction): ApiKeysStat
         apiKeys: getApiKeys(),
       };
     case "ADD_PROVIDER_LOADING": {
-      const { loadingProviderIds = new Set() } = state;
+      const loadingProviderIds = new Set(state.loadingProviderIds);
       loadingProviderIds.add(action.providerId);
       return { ...state, loadingProviderIds };
     }
     case "REMOVE_PROVIDER_LOADING": {
-      const { loadingProviderIds = new Set() } = state;
+      const loadingProviderIds = new Set(state.loadingProviderIds);
       loadingProviderIds.delete(action.providerId);
       return { ...state, loadingProviderIds };
     }
@@ -65,13 +66,14 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorageChange);
   }, []);
 
-  const saveApiKey = useCallback((providerId: ProviderId, apiKey: string) => {
+  const saveApiKey = useCallback(async (providerId: ProviderId, apiKey: string) => {
     dispatch({
       type: "ADD_PROVIDER_LOADING",
       providerId,
     });
 
     // TODO: validate api key
+    await randomDelay({ minimum: 2000 });
 
     dispatch({
       type: "REMOVE_PROVIDER_LOADING",

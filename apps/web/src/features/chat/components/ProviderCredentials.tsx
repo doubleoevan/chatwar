@@ -7,7 +7,7 @@ import { useApiKeys } from "@/providers/credentials";
 
 export function ProviderCredentials({ provider }: { provider: Provider }) {
   const [apiKey, setApiKey] = useState("");
-  const { saveApiKey } = useApiKeys();
+  const { saveApiKey, loadingProviderIds } = useApiKeys();
 
   return (
     <section>
@@ -24,6 +24,7 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
         <Input
           id={`${provider.id}-key`}
           type="password"
+          disabled={loadingProviderIds.has(provider.id)}
           placeholder="Enter your API key"
           name="apiKey"
           className="
@@ -40,7 +41,7 @@ export function ProviderCredentials({ provider }: { provider: Provider }) {
         />
         <button
           type="submit"
-          disabled={!apiKey}
+          disabled={!apiKey || loadingProviderIds.has(provider.id)}
           aria-label="Save your API key"
           className="
           absolute right-1.5 top-1/2 -translate-y-1/2
