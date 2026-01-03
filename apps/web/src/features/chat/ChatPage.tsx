@@ -18,17 +18,16 @@ import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSel
 import { useState } from "react";
 import { ChatComposer } from "@/features/chat/components/ChatComposer";
 import { ProviderIcon } from "@/features/chat/components/ProviderIcon";
+import { sortProviders } from "@/utils/providers";
 
 export function ChatPage() {
   const [openProviderIds, setOpenProviderIds] = useState<Set<ProviderId>>(new Set());
   const { apiKeys } = useApiKeys();
 
   // sort providers with api keys to the top
+  // shuffle if providers need to be voted on
   const providers = PROVIDERS.map((id) => PROVIDER_CONFIGURATIONS[id]);
-  const sortedProviders = [
-    ...providers.filter((provider) => apiKeys[provider.id]),
-    ...providers.filter((provider) => !apiKeys[provider.id]),
-  ];
+  const sortedProviders = sortProviders(providers, apiKeys);
 
   return (
     <section aria-labelledby="chat-heading">
