@@ -81,7 +81,8 @@ export function ChatPage() {
                           h-6 w-6
                         "
                         onApiKeyRemove={(providerId) => {
-                          setOpenProviderIds(new Set([...openProviderIds, providerId]));
+                          openProviderIds.delete(providerId);
+                          setOpenProviderIds(new Set([...openProviderIds]));
                         }}
                       />
                     </>
