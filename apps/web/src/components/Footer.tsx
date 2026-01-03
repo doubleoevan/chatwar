@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t">
       <div className="mx-auto max-w-7xl px-4 py-6 text-center text-sm text-muted-foreground">
         <p>ChatWar is a selfish project for the author’s own personal growth.</p>
-        <p>Your API key stays on your device.</p>
+        <p>Your API keys stay on your device.</p>
         <p>
           The code can be found{" "}
           <ExternalLink href="https://github.com/doubleoevan/chatwar">here</ExternalLink>.
