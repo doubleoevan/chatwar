@@ -8,7 +8,7 @@ const tabInactive = "opacity-70 hover:opacity-100 hover:bg-accent/50";
 
 export function Tabs() {
   return (
-    <nav aria-label="Primary" className="flex gap-2 p-2">
+    <nav aria-label="Primary" className="flex gap-2 p-2 pt-4">
       <NavLink
         to="/chat"
         className={({ isActive }) => cn(tabBase, isActive ? tabActive : tabInactive)}

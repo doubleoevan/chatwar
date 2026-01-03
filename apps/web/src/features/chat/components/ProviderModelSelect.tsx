@@ -22,7 +22,7 @@ export function ProviderModelSelect({
     >
       <SelectTrigger
         className={cn(
-          `h-8
+          `h-6
           w-auto
           inline-flex
           px-2
