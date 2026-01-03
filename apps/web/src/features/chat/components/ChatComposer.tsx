@@ -1,6 +1,7 @@
 import { Button, cn, Textarea } from "@chatwar/ui";
 import { useRef, useState } from "react";
-import { ArrowUp, Square } from "lucide-react";
+import { ArrowUp } from "lucide-react";
+import { useApiKeys } from "@/providers/credentials";
 
 const MAX_HEIGHT_TEXTAREA = 200;
 
@@ -12,6 +13,8 @@ export function ChatComposer({
   className?: string;
 }) {
   const [message, setMessage] = useState("");
+  const { apiKeys } = useApiKeys();
+  const isDisabled = !Object.keys(apiKeys).length;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const autoResize = () => {
@@ -35,9 +38,14 @@ export function ChatComposer({
     >
       <Textarea
         ref={textareaRef}
-        placeholder="Ask anything"
+        placeholder={isDisabled ? "Enter API key to chat" : "Ask anything"}
+        disabled={isDisabled}
         rows={1}
-        className={cn("resize-none pr-12", "min-h-11 max-h-50", "overflow-hidden")}
+        className={cn(
+          "rounded-[20px] resize-none pt-2.5 pr-12",
+          "min-h-11 max-h-50",
+          "overflow-hidden",
+        )}
         value={message}
         onChange={(event) => {
           setMessage(event.target.value);
@@ -55,9 +63,9 @@ export function ChatComposer({
         type="submit"
         size="icon"
         disabled={!message.trim()}
-        className="absolute bottom-4 right-4 h-7 w-7"
+        className="absolute bottom-4 right-4 h-7 w-7 rounded-full cursor-pointer"
       >
-        {message.trim().length ? <ArrowUp /> : <Square />}
+        <ArrowUp />
       </Button>
     </form>
   );
