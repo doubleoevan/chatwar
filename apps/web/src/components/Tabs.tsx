@@ -2,9 +2,10 @@ import { NavLink } from "react-router-dom";
 import { cn } from "@chatwar/ui";
 import { ChartColumnIncreasing, MessageSquareMore } from "lucide-react";
 
-const tabBase = "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors";
-const tabActive = "bg-accent text-accent-foreground";
-const tabInactive = "opacity-70 hover:opacity-100 hover:bg-accent/50";
+const tabBase =
+  "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors border border-transparent";
+const tabActive = "bg-accent text-accent-foreground border-input";
+const tabInactive = "opacity-70 hover:opacity-100 hover:bg-accent/50 hover:border-input";
 
 export function Tabs() {
   return (
