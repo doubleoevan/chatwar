@@ -16,6 +16,8 @@ export * from "./components/ui/accordion";
 export * from "./components/ui/dialog";
 export * from "./components/ui/popover";
 export * from "./components/ui/dropdown-menu";
+export * from "./components/ui/tooltip";
+export * from "./components/ui/select";
 
 // feedback
 export * from "./components/ui/sonner";

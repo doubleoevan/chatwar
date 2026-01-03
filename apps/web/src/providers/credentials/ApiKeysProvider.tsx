@@ -9,24 +9,45 @@ import { ProviderId } from "@chatwar/shared";
 import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
 import { ApiKeysContext } from "@/providers/credentials/ApiKeysContext";
 
-type ApiKeysState = { apiKeys: ProviderApiKeys };
+type ApiKeysState = { apiKeys: ProviderApiKeys; loadingProviderIds: Set<ProviderId> };
 type ApiKeysAction =
   | { type: "SET_API_KEYS"; apiKeys: ProviderApiKeys }
-  | { type: "API_KEYS_UPDATED" };
+  | { type: "API_KEYS_UPDATED" }
+  | { type: "ADD_PROVIDER_LOADING"; providerId: ProviderId }
+  | { type: "REMOVE_PROVIDER_LOADING"; providerId: ProviderId };
 
 function apiKeysReducer(state: ApiKeysState, action: ApiKeysAction): ApiKeysState {
   switch (action.type) {
     case "SET_API_KEYS":
-      return { apiKeys: action.apiKeys };
+      return {
+        ...state,
+        apiKeys: action.apiKeys,
+      };
     case "API_KEYS_UPDATED":
-      return { apiKeys: getApiKeys() };
+      return {
+        ...state,
+        apiKeys: getApiKeys(),
+      };
+    case "ADD_PROVIDER_LOADING": {
+      const { loadingProviderIds = new Set() } = state;
+      loadingProviderIds.add(action.providerId);
+      return { ...state, loadingProviderIds };
+    }
+    case "REMOVE_PROVIDER_LOADING": {
+      const { loadingProviderIds = new Set() } = state;
+      loadingProviderIds.delete(action.providerId);
+      return { ...state, loadingProviderIds };
+    }
     default:
       return state;
   }
 }
 
 export function ApiKeysProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(apiKeysReducer, { apiKeys: getApiKeys() });
+  const [state, dispatch] = useReducer(apiKeysReducer, {
+    apiKeys: getApiKeys(),
+    loadingProviderIds: new Set<ProviderId>(),
+  });
 
   // listen to local storage changes
   useEffect(() => {
@@ -45,6 +66,18 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const saveApiKey = useCallback((providerId: ProviderId, apiKey: string) => {
+    dispatch({
+      type: "ADD_PROVIDER_LOADING",
+      providerId,
+    });
+
+    // TODO: validate api key
+
+    dispatch({
+      type: "REMOVE_PROVIDER_LOADING",
+      providerId,
+    });
+
     storeApiKey(providerId, apiKey);
     dispatch({
       type: "SET_API_KEYS",
@@ -72,8 +105,9 @@ export function ApiKeysProvider({ children }: { children: ReactNode }) {
       deleteApiKey,
       getApiKey,
       apiKeys: state.apiKeys,
+      loadingProviderIds: state.loadingProviderIds,
     }),
-    [saveApiKey, deleteApiKey, getApiKey, state.apiKeys],
+    [saveApiKey, deleteApiKey, getApiKey, state.apiKeys, state.loadingProviderIds],
   );
   return <ApiKeysContext.Provider value={value}>{children}</ApiKeysContext.Provider>;
 }

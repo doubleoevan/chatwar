@@ -9,8 +9,12 @@
     "baseColor": "slate",
     "cssVariables": true
   },
+  "iconLibrary": "lucide",
   "aliases": {
-    "ui": "@chatwar/ui/components",
-    "utils": "@chatwar/lib/utils"
+    "components": "@/components",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "utils": "@/lib/utils",
+    "hooks": "@/hooks"
   }
 }

@@ -7,6 +7,7 @@ export type ApiKeysContextValue = {
   deleteApiKey: (providerId: ProviderId) => void;
   getApiKey: (providerId: ProviderId) => string | null;
   apiKeys: ProviderApiKeys;
+  loadingProviderIds: Set<string>;
 };
 
 export const ApiKeysContext = createContext<ApiKeysContextValue | undefined>(undefined);
