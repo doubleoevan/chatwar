@@ -10,6 +10,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
 import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
 import { validateProviderKey } from "@/api/providers";
 import { toApiError } from "@/utils/apiError";
+import { toastApiError } from "@/utils/toast";
 
 type CredentialsAction =
   | { type: "SET_API_KEYS"; apiKeys: ProviderApiKeys }
@@ -130,6 +131,13 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
           message: "Unknown error validating API key",
         });
         dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
+        toastApiError(apiError, {
+          providerId,
+          metadata: {
+            action: "validate-key",
+            endpoint: `/api/v1/providers/${providerId}/validate-key`,
+          },
+        });
       } finally {
         // stop the loading animation
         dispatch({ type: "REMOVE_LOADING_PROVIDER", providerId });
