@@ -1,6 +1,8 @@
-import { Provider, ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import { cn, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@chatwar/ui";
 import { useState } from "react";
+import { useCredentials } from "@/providers/credentials";
 
 export function ProviderModelSelect({
   provider,
@@ -11,7 +13,9 @@ export function ProviderModelSelect({
   onModelSelect?: (providerId: ProviderId, modelId: string) => void;
   className?: string;
 }) {
-  const [modelId, setModelId] = useState(provider.defaultModelId);
+  const { providerModels } = useCredentials();
+  const modelMetadata = providerModels[provider.id];
+  const [modelId, setModelId] = useState(modelMetadata?.defaultModelId);
   return (
     <Select
       value={modelId}
@@ -42,7 +46,7 @@ export function ProviderModelSelect({
         sideOffset={8}
         className="w-auto min-w-(--radix-select-trigger-width)"
       >
-        {provider.models.map((model) => (
+        {modelMetadata?.models.map((model) => (
           <SelectItem key={model.id} value={model.id}>
             {model.label}
           </SelectItem>

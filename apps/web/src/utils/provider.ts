@@ -1,4 +1,4 @@
-import type { Provider } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import type { ProviderApiKeys } from "@/utils/apiKeys";
 
 /**

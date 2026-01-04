@@ -1,4 +1,4 @@
-import { ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
 
 export type ProviderApiKeys = Partial<Record<ProviderId, string>>;
 

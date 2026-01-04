@@ -1,5 +1,3 @@
-import type { ComponentType, SVGProps } from "react";
-
 /* Providers */
 export const PROVIDERS = [
   "openai",
@@ -12,11 +10,14 @@ export const PROVIDERS = [
 
 export type ProviderId = (typeof PROVIDERS)[number];
 
-export type Provider = {
+export type ProviderMetadata = {
   id: ProviderId;
   label: string;
-  Icon: ComponentType<SVGProps<SVGElement>>;
   apiKeyUrl: string;
+};
+
+export type ProviderModels = {
+  providerId: ProviderId;
   models: Model[];
   defaultModelId: string;
 };

@@ -1,7 +1,8 @@
-import type { Provider, ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleOff } from "lucide-react";
-import { useApiKeys } from "@/providers/credentials";
+import { useCredentials } from "@/providers/credentials";
 
 export function RemoveApiKeyButton({
   provider,
@@ -12,7 +13,7 @@ export function RemoveApiKeyButton({
   onApiKeyRemove?: (providerId: ProviderId) => void;
   className?: string;
 }) {
-  const { deleteApiKey } = useApiKeys();
+  const { deleteApiKey } = useCredentials();
 
   return (
     <TooltipProvider>

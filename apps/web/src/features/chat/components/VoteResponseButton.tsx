@@ -1,4 +1,5 @@
-import type { Provider, ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleHeartIcon } from "lucide-react";
 

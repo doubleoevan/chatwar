@@ -8,10 +8,11 @@ import {
 } from "@chatwar/ui";
 
 import { ProviderChat } from "@/features/chat/components/ProviderChat";
-import { useApiKeys } from "@/providers/credentials";
+import { useCredentials } from "@/providers/credentials";
 import { ProviderCredentials } from "@/features/chat/components/ProviderCredentials";
 
-import { ProviderId, PROVIDERS } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import { PROVIDERS } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { RemoveApiKeyButton } from "@/features/chat/components/RemoveApiKeyButton";
 import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSelect";
@@ -22,7 +23,7 @@ import { sortProviders } from "@/utils/provider";
 
 export function ChatPage() {
   const [openProviderIds, setOpenProviderIds] = useState<Set<ProviderId>>(new Set());
-  const { apiKeys } = useApiKeys();
+  const { apiKeys } = useCredentials();
 
   // sort providers with api keys to the top
   // shuffle if providers need to be voted on

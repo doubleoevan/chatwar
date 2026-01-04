@@ -1,7 +1,8 @@
 import { cn } from "@chatwar/ui";
-import { Provider, type ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import { Spinner } from "@/components/Spinner";
-import { useApiKeys } from "@/providers/credentials";
+import { useCredentials } from "@/providers/credentials";
 import { MessageCircleHeartIcon } from "lucide-react";
 import { VoteResponseButton } from "@/features/chat/components/VoteResponseButton";
 
@@ -15,7 +16,7 @@ export function ProviderIcon({
   onVoteResponse?: (providerId: ProviderId) => void;
 }) {
   const { Icon } = provider;
-  const { loadingProviderIds } = useApiKeys();
+  const { loadingProviderIds } = useCredentials();
 
   // TODO: get these from the chat context useChat()
   const respondingProviderIds = new Set();

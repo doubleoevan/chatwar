@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import { type Provider } from "@chatwar/shared";
+import type { Provider } from "@/types/provider";
 import { Input } from "@chatwar/ui";
 
-import { useApiKeys } from "@/providers/credentials";
+import { useCredentials } from "@/providers/credentials";
 
 export function ProviderCredentials({ provider }: { provider: Provider }) {
   const [apiKey, setApiKey] = useState("");
-  const { saveApiKey, loadingProviderIds } = useApiKeys();
+  const { saveApiKey, loadingProviderIds } = useCredentials();
 
   return (
     <section>

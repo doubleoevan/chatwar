@@ -1,7 +1,7 @@
 import { Button, cn, Textarea } from "@chatwar/ui";
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
-import { useApiKeys } from "@/providers/credentials";
+import { useCredentials } from "@/providers/credentials";
 
 const MAX_HEIGHT_TEXTAREA = 200;
 
@@ -13,7 +13,7 @@ export function ChatComposer({
   className?: string;
 }) {
   const [message, setMessage] = useState("");
-  const { apiKeys } = useApiKeys();
+  const { apiKeys } = useCredentials();
   const isDisabled = !Object.keys(apiKeys).length;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
