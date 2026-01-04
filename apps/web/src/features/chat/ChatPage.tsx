@@ -18,7 +18,7 @@ import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSel
 import { useState } from "react";
 import { ChatComposer } from "@/features/chat/components/ChatComposer";
 import { ProviderIcon } from "@/features/chat/components/ProviderIcon";
-import { sortProviders } from "@/utils/providers";
+import { sortProviders } from "@/utils/provider";
 
 export function ChatPage() {
   const [openProviderIds, setOpenProviderIds] = useState<Set<ProviderId>>(new Set());
