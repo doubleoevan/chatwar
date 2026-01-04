@@ -8,7 +8,8 @@ import {
 import type { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
 import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
 import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
-import { randomDelay } from "@/mocks/latency";
+import { validateProviderKey } from "@/api/providers";
+import { toApiError } from "@/utils/apiError";
 
 type CredentialsAction =
   | { type: "SET_API_KEYS"; apiKeys: ProviderApiKeys }
@@ -110,39 +111,45 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", onStorageChange);
   }, []);
 
-  const saveApiKey = useCallback(async (providerId: ProviderId, apiKey: string) => {
-    // remove provider data and show the loading animation
-    dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
-    dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
-    dispatch({ type: "ADD_LOADING_PROVIDER", providerId });
-    try {
-      // TODO: save the provider models and store the api key
-      await randomDelay();
-      storeApiKey(providerId, apiKey);
-      dispatch({ type: "SET_API_KEYS", apiKeys: getApiKeys() });
-    } catch (exception) {
-      // show an error
-      const code = "INVALID_API_KEY";
-      const error: ApiError =
-        exception instanceof Error
-          ? { code, message: exception.message }
-          : { code, message: "Unknown error validating API key" };
-      dispatch({ type: "SET_PROVIDER_ERROR", providerId, error });
-    } finally {
-      // stop the loading animation
-      dispatch({ type: "REMOVE_LOADING_PROVIDER", providerId });
-    }
-  }, []);
+  const saveApiKey = useCallback(
+    async (providerId: ProviderId, apiKey: string) => {
+      // remove provider data and show the loading animation
+      dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
+      dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
+      dispatch({ type: "ADD_LOADING_PROVIDER", providerId });
+      try {
+        // set the provider models and api key
+        const providerModels = await validateProviderKey({ providerId, apiKey });
+        dispatch({ type: "SET_PROVIDER_MODELS", providerModels });
+        storeApiKey(providerId, apiKey);
+        dispatch({ type: "SET_API_KEYS", apiKeys: getApiKeys() });
+      } catch (error) {
+        // or set an error
+        const apiError = toApiError(error, {
+          code: "PROVIDER_FAILED",
+          message: "Unknown error validating API key",
+        });
+        dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
+      } finally {
+        // stop the loading animation
+        dispatch({ type: "REMOVE_LOADING_PROVIDER", providerId });
+      }
+    },
+    [dispatch],
+  );
 
-  const deleteApiKey = useCallback((providerId: ProviderId) => {
-    removeApiKey(providerId);
-    dispatch({
-      type: "SET_API_KEYS",
-      apiKeys: getApiKeys(),
-    });
-    dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
-    dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
-  }, []);
+  const deleteApiKey = useCallback(
+    (providerId: ProviderId) => {
+      removeApiKey(providerId);
+      dispatch({
+        type: "SET_API_KEYS",
+        apiKeys: getApiKeys(),
+      });
+      dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
+      dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
+    },
+    [dispatch],
+  );
 
   const getApiKey = useCallback(
     (providerId: ProviderId) => state.apiKeys[providerId] ?? null,

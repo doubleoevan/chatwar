@@ -4,6 +4,10 @@ import "@/index.css";
 import "@chatwar/ui/styles.css";
 import App from "@/App";
 import { AppProviders } from "@/app/Providers";
+import { enableMocks } from "@/mocks";
+
+// enable mock service worker in dev
+await enableMocks();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
