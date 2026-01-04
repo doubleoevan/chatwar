@@ -22,14 +22,6 @@ export function removeApiKey(providerId: ProviderId) {
   localStorage.setItem(API_KEYS_STORAGE_KEY, JSON.stringify(apiKeys));
 }
 
-export function getApiKey(providerId: ProviderId) {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  const apiKeys = getApiKeys();
-  return apiKeys[providerId] ?? null;
-}
-
 export function getApiKeys(): ProviderApiKeys {
   if (typeof window === "undefined") {
     return {};

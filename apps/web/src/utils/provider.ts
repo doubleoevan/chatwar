@@ -4,7 +4,7 @@ import type { ProviderApiKeys } from "@/utils/apiKeys";
 /**
  * non-mutating fisher–yates shuffle.
  */
-function shuffle(items: readonly Provider[]): Provider[] {
+function shuffleProviders(items: readonly Provider[]): Provider[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
     const swapIndex = Math.floor(Math.random() * (i + 1));
@@ -32,7 +32,7 @@ export function sortProviders(
     }
   }
   const orderedProvidersWithKeys = shuffleProvidersWithKeys
-    ? shuffle(providersWithKeys)
+    ? shuffleProviders(providersWithKeys)
     : providersWithKeys;
   return [...orderedProvidersWithKeys, ...providersWithoutKeys];
 }
