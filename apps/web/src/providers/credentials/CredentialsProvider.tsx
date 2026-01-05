@@ -6,12 +6,13 @@ import {
   removeApiKey,
   storeApiKey,
 } from "@/utils/apiKeys";
-import type { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
+import { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
 import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
 import { getProviderModels } from "@/api";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError } from "@/utils/toast";
+import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 
 type CredentialsAction =
   | { type: "SET_API_KEYS"; apiKeys: ProviderApiKeys }
@@ -155,8 +156,11 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
 
         // show an error toast
+        const provider = PROVIDER_CONFIGURATIONS[providerId];
+        const { Icon } = provider;
         toastApiError(apiError, {
           providerId,
+          icon: <Icon />,
           metadata: {
             action,
             endpoint: `/api/v1/providers/${providerId}/models`,

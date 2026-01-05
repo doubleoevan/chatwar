@@ -1,16 +1,19 @@
 import { toast } from "sonner";
 import type { ApiError } from "@chatwar/shared";
 import { toApiErrorToast } from "@/utils/apiErrorToast";
+import { ReactNode } from "react";
 
 export function toastApiError(
   error: ApiError,
   {
     id,
     providerId,
+    icon,
     metadata = {},
   }: {
     id?: string;
     providerId?: string;
+    icon?: ReactNode;
     metadata?: Record<string, unknown>;
   } = {},
 ) {
@@ -29,6 +32,7 @@ export function toastApiError(
   // show the error toast
   const toastDescription = toToastDescription({ description, debug });
   toast.error(title, {
+    icon,
     id: toastId,
     description: toastDescription,
   });
