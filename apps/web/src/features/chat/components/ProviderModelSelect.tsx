@@ -14,11 +14,14 @@ export function ProviderModelSelect({
   className?: string;
 }) {
   const { providerModels } = useCredentials();
-  const modelMetadata = providerModels[provider.id];
-  const [modelId, setModelId] = useState(modelMetadata?.defaultModelId);
+  const [modelId, setModelId] = useState<string | undefined>(undefined);
+
+  const modelsMetadata = providerModels[provider.id];
+  const selectedModelId = modelId ?? modelsMetadata?.defaultModelId;
+
   return (
     <Select
-      value={modelId}
+      value={selectedModelId}
       onValueChange={(modelId) => {
         setModelId(modelId);
         onModelSelect?.(provider.id, modelId);
@@ -46,7 +49,7 @@ export function ProviderModelSelect({
         sideOffset={8}
         className="w-auto min-w-(--radix-select-trigger-width)"
       >
-        {modelMetadata?.models.map((model) => (
+        {modelsMetadata?.models.map((model) => (
           <SelectItem key={model.id} value={model.id}>
             {model.label}
           </SelectItem>

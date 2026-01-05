@@ -1,14 +1,17 @@
 import { http, HttpResponse } from "msw";
 import type { ApiError, ProviderId } from "@chatwar/shared";
+import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 import { PROVIDER_MODELS } from "@/mocks/data/providerModels";
 import { withLatency } from "@/mocks/utils/withLatency";
+
+export const PREFIX_BAD_KEY = "bad";
 
 function errorResponse(error: ApiError, status: number) {
   return HttpResponse.json({ error }, { status });
 }
 
 export const providerHandlers = [
-  http.post("/api/v1/providers/:providerId/validate-key", async ({ params, request }) =>
+  http.get("/api/v1/providers/:providerId/models", async ({ params, request }) =>
     withLatency(async () => {
       // throw an error for a missing providerId
       const providerId = params.providerId as ProviderId | undefined;
@@ -17,14 +20,13 @@ export const providerHandlers = [
       }
 
       // throw an error for a missing apiKey
-      const body = (await request.json().catch(() => null)) as { apiKey?: string } | null;
-      const apiKey = body?.apiKey?.trim();
+      const apiKey = request.headers.get(PROVIDER_API_KEY_HEADER)?.trim();
       if (!apiKey) {
-        return errorResponse({ code: "BAD_REQUEST", message: "apiKey is required" }, 400);
+        return errorResponse({ code: "BAD_REQUEST", message: "Provider API Key is required" }, 400);
       }
 
       // throw an error for an invalid api key
-      if (apiKey.startsWith("bad")) {
+      if (apiKey.startsWith(PREFIX_BAD_KEY)) {
         return errorResponse({ code: "INVALID_API_KEY", message: "Invalid API key" }, 401);
       }
 

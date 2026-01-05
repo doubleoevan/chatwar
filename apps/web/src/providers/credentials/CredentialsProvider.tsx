@@ -1,14 +1,15 @@
 import {
   API_KEYS_STORAGE_KEY,
+  getApiKey as getSavedApiKey,
   getApiKeys,
   ProviderApiKeys,
   removeApiKey,
   storeApiKey,
 } from "@/utils/apiKeys";
 import type { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
-import { validateProviderKey } from "@/api/providers";
+import { getProviderModels } from "@/api";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError } from "@/utils/toast";
 
@@ -17,7 +18,7 @@ type CredentialsAction =
   | { type: "API_KEYS_UPDATED" }
   | { type: "ADD_LOADING_PROVIDER"; providerId: ProviderId }
   | { type: "REMOVE_LOADING_PROVIDER"; providerId: ProviderId }
-  | { type: "SET_PROVIDER_MODELS"; providerModels: ProviderModels }
+  | { type: "SET_PROVIDER_MODELS"; providerId: ProviderId; providerModels: ProviderModels }
   | { type: "REMOVE_PROVIDER_MODELS"; providerId: ProviderId }
   | { type: "SET_PROVIDER_ERROR"; providerId: ProviderId; error: ApiError }
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
@@ -53,7 +54,7 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
     }
     case "SET_PROVIDER_MODELS": {
       // remove a previous provider error
-      const providerId = action.providerModels.providerId;
+      const providerId = action.providerId;
       const providerErrors = { ...state.providerErrors };
       delete providerErrors[providerId];
 
@@ -64,7 +65,6 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
         providerErrors,
       };
     }
-
     case "REMOVE_PROVIDER_MODELS": {
       const providerModels = { ...state.providerModels };
       delete providerModels[action.providerId];
@@ -96,54 +96,115 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
     providerErrors: {},
   });
 
+  // store current provider models to check when loading
+  const providerModelsRef = useRef(state.providerModels);
+  useEffect(() => {
+    providerModelsRef.current = state.providerModels;
+  }, [state.providerModels]);
+
   // listen to local storage changes
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
-
     const onStorageChange = (event: StorageEvent) => {
       if (event.key === API_KEYS_STORAGE_KEY) {
         dispatch({ type: "API_KEYS_UPDATED" });
       }
     };
-
     window.addEventListener("storage", onStorageChange);
     return () => window.removeEventListener("storage", onStorageChange);
   }, []);
 
-  const saveApiKey = useCallback(
-    async (providerId: ProviderId, apiKey: string) => {
-      // remove provider data and show the loading animation
+  // fetch models from provider api keys
+  const fetchProviderModels = useCallback(
+    async (
+      providerId: ProviderId,
+      apiKey: string,
+      action: "saveApiKey" | "loadProviderModels",
+      options?: { signal?: AbortSignal },
+    ) => {
+      dispatch({ type: "ADD_LOADING_PROVIDER", providerId });
       dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
       dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
-      dispatch({ type: "ADD_LOADING_PROVIDER", providerId });
       try {
-        // set the provider models and api key
-        const providerModels = await validateProviderKey({ providerId, apiKey });
-        dispatch({ type: "SET_PROVIDER_MODELS", providerModels });
-        storeApiKey(providerId, apiKey);
-        dispatch({ type: "SET_API_KEYS", apiKeys: getApiKeys() });
+        // update the models
+        const providerModels = await getProviderModels({
+          providerId,
+          providerApiKey: apiKey,
+          signal: options?.signal,
+        });
+        dispatch({ type: "SET_PROVIDER_MODELS", providerId, providerModels });
+
+        // update the provider api key if necessary
+        if (getSavedApiKey(providerId) !== apiKey) {
+          storeApiKey(providerId, apiKey);
+          dispatch({ type: "SET_API_KEYS", apiKeys: getApiKeys() });
+        }
       } catch (error) {
-        // or set an error
+        // no need to log an error if the request was aborted
+        if (options?.signal?.aborted) {
+          return;
+        }
+
+        // save the error
         const apiError = toApiError(error, {
           code: "PROVIDER_FAILED",
           message: "Unknown error validating API key",
         });
         dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
+
+        // show an error toast
         toastApiError(apiError, {
           providerId,
           metadata: {
-            action: "validate-key",
-            endpoint: `/api/v1/providers/${providerId}/validate-key`,
+            action,
+            endpoint: `/api/v1/providers/${providerId}/models`,
           },
         });
       } finally {
-        // stop the loading animation
         dispatch({ type: "REMOVE_LOADING_PROVIDER", providerId });
       }
     },
     [dispatch],
+  );
+
+  // reload missing provider models using api keys from local storage
+  useEffect(() => {
+    // nothing to hydrate if there are no api keys in local storage
+    const apiKeys = Object.entries(state.apiKeys) as Array<[ProviderId, string]>;
+    if (apiKeys.length === 0) {
+      return;
+    }
+    const controller = new AbortController();
+    const { signal } = controller;
+    const providerModels = providerModelsRef.current;
+    const loadProviderModels = async () => {
+      for (const [providerId, apiKey] of apiKeys) {
+        // exit on unmount
+        if (signal.aborted) {
+          return;
+        }
+        // ignore providers without keys or with models already hydrated
+        if (!apiKey || providerModels[providerId]) {
+          continue;
+        }
+        await fetchProviderModels(providerId, apiKey, "loadProviderModels", { signal });
+      }
+    };
+    void loadProviderModels();
+
+    // abort loading models on unmount
+    return () => {
+      controller.abort();
+    };
+  }, [state.apiKeys, fetchProviderModels]);
+
+  const saveApiKey = useCallback(
+    async (providerId: ProviderId, apiKey: string) => {
+      await fetchProviderModels(providerId, apiKey, "saveApiKey");
+    },
+    [fetchProviderModels],
   );
 
   const deleteApiKey = useCallback(

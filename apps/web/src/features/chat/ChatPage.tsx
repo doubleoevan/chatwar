@@ -16,7 +16,7 @@ import { PROVIDERS } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { RemoveApiKeyButton } from "@/features/chat/components/RemoveApiKeyButton";
 import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSelect";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ChatComposer } from "@/features/chat/components/ChatComposer";
 import { ProviderIcon } from "@/features/chat/components/ProviderIcon";
 import { sortProviders } from "@/utils/provider";
@@ -29,6 +29,26 @@ export function ChatPage() {
   // shuffle if providers need to be voted on
   const providers = PROVIDERS.map((id) => PROVIDER_CONFIGURATIONS[id]);
   const sortedProviders = sortProviders(providers, apiKeys);
+
+  const openProvider = useCallback((providerId: ProviderId) => {
+    setOpenProviderIds((providerIds) => {
+      if (providerIds.has(providerId)) {
+        return providerIds;
+      }
+      return new Set([...providerIds, providerId]);
+    });
+  }, []);
+
+  const closeProvider = useCallback((providerId: ProviderId) => {
+    setOpenProviderIds((providerIds) => {
+      if (!providerIds.has(providerId)) {
+        return providerIds;
+      }
+      const nextProviderIds = new Set([...providerIds]);
+      nextProviderIds.delete(providerId);
+      return nextProviderIds;
+    });
+  }, []);
 
   return (
     <section aria-labelledby="chat-heading">
@@ -55,7 +75,7 @@ export function ChatPage() {
                       provider={provider}
                       className="w-full"
                       onVoteResponse={(providerId) => {
-                        setOpenProviderIds(new Set([...openProviderIds, providerId]));
+                        openProvider(providerId);
                       }}
                     />
                   </AccordionTrigger>
@@ -66,7 +86,7 @@ export function ChatPage() {
                         provider={provider}
                         className="absolute right-20 top-1/2 -translate-y-1/2 w-auto"
                         onModelSelect={(providerId) => {
-                          setOpenProviderIds(new Set([...openProviderIds, providerId]));
+                          openProvider(providerId);
                         }}
                       />
                       <RemoveApiKeyButton
@@ -76,8 +96,7 @@ export function ChatPage() {
                           h-6 w-6
                         "
                         onApiKeyRemove={(providerId) => {
-                          openProviderIds.delete(providerId);
-                          setOpenProviderIds(new Set([...openProviderIds]));
+                          closeProvider(providerId);
                         }}
                       />
                     </>

@@ -1,12 +1,18 @@
 import type { ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@/providers/theme/ThemeProvider";
+import { ChatProvider } from "@/providers/chat";
+import { CredentialsProvider } from "@/providers/credentials/CredentialsProvider";
 
 /** App context providers */
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <BrowserRouter>
-      <ThemeProvider>{children}</ThemeProvider>
+      <ThemeProvider>
+        <CredentialsProvider>
+          <ChatProvider>{children}</ChatProvider>
+        </CredentialsProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

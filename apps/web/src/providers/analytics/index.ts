@@ -1,1 +1,1 @@
-export { AnalyticsProvider } from "@/providers/analytics/AnalyticsProvider";
+export { AnalyticsProvider } from "./AnalyticsProvider";

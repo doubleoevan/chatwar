@@ -1,3 +1,3 @@
-import { providerHandlers } from "@/mocks/handlers/providers";
+import { providerHandlers } from "./models";
 
 export const handlers = [...providerHandlers];

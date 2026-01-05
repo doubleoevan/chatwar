@@ -1,2 +1,2 @@
-export { useCredentials } from "@/providers/credentials/useCredentials";
-export type { CredentialsContextValue } from "@/providers/credentials/CredentialsContext";
+export { useCredentials } from "./useCredentials";
+export type { CredentialsContextValue } from "./CredentialsContext";
