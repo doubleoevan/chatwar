@@ -5,6 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "test": "vitest --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts --watch",
+    "test:ui": "vitest --config vitest.config.ts --ui",
+    "test:unit": "vitest --config vitest.config.ts src/test",
+    "test:integration": "vitest --config vitest.config.ts src/features",
+    "test:coverage": "vitest --config vitest.config.ts run --coverage",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -33,15 +39,20 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.4",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
+    "happy-dom": "^20.0.11",
+    "jsdom": "^27.4.0",
     "msw": "^2.12.7",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
-    "vite-plugin-svgr": "^4.5.0"
+    "vite-plugin-svgr": "^4.5.0",
+    "vitest": "^4.0.16"
   },
   "msw": {
     "workerDirectory": [
