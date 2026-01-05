@@ -1,5 +1,6 @@
 import { Storage } from "happy-dom";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
+import { server } from "@/mocks/server";
 
 // mock local storage and session storage
 globalThis.localStorage = new Storage();
@@ -15,13 +16,24 @@ if (typeof window !== "undefined") {
   });
 }
 
-// clear storage before tests
+beforeAll(() => {
+  // start mock service worker
+  server.listen({ onUnhandledRequest: "error" });
+});
+
 beforeEach(() => {
+  // clear storage before tests
   localStorage.clear();
   sessionStorage.clear();
 });
 
-// restore mocks after tests
 afterEach(() => {
+  // reset mock service workers and restore test mocks
+  server.resetHandlers();
   vi.restoreAllMocks();
+});
+
+afterAll(() => {
+  // stop mock service worker
+  server.close();
 });

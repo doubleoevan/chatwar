@@ -10,5 +10,22 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     setupFiles: ["src/test/vitest.setup.ts"],
+
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      reportsDirectory: "coverage",
+
+      // include all src files in the coverage report
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: [
+        "src/test/**",
+        "src/**/*.d.ts",
+        "src/**/__generated__/**",
+        "src/**/mocks/**",
+        "src/**/stories/**",
+        "src/**/index.ts", // ignore index files
+      ],
+    },
   },
 });
