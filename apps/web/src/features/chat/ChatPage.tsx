@@ -90,7 +90,7 @@ export function ChatPage() {
                       className="w-full"
                       onVoteResponse={(wonProviderId) => {
                         // open the provider that one and close the others
-                        for (const [providerId] of typedEntries(apiKeys)) {
+                        for (const providerId of openProviderIds) {
                           if (providerId === wonProviderId) {
                             openProvider(providerId);
                           } else {
