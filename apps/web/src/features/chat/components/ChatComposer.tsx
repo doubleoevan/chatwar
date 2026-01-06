@@ -1,9 +1,9 @@
 import { Button, cn, Textarea } from "@chatwar/ui";
-import React, { useRef, useState } from "react";
-import { ArrowUp } from "lucide-react";
+import React, { useCallback, useRef, useState } from "react";
+import { ArrowUp, Square } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
 import { useChat } from "@/providers/chat";
-import { typedEntries } from "@/utils/object";
+import { typedEntries, typedKeys } from "@/utils/object";
 
 const MAX_HEIGHT_TEXTAREA = 200;
 
@@ -17,20 +17,23 @@ export function ChatComposer({
   inputRef?: React.RefObject<HTMLTextAreaElement | null>;
 }) {
   const { apiKeys } = useCredentials();
-  const { selectedProviderModels, startProviderChat } = useChat();
+  const { respondingProviderIds, selectedProviderModels, startProviderChat, stopProviderChat } =
+    useChat();
   const [message, setMessage] = useState("");
 
   // use an internal textarea ref for auto resize
   // and set it to the external textarea ref if one is passed in
   const internalInputRef = useRef<HTMLTextAreaElement | null>(null);
-  const setInputRef = (node: HTMLTextAreaElement | null) => {
-    internalInputRef.current = node;
-    if (externalInputRef) {
-      externalInputRef.current = node;
-    }
-  };
+  const setInputRef = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      internalInputRef.current = node;
+      if (externalInputRef) {
+        externalInputRef.current = node;
+      }
+    },
+    [externalInputRef],
+  );
 
-  const isInputDisabled = !Object.keys(apiKeys).length;
   const autoResize = () => {
     const textarea = internalInputRef.current;
     if (!textarea) {
@@ -42,20 +45,46 @@ export function ChatComposer({
     textarea.style.overflowY = textarea.scrollHeight > MAX_HEIGHT_TEXTAREA ? "auto" : "hidden";
   };
 
+  // start a chat for each provider with an api key
+  const startChats = useCallback(
+    (message: string) => {
+      for (const [providerId, providerApiKey] of typedEntries(apiKeys)) {
+        const model = selectedProviderModels[providerId];
+        if (!providerApiKey || !model) {
+          continue;
+        }
+        startProviderChat({ providerId, providerApiKey, model, message });
+      }
+    },
+    [apiKeys, selectedProviderModels, startProviderChat],
+  );
+
+  // stop chats for each provider with an api key
+  const stopChats = useCallback(() => {
+    for (const providerId of typedKeys(apiKeys)) {
+      stopProviderChat(providerId);
+    }
+
+    // focus the input after the next render
+    requestAnimationFrame(() => {
+      internalInputRef?.current?.focus?.();
+    });
+  }, [apiKeys, stopProviderChat]);
+
+  const isResponding = !!respondingProviderIds.size;
+  const isApiKeysEmpty = !Object.keys(apiKeys).length;
+  const isInputDisabled = isResponding || isApiKeysEmpty;
+
   return (
     <form
       onSubmit={(event) => {
+        // start chats
         event.preventDefault();
-        onChat?.(message);
-
-        // start a chat for each providers with an api key
-        for (const [providerId, providerApiKey] of typedEntries(apiKeys)) {
-          const model = selectedProviderModels[providerId];
-          if (!providerApiKey || !model) {
-            return;
-          }
-          startProviderChat({ providerId, providerApiKey, model, message });
+        if (!message.trim()) {
+          return;
         }
+        onChat?.(message);
+        startChats(message);
 
         // clear the message and reset the textarea height
         setMessage("");
@@ -65,7 +94,7 @@ export function ChatComposer({
     >
       <Textarea
         ref={setInputRef}
-        placeholder={isInputDisabled ? "Enter an API key to chat" : "Ask anything"}
+        placeholder={isApiKeysEmpty ? "Enter an API key to chat" : "Ask anything"}
         disabled={isInputDisabled}
         rows={1}
         className={cn(
@@ -89,14 +118,26 @@ export function ChatComposer({
         }}
       />
 
-      <Button
-        type="submit"
-        size="icon"
-        disabled={!message.trim()}
-        className="absolute bottom-4 right-4 h-7 w-7 rounded-full cursor-pointer"
-      >
-        <ArrowUp />
-      </Button>
+      {isResponding ? (
+        <Button
+          type="button"
+          size="icon"
+          className="absolute bottom-4 right-4 h-7 w-7 rounded-full cursor-pointer"
+          onClick={stopChats}
+          onMouseDown={(event) => event.preventDefault()}
+        >
+          <Square className="fill-current stroke-none" />
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          size="icon"
+          disabled={!message.trim()}
+          className="absolute bottom-4 right-4 h-7 w-7 rounded-full cursor-pointer"
+        >
+          <ArrowUp />
+        </Button>
+      )}
     </form>
   );
 }
