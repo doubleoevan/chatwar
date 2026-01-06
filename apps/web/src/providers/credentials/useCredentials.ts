@@ -7,7 +7,7 @@ import {
 export function useCredentials(): CredentialsContextValue {
   const context = useContext(CredentialsContext);
   if (!context) {
-    throw new Error("useCredentials must be used within a CredentialsContextProvider");
+    throw new Error("useCredentials must be used within <CredentialsProvider />");
   }
   return context;
 }
