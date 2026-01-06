@@ -18,14 +18,16 @@ const initialState: ThemeState = { theme: getTheme() };
 
 function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
   switch (action.type) {
-    case "SET_THEME":
+    case "SET_THEME": {
       return { theme: action.theme };
+    }
 
-    case "SYSTEM_THEME_UPDATED":
+    case "SYSTEM_THEME_UPDATED": {
       if (getUserTheme()) {
         return state;
       }
       return { theme: getTheme() };
+    }
 
     default:
       return state;

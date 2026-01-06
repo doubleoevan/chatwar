@@ -43,26 +43,32 @@ const initialState: CredentialsState = {
 
 function credentialsReducer(state: CredentialsState, action: CredentialsAction): CredentialsState {
   switch (action.type) {
-    case "SET_API_KEYS":
+    case "SET_API_KEYS": {
       return {
         ...state,
         apiKeys: action.apiKeys,
       };
-    case "API_KEYS_UPDATED":
+    }
+
+    case "API_KEYS_UPDATED": {
       return {
         ...state,
         apiKeys: getApiKeys(),
       };
+    }
+
     case "ADD_LOADING_PROVIDER": {
       const loadingProviderIds = new Set(state.loadingProviderIds);
       loadingProviderIds.add(action.providerId);
       return { ...state, loadingProviderIds };
     }
+
     case "REMOVE_LOADING_PROVIDER": {
       const loadingProviderIds = new Set(state.loadingProviderIds);
       loadingProviderIds.delete(action.providerId);
       return { ...state, loadingProviderIds };
     }
+
     case "SET_PROVIDER_MODELS": {
       // remove a previous provider error
       const providerId = action.providerId;
@@ -76,12 +82,14 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
         providerErrors,
       };
     }
+
     case "REMOVE_PROVIDER_MODELS": {
       const providerModels = { ...state.providerModels };
       delete providerModels[action.providerId];
       return { ...state, providerModels };
     }
-    case "SET_PROVIDER_ERROR":
+
+    case "SET_PROVIDER_ERROR": {
       return {
         ...state,
         providerErrors: {
@@ -89,11 +97,14 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
           [action.providerId]: action.error,
         },
       };
+    }
+
     case "REMOVE_PROVIDER_ERROR": {
       const providerErrors = { ...state.providerErrors };
       delete providerErrors[action.providerId];
       return { ...state, providerErrors };
     }
+
     default:
       return state;
   }
