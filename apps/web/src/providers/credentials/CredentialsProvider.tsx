@@ -24,7 +24,7 @@ type CredentialsAction =
   | { type: "SET_PROVIDER_ERROR"; providerId: ProviderId; error: ApiError }
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
 
-type CredentialsState = {
+export type CredentialsState = {
   apiKeys: ProviderApiKeys;
   loadingProviderIds: Set<ProviderId>;
   providerModels: Partial<Record<ProviderId, ProviderModels>>;
