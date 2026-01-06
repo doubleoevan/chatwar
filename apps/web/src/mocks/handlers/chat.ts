@@ -3,6 +3,36 @@ import { PROVIDER_API_KEY_HEADER, ProviderId } from "@chatwar/shared";
 import { PROVIDER_CHATS } from "@/mocks/data/providerChats";
 import { randomDelay } from "@/mocks";
 
+const BREAK_MID_WORD_PROBABILITY = 0.3; // 30% probability of breaking in the middle of a word
+
+function toChunks(
+  message: string,
+  options: { minimum: number; range: number } = { minimum: 15, range: 45 },
+): string[] {
+  const { minimum, range } = options;
+  const chunks: string[] = [];
+  let startIndex = 0;
+  while (startIndex < message.length) {
+    // set the end index
+    const length = Math.floor(Math.random() * range) + minimum;
+    let endIndex = Math.min(startIndex + length, message.length);
+
+    // randomly break in the middle of a word
+    const shouldBreakMidWord = Math.random() < BREAK_MID_WORD_PROBABILITY;
+    if (!shouldBreakMidWord) {
+      const lastSpace = message.lastIndexOf(" ", endIndex);
+      if (lastSpace > startIndex + 5) {
+        endIndex = lastSpace + 1;
+      }
+    }
+
+    // push a message slice and update the start index
+    chunks.push(message.slice(startIndex, endIndex));
+    startIndex = endIndex;
+  }
+  return chunks;
+}
+
 export const chatHandlers = [
   http.post("/api/v1/providers/:providerId/chat", async ({ params, request }) => {
     // throw an error for a missing providerId
@@ -49,12 +79,15 @@ export const chatHandlers = [
       );
     }
 
-    // stream the messages with random latency
+    // stream the message as chunks of random length with random latency
     const stream = new ReadableStream<string>({
       async start(controller) {
         for (const message of messages) {
-          await randomDelay({ minimum: 300, range: 100 });
-          controller.enqueue(message);
+          const chunks = toChunks(message);
+          for (const chunk of chunks) {
+            await randomDelay({ minimum: 20, range: 80 });
+            controller.enqueue(chunk);
+          }
         }
         controller.close();
       },
