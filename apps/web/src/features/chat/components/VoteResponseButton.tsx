@@ -68,7 +68,7 @@ export function VoteResponseButton({
           </span>
         </TooltipTrigger>
 
-        <TooltipContent side="top" align="start">
+        <TooltipContent side="right" align="end">
           <span>Vote for this response</span>
         </TooltipContent>
       </Tooltip>

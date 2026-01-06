@@ -8,22 +8,25 @@ import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useCredentials } from "@/providers/credentials";
 import { typedEntries } from "@/utils/object";
 
+export type ChatMessage = { role: "user"; message: string } | { role: "provider"; message: string };
+
 export type ChatState = {
-  message: string;
+  userMessage: string;
   selectedProviderModels: Partial<Record<ProviderId, Model>>;
-  providerChats: Partial<Record<ProviderId, string>>;
+  providerChats: Partial<Record<ProviderId, ChatMessage[]>>;
   respondingProviderIds: Set<ProviderId>;
   votingProviderIds: Set<ProviderId>;
   providerErrors: Partial<Record<ProviderId, ApiError>>;
 };
 
 type ChatAction =
-  | { type: "SET_CHAT_MESSAGE"; message: string }
+  | { type: "ADD_USER_MESSAGE"; providerId: ProviderId; message: string }
   | { type: "SET_SELECTED_PROVIDER_MODEL"; providerId: ProviderId; model: Model }
   | { type: "REMOVE_SELECTED_PROVIDER_MODEL"; providerId: ProviderId }
   | { type: "REMOVE_PROVIDER_CHAT"; providerId: ProviderId }
   | { type: "CLEAR_PROVIDER_CHAT"; providerId: ProviderId }
-  | { type: "APPEND_CHAT_RESPONSE"; providerId: ProviderId; response: string }
+  | { type: "ADD_PROVIDER_MESSAGE"; providerId: ProviderId }
+  | { type: "APPEND_PROVIDER_MESSAGE"; providerId: ProviderId; message: string }
   | { type: "ADD_RESPONDING_PROVIDER"; providerId: ProviderId }
   | { type: "REMOVE_RESPONDING_PROVIDER"; providerId: ProviderId }
   | { type: "ADD_VOTING_PROVIDER"; providerId: ProviderId }
@@ -33,7 +36,7 @@ type ChatAction =
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
 
 const initialState: ChatState = {
-  message: "",
+  userMessage: "",
   selectedProviderModels: {},
   providerChats: {},
   respondingProviderIds: new Set(),
@@ -43,8 +46,16 @@ const initialState: ChatState = {
 
 function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
-    case "SET_CHAT_MESSAGE": {
-      return { ...state, message: action.message };
+    case "ADD_USER_MESSAGE": {
+      const chats = state.providerChats[action.providerId] ?? [];
+      return {
+        ...state,
+        userMessage: action.message,
+        providerChats: {
+          ...state.providerChats,
+          [action.providerId]: [...chats, { role: "user", message: action.message }],
+        },
+      };
     }
 
     case "SET_SELECTED_PROVIDER_MODEL": {
@@ -68,15 +79,42 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
     case "CLEAR_PROVIDER_CHAT": {
       return {
         ...state,
-        providerChats: { ...state.providerChats, [action.providerId]: "" },
+        providerChats: { ...state.providerChats, [action.providerId]: [] },
       };
     }
 
-    case "APPEND_CHAT_RESPONSE": {
-      const chat = state.providerChats[action.providerId] ?? "";
+    case "ADD_PROVIDER_MESSAGE": {
+      const chats = state.providerChats[action.providerId] ?? [];
       return {
         ...state,
-        providerChats: { ...state.providerChats, [action.providerId]: chat + action.response },
+        providerChats: {
+          ...state.providerChats,
+          [action.providerId]: [...chats, { role: "provider", message: "" }],
+        },
+      };
+    }
+
+    case "APPEND_PROVIDER_MESSAGE": {
+      const chats = state.providerChats[action.providerId] ?? [];
+      const providerChat = chats[chats.length - 1];
+      if (providerChat?.role !== "provider") {
+        return {
+          ...state,
+          providerChats: {
+            ...state.providerChats,
+            [action.providerId]: [...chats, { role: "provider", message: action.message }],
+          },
+        };
+      }
+      return {
+        ...state,
+        providerChats: {
+          ...state.providerChats,
+          [action.providerId]: [
+            ...chats.slice(0, -1),
+            { ...providerChat, message: providerChat.message + action.message },
+          ],
+        },
       };
     }
 
@@ -194,7 +232,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
 
       // stream the chat
-      dispatch({ type: "SET_CHAT_MESSAGE", message });
+      dispatch({ type: "ADD_USER_MESSAGE", message, providerId });
+      dispatch({ type: "ADD_PROVIDER_MESSAGE", providerId });
       dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
       dispatch({ type: "ADD_RESPONDING_PROVIDER", providerId });
       void streamChat({
@@ -204,7 +243,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         message,
         signal: controller.signal,
         onChunk: (chunk) => {
-          dispatch({ type: "APPEND_CHAT_RESPONSE", providerId, response: chunk });
+          dispatch({ type: "APPEND_PROVIDER_MESSAGE", providerId, message: chunk });
         },
         onComplete: () => {
           // finished responding and ready to vote
@@ -260,7 +299,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     (options: { providerId: ProviderId; providerApiKey: string; model: Model }) => {
       // TODO: post winning provider and model to backend
       const { providerId, providerApiKey, model } = options;
-      console.log({ providerId, providerApiKey, modelId: model.id, message: state.message });
+      console.log({ providerId, providerApiKey, modelId: model.id, message: state.userMessage });
 
       // show a victory toast
       const provider = PROVIDER_CONFIGURATIONS[providerId];
@@ -269,7 +308,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       toastVoteMessage(message, <Icon />);
       dispatch({ type: "CLEAR_VOTING_PROVIDERS" });
     },
-    [state.message],
+    [state.userMessage],
   );
 
   const removeProviderChat = useCallback(

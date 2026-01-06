@@ -88,8 +88,15 @@ export function ChatPage() {
                     <ProviderIcon
                       provider={provider}
                       className="w-full"
-                      onVoteResponse={(providerId) => {
-                        openProvider(providerId);
+                      onVoteResponse={(wonProviderId) => {
+                        // open the provider that one and close the others
+                        for (const [providerId] of typedEntries(apiKeys)) {
+                          if (providerId === wonProviderId) {
+                            openProvider(providerId);
+                          } else {
+                            closeProvider(providerId);
+                          }
+                        }
                       }}
                     />
                   </AccordionTrigger>
