@@ -130,10 +130,12 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
       try {
         // update the models
+        const useCache = action !== "saveApiKey";
         const providerModels = await getProviderModels({
           providerId,
           providerApiKey: apiKey,
           signal: options?.signal,
+          useCache,
         });
         dispatch({ type: "SET_PROVIDER_MODELS", providerId, providerModels });
 
@@ -144,7 +146,10 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         // no need to log an error if the request was aborted
-        if (options?.signal?.aborted) {
+        if (
+          options?.signal?.aborted ||
+          (error instanceof DOMException && error.name === "AbortError")
+        ) {
           return;
         }
 

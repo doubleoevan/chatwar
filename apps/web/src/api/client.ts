@@ -1,5 +1,5 @@
 import type { ApiError } from "@chatwar/shared";
-import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
+import { CACHE_HEADER, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 
 type ApiErrorResponse = { error: ApiError };
 
@@ -46,6 +46,7 @@ function toApiError(response: Response): ApiError {
 
 export type ApiClientOptions = {
   providerApiKey?: string;
+  useCache?: boolean;
   signal?: AbortSignal;
 };
 
@@ -58,6 +59,9 @@ export async function fetchJson<T>(
   const headers = new Headers(request.headers);
   if (options.providerApiKey) {
     headers.set(PROVIDER_API_KEY_HEADER, options.providerApiKey);
+  }
+  if (options.useCache === false) {
+    headers.set(CACHE_HEADER, "no-cache");
   }
 
   // fetch the response
