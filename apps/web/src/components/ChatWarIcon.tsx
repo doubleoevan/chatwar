@@ -1,4 +1,3 @@
-// src/components/ChatWarIcon.tsx
 import { cn } from "@chatwar/ui";
 import darkIconUrl from "@/assets/icons/chatwar-dark.svg";
 import lightIconUrl from "@/assets/icons/chatwar-light.svg";
