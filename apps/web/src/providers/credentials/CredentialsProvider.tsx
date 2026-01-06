@@ -242,23 +242,12 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
   // memoize context to avoid rerendering consumers
   const value = useMemo(
     () => ({
+      ...state,
       saveApiKey,
       deleteApiKey,
       getApiKey,
-      apiKeys: state.apiKeys,
-      loadingProviderIds: state.loadingProviderIds,
-      providerModels: state.providerModels,
-      providerErrors: state.providerErrors,
     }),
-    [
-      saveApiKey,
-      deleteApiKey,
-      getApiKey,
-      state.apiKeys,
-      state.loadingProviderIds,
-      state.providerModels,
-      state.providerErrors,
-    ],
+    [state, saveApiKey, deleteApiKey, getApiKey],
   );
   return <CredentialsContext.Provider value={value}>{children}</CredentialsContext.Provider>;
 }

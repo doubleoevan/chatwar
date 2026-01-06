@@ -83,10 +83,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // memoize context to avoid rerendering consumers
   const value = useMemo(
     () => ({
-      theme: state.theme,
+      ...state,
       setTheme,
     }),
-    [state.theme, setTheme],
+    [state, setTheme],
   );
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
