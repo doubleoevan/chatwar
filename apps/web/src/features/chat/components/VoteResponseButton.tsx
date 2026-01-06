@@ -2,6 +2,8 @@ import type { ProviderId } from "@chatwar/shared";
 import type { Provider } from "@/types/provider";
 import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleHeartIcon } from "lucide-react";
+import { useChat } from "@/providers/chat";
+import { useCredentials } from "@/providers/credentials";
 
 export function VoteResponseButton({
   provider,
@@ -12,7 +14,18 @@ export function VoteResponseButton({
   className?: string;
   onVoteResponse?: (providerId: ProviderId) => void;
 }) {
-  const onVote = () => onVoteResponse?.(provider.id);
+  const { apiKeys } = useCredentials();
+  const { voteProviderChat, selectedProviderModels } = useChat();
+  const onVote = () => {
+    const providerId = provider.id;
+    const providerApiKey = apiKeys[providerId];
+    const model = selectedProviderModels[providerId];
+    if (!providerApiKey || !model) {
+      return;
+    }
+    voteProviderChat({ providerId, providerApiKey, model });
+    onVoteResponse?.(providerId);
+  };
 
   return (
     <TooltipProvider>
@@ -56,7 +69,7 @@ export function VoteResponseButton({
         </TooltipTrigger>
 
         <TooltipContent side="top" align="start">
-          <span>Vote for response</span>
+          <span>Vote for this response</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

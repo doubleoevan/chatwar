@@ -190,7 +190,7 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "REMOVE_LOADING_PROVIDER", providerId });
       }
     },
-    [dispatch],
+    [],
   );
 
   // reload missing provider models using api keys from local storage
@@ -231,18 +231,15 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
     [fetchProviderModels],
   );
 
-  const deleteApiKey = useCallback(
-    (providerId: ProviderId) => {
-      removeApiKey(providerId);
-      dispatch({
-        type: "SET_API_KEYS",
-        apiKeys: getApiKeys(),
-      });
-      dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
-      dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
-    },
-    [dispatch],
-  );
+  const deleteApiKey = useCallback((providerId: ProviderId) => {
+    removeApiKey(providerId);
+    dispatch({
+      type: "SET_API_KEYS",
+      apiKeys: getApiKeys(),
+    });
+    dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
+    dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
+  }, []);
 
   const getApiKey = useCallback(
     (providerId: ProviderId) => state.apiKeys[providerId] ?? null,

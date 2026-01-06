@@ -1,13 +1,15 @@
-import type { Provider } from "@/types/provider";
-import type { ProviderApiKeys } from "@/utils/apiKeys";
+import seedrandom from "seedrandom";
+import { Provider } from "@/types/provider";
+import { ProviderApiKeys } from "@/utils/apiKeys";
 
 /**
- * non-mutating fisher–yates shuffle.
+ * Deterministic, seeded Fisher–Yates shuffle for stable UI ordering.
  */
-function shuffleProviders(items: readonly Provider[]): Provider[] {
+function shuffleProviders(items: readonly Provider[], seed: number): Provider[] {
+  const randomNumberGenerator = seedrandom(String(seed));
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
-    const swapIndex = Math.floor(Math.random() * (i + 1));
+    const swapIndex = Math.floor(randomNumberGenerator() * (i + 1));
     [result[i], result[swapIndex]] = [result[swapIndex], result[i]];
   }
   return result;
@@ -20,7 +22,7 @@ function shuffleProviders(items: readonly Provider[]): Provider[] {
 export function sortProviders(
   providers: readonly Provider[],
   apiKeys: ProviderApiKeys,
-  shuffleProvidersWithKeys = false,
+  shuffleSeed = 0,
 ): Provider[] {
   const providersWithKeys: Provider[] = [];
   const providersWithoutKeys: Provider[] = [];
@@ -31,8 +33,8 @@ export function sortProviders(
       providersWithoutKeys.push(provider);
     }
   }
-  const orderedProvidersWithKeys = shuffleProvidersWithKeys
-    ? shuffleProviders(providersWithKeys)
+  const orderedProvidersWithKeys = shuffleSeed
+    ? shuffleProviders(providersWithKeys, shuffleSeed)
     : providersWithKeys;
   return [...orderedProvidersWithKeys, ...providersWithoutKeys];
 }

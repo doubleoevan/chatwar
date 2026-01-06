@@ -5,6 +5,7 @@ export type ApiErrorCode =
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "RATE_LIMITED"
+  | "MISSING_MODEL"
   | "PROVIDER_FAILED"
   | "TIMEOUT"
   | "INTERNAL";

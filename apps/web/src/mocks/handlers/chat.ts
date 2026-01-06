@@ -18,13 +18,21 @@ export const chatHandlers = [
     const apiKey = request.headers.get(PROVIDER_API_KEY_HEADER)?.trim();
     if (!apiKey) {
       return HttpResponse.json(
-        { code: "BAD_REQUEST", message: "Provider API Key is required" },
+        { error: { code: "BAD_REQUEST", message: "Provider API Key is required" } },
+        { status: 400 },
+      );
+    }
+
+    // throw an error for a missing modelId
+    const { modelId, message } = (await request.json()) as { modelId?: string; message?: string };
+    if (!modelId?.trim()) {
+      return HttpResponse.json(
+        { error: { code: "BAD_REQUEST", message: "Missing modelId" } },
         { status: 400 },
       );
     }
 
     // throw an error for a missing message
-    const { message } = (await request.json()) as { message?: string };
     if (!message?.trim()) {
       return HttpResponse.json(
         { error: { code: "BAD_REQUEST", message: "Missing message" } },

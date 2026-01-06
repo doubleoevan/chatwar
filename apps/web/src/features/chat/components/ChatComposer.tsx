@@ -2,6 +2,8 @@ import { Button, cn, Textarea } from "@chatwar/ui";
 import { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
+import { useChat } from "@/providers/chat";
+import { typedEntries } from "@/utils/object";
 
 const MAX_HEIGHT_TEXTAREA = 200;
 
@@ -12,11 +14,13 @@ export function ChatComposer({
   onChat?: (message: string) => void;
   className?: string;
 }) {
-  const [message, setMessage] = useState("");
   const { apiKeys } = useCredentials();
-  const isDisabled = !Object.keys(apiKeys).length;
+  const { selectedProviderModels, startProviderChat } = useChat();
+  const [message, setMessage] = useState("");
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const isDisabled = !Object.keys(apiKeys).length;
   const autoResize = () => {
     const textarea = textareaRef.current;
     if (!textarea) {
@@ -31,8 +35,22 @@ export function ChatComposer({
   return (
     <form
       onSubmit={(event) => {
+        // call the chat handler
         event.preventDefault();
         onChat?.(message);
+
+        // start a chat for all providers with api keys
+        for (const [providerId, providerApiKey] of typedEntries(apiKeys)) {
+          const model = selectedProviderModels[providerId];
+          if (!providerApiKey || !model) {
+            return;
+          }
+          startProviderChat({ providerId, providerApiKey, model, message });
+        }
+
+        // clear the message and resize
+        setMessage("");
+        requestAnimationFrame(autoResize);
       }}
       className={cn("sticky", className)}
     >
@@ -53,8 +71,12 @@ export function ChatComposer({
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            onChat?.(message);
+            event.preventDefault(); // stop newline + native form submit
+            if (!message.trim()) {
+              return;
+            }
+            // manually trigger submit
+            event.currentTarget.form?.requestSubmit();
           }
         }}
       />

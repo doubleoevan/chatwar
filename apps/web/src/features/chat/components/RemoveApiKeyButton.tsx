@@ -3,6 +3,7 @@ import type { Provider } from "@/types/provider";
 import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleOff } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
+import { useChat } from "@/providers/chat";
 
 export function RemoveApiKeyButton({
   provider,
@@ -13,7 +14,16 @@ export function RemoveApiKeyButton({
   onApiKeyRemove?: (providerId: ProviderId) => void;
   className?: string;
 }) {
-  const { deleteApiKey } = useCredentials();
+  const { deleteApiKey, loadingProviderIds } = useCredentials();
+  const { removeProviderChat, respondingProviderIds, votingProviderIds } = useChat();
+
+  // hide the remove button while loading, responding or voting
+  const isLoading = loadingProviderIds.has(provider.id);
+  const isResponding = respondingProviderIds.has(provider.id);
+  const isVoting = votingProviderIds.has(provider.id);
+  if (isLoading || isResponding || isVoting) {
+    return null;
+  }
 
   return (
     <TooltipProvider>
@@ -32,9 +42,10 @@ export function RemoveApiKeyButton({
             `,
               className,
             )}
-            aria-label={`Remove API Key`}
+            aria-label={`Remove this API Key`}
             onClick={() => {
               deleteApiKey(provider.id);
+              removeProviderChat(provider.id);
               onApiKeyRemove?.(provider.id);
             }}
           >
@@ -43,7 +54,7 @@ export function RemoveApiKeyButton({
         </TooltipTrigger>
 
         <TooltipContent side="bottom" align="end">
-          <span>Remove API Key</span>
+          <span>Remove this API Key</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

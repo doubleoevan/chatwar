@@ -5,7 +5,7 @@ import { Spinner } from "@/components/Spinner";
 import { useCredentials } from "@/providers/credentials";
 import { MessageCircleHeartIcon } from "lucide-react";
 import { VoteResponseButton } from "@/features/chat/components/VoteResponseButton";
-import { useChat } from "@/providers/chat/useChat";
+import { useChat } from "@/providers/chat";
 
 export function ProviderIcon({
   provider,

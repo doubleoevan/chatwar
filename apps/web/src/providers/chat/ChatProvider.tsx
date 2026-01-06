@@ -1,13 +1,16 @@
-import React, { useCallback, useMemo, useReducer, useRef } from "react";
-import type { ApiError, ProviderId } from "@chatwar/shared";
+import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import type { ApiError, Model, ProviderId } from "@chatwar/shared";
 import { streamChat } from "@/api/chat";
 import { ChatContext } from "@/providers/chat/ChatContext";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError, toastVoteMessage } from "@/utils/toast";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
+import { useCredentials } from "@/providers/credentials";
+import { typedEntries } from "@/utils/object";
 
 export type ChatState = {
   message: string;
+  selectedProviderModels: Partial<Record<ProviderId, Model>>;
   providerChats: Partial<Record<ProviderId, string>>;
   respondingProviderIds: Set<ProviderId>;
   votingProviderIds: Set<ProviderId>;
@@ -16,6 +19,8 @@ export type ChatState = {
 
 type ChatAction =
   | { type: "SET_CHAT_MESSAGE"; message: string }
+  | { type: "SET_SELECTED_PROVIDER_MODEL"; providerId: ProviderId; model: Model }
+  | { type: "REMOVE_SELECTED_PROVIDER_MODEL"; providerId: ProviderId }
   | { type: "REMOVE_PROVIDER_CHAT"; providerId: ProviderId }
   | { type: "CLEAR_PROVIDER_CHAT"; providerId: ProviderId }
   | { type: "APPEND_CHAT_RESPONSE"; providerId: ProviderId; response: string }
@@ -29,6 +34,7 @@ type ChatAction =
 
 const initialState: ChatState = {
   message: "",
+  selectedProviderModels: {},
   providerChats: {},
   respondingProviderIds: new Set(),
   votingProviderIds: new Set(),
@@ -39,6 +45,18 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
     case "SET_CHAT_MESSAGE": {
       return { ...state, message: action.message };
+    }
+
+    case "SET_SELECTED_PROVIDER_MODEL": {
+      const selectedProviderModels = { ...state.selectedProviderModels };
+      selectedProviderModels[action.providerId] = action.model;
+      return { ...state, selectedProviderModels };
+    }
+
+    case "REMOVE_SELECTED_PROVIDER_MODEL": {
+      const selectedProviderModels = { ...state.selectedProviderModels };
+      delete selectedProviderModels[action.providerId];
+      return { ...state, selectedProviderModels };
     }
 
     case "REMOVE_PROVIDER_CHAT": {
@@ -118,6 +136,29 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { providerModels } = useCredentials();
+
+  // initialize selected models from credentials provider defaults
+  useEffect(() => {
+    for (const [providerId, modelsMetadata] of typedEntries(providerModels)) {
+      const defaultModelId = modelsMetadata?.defaultModelId;
+      if (!defaultModelId || state.selectedProviderModels[providerId]) {
+        continue;
+      }
+      const model = modelsMetadata.models.find((model) => model.id === defaultModelId);
+      if (!model) {
+        continue;
+      }
+      dispatch({ type: "SET_SELECTED_PROVIDER_MODEL", providerId, model });
+    }
+
+    // remove selected models from providers that do not have defaults
+    for (const [providerId] of typedEntries(state.selectedProviderModels)) {
+      if (!providerModels[providerId]) {
+        dispatch({ type: "REMOVE_SELECTED_PROVIDER_MODEL", providerId });
+      }
+    }
+  }, [providerModels, state.selectedProviderModels]);
 
   // use an instance field to abort streaming providers if necessary
   const abortControllersRef = useRef(new Map<ProviderId, AbortController>());
@@ -134,19 +175,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const startProviderChat = useCallback(
-    (args: {
+    (options: {
       providerId: ProviderId;
       providerApiKey: string;
-      modelId: string;
+      model: Model;
       message: string;
       clearChat?: boolean;
     }) => {
-      // set the message to pass with the vote
-      const { providerId, providerApiKey, modelId, message, clearChat = false } = args;
-      dispatch({ type: "SET_CHAT_MESSAGE", message });
-      dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
-
       // stop any previous stream for this provider and set a new abort controller
+      const { providerId, providerApiKey, model, message, clearChat = false } = options;
       stopProviderChat(providerId);
       const controller = new AbortController();
       abortControllersRef.current.set(providerId, controller);
@@ -157,10 +194,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
 
       // stream the chat
+      dispatch({ type: "SET_CHAT_MESSAGE", message });
+      dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
       dispatch({ type: "ADD_RESPONDING_PROVIDER", providerId });
       void streamChat({
         providerId,
         providerApiKey,
+        modelId: model.id,
         message,
         signal: controller.signal,
         onChunk: (chunk) => {
@@ -201,7 +241,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             icon: <Icon />,
             metadata: {
               endpoint: `/api/v1/providers/${providerId}/chat`,
-              modelId,
+              modelId: model.id,
+              modelLabel: model.label,
               message,
             },
           });
@@ -211,12 +252,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     [stopProviderChat],
   );
 
+  const selectProviderModel = useCallback((providerId: ProviderId, model: Model) => {
+    dispatch({ type: "SET_SELECTED_PROVIDER_MODEL", providerId, model });
+  }, []);
+
   const voteProviderChat = useCallback(
-    (providerId: ProviderId, modelId: string) => {
-      // TODO: post winning provider and model vote to backend
-      console.log({ providerId, modelId, message: state.message });
+    (options: { providerId: ProviderId; providerApiKey: string; model: Model }) => {
+      // TODO: post winning provider and model to backend
+      const { providerId, providerApiKey, model } = options;
+      console.log({ providerId, providerApiKey, modelId: model.id, message: state.message });
+
+      // show a victory toast
       const provider = PROVIDER_CONFIGURATIONS[providerId];
-      const message = `${provider.label} Wins!`;
+      const message = `${provider.label} with ${model.label} wins!`;
       const { Icon } = provider;
       toastVoteMessage(message, <Icon />);
       dispatch({ type: "CLEAR_VOTING_PROVIDERS" });
@@ -229,6 +277,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       stopProviderChat(providerId);
       dispatch({ type: "REMOVE_PROVIDER_CHAT", providerId });
       dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
+      dispatch({ type: "REMOVE_SELECTED_PROVIDER_MODEL", providerId });
     },
     [stopProviderChat],
   );
@@ -237,12 +286,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       ...state,
+      selectProviderModel,
       startProviderChat,
       stopProviderChat,
       voteProviderChat,
       removeProviderChat,
     }),
-    [state, startProviderChat, stopProviderChat, voteProviderChat, removeProviderChat],
+    [
+      state,
+      selectProviderModel,
+      startProviderChat,
+      stopProviderChat,
+      voteProviderChat,
+      removeProviderChat,
+    ],
   );
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 }

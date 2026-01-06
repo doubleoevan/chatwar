@@ -5,8 +5,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import type { ProviderId } from "@chatwar/shared";
 import { PROVIDERS } from "@chatwar/shared";
 
-import { CredentialsProvider } from "@/providers/credentials/CredentialsProvider";
-import { useCredentials } from "@/providers/credentials/useCredentials";
+import { CredentialsProvider, useCredentials } from "@/providers/credentials";
 import { getApiKey as getSavedApiKey, removeApiKey } from "@/utils/apiKeys";
 
 function TestComponent({ providerId, apiKey }: { providerId: ProviderId; apiKey: string }) {

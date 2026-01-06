@@ -1,9 +1,8 @@
 import type { ProviderId } from "@chatwar/shared";
 import type { Provider } from "@/types/provider";
 import { cn, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@chatwar/ui";
-import { useState } from "react";
 import { useCredentials } from "@/providers/credentials";
-import { useChat } from "@/providers/chat/useChat";
+import { useChat } from "@/providers/chat";
 
 export function ProviderModelSelect({
   provider,
@@ -15,24 +14,28 @@ export function ProviderModelSelect({
   className?: string;
 }) {
   const { providerModels, loadingProviderIds } = useCredentials();
-  const { respondingProviderIds, votingProviderIds } = useChat();
-  const [modelId, setModelId] = useState<string | undefined>(undefined);
+  const { selectProviderModel, selectedProviderModels, respondingProviderIds, votingProviderIds } =
+    useChat();
 
-  // hide the select while loading responding or voting
+  // hide the select while loading, responding or voting
   const isLoading = loadingProviderIds.has(provider.id);
   const isResponding = respondingProviderIds.has(provider.id);
   const isVoting = votingProviderIds.has(provider.id);
   const modelsMetadata = providerModels[provider.id];
-  const selectedModelId = modelId ?? modelsMetadata?.defaultModelId;
-  if (isLoading || isResponding || isVoting || !selectedModelId) {
+  const modelId = selectedProviderModels[provider.id]?.id ?? modelsMetadata?.defaultModelId;
+  if (isLoading || isResponding || isVoting || !modelsMetadata || !modelId) {
     return null;
   }
 
   return (
     <Select
-      value={selectedModelId}
+      value={modelId}
       onValueChange={(modelId) => {
-        setModelId(modelId);
+        const model = modelsMetadata.models.find((model) => model.id === modelId);
+        if (!model) {
+          return;
+        }
+        selectProviderModel(provider.id, model);
         onModelSelect?.(provider.id, modelId);
       }}
     >
@@ -58,7 +61,7 @@ export function ProviderModelSelect({
         sideOffset={8}
         className="w-auto min-w-(--radix-select-trigger-width)"
       >
-        {modelsMetadata?.models.map((model) => (
+        {modelsMetadata.models.map((model) => (
           <SelectItem key={model.id} value={model.id}>
             {model.label}
           </SelectItem>
