@@ -16,11 +16,11 @@ import { PROVIDERS } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { RemoveApiKeyButton } from "@/features/chat/components/RemoveApiKeyButton";
 import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSelect";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ChatComposer } from "@/features/chat/components/ChatComposer";
 import { ProviderIcon } from "@/features/chat/components/ProviderIcon";
 import { sortProviders } from "@/utils/provider";
-import { typedEntries } from "@/utils/object";
+import { typedKeys } from "@/utils/object";
 
 export function ChatPage() {
   const { apiKeys } = useCredentials();
@@ -54,15 +54,39 @@ export function ChatPage() {
     });
   }, []);
 
+  // opens the passed in providers and closes all other providers
+  const openProviders = useCallback(
+    (providerIds: ProviderId[]) => {
+      const ids = new Set(providerIds);
+      for (const provider of providers) {
+        const providerId = provider.id;
+        if (ids.has(providerId)) {
+          openProvider(providerId);
+        } else {
+          closeProvider(providerId);
+        }
+      }
+    },
+    [providers, openProvider, closeProvider],
+  );
+
   const onChat = useCallback(() => {
-    // Choose a new shuffle seed for each vote round
+    // choose a new shuffle seed for each vote round
     setShuffleSeed((seed) => seed + 1);
 
-    // open all providers with api keys
-    for (const [providerId] of typedEntries(apiKeys)) {
-      openProvider(providerId);
-    }
-  }, [apiKeys, openProvider]);
+    // open providers with api keys and close others
+    const providerIds = typedKeys(apiKeys);
+    openProviders(providerIds);
+  }, [apiKeys, openProviders]);
+
+  // focus the input in the composer component with a ref
+  const composerInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const focusComposerInput = useCallback(() => {
+    // defer until the accordion/layout settles
+    requestAnimationFrame(() => {
+      composerInputRef.current?.focus();
+    });
+  }, []);
 
   return (
     <section aria-labelledby="chat-heading">
@@ -88,15 +112,8 @@ export function ChatPage() {
                     <ProviderIcon
                       provider={provider}
                       className="w-full"
-                      onVoteResponse={(wonProviderId) => {
-                        // open the provider that one and close the others
-                        for (const providerId of openProviderIds) {
-                          if (providerId === wonProviderId) {
-                            openProvider(providerId);
-                          } else {
-                            closeProvider(providerId);
-                          }
-                        }
+                      onVoteResponse={(providerId) => {
+                        openProviders([providerId]);
                       }}
                     />
                   </AccordionTrigger>
@@ -124,7 +141,7 @@ export function ChatPage() {
                 <AccordionContent className="pt-0 pb-2">
                   <CardContent className="px-2 py-0 m-0">
                     {apiKeys[provider.id] ? (
-                      <ProviderChat provider={provider} />
+                      <ProviderChat provider={provider} onStartChatClick={focusComposerInput} />
                     ) : (
                       <ProviderCredentials provider={provider} />
                     )}
@@ -135,7 +152,7 @@ export function ChatPage() {
           );
         })}
       </Accordion>
-      <ChatComposer className="p-2 mb-3.5 mt-3" onChat={onChat} />
+      <ChatComposer className="p-2 mb-3.5 mt-3" inputRef={composerInputRef} onChat={onChat} />
     </section>
   );
 }

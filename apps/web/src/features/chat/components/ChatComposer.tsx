@@ -1,5 +1,5 @@
 import { Button, cn, Textarea } from "@chatwar/ui";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
 import { useChat } from "@/providers/chat";
@@ -10,19 +10,29 @@ const MAX_HEIGHT_TEXTAREA = 200;
 export function ChatComposer({
   onChat,
   className,
+  inputRef: externalInputRef,
 }: {
   onChat?: (message: string) => void;
   className?: string;
+  inputRef?: React.RefObject<HTMLTextAreaElement | null>;
 }) {
   const { apiKeys } = useCredentials();
   const { selectedProviderModels, startProviderChat } = useChat();
   const [message, setMessage] = useState("");
 
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  // use an internal textarea ref for auto resize
+  // and set it to the external textarea ref if one is passed in
+  const internalInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const setInputRef = (node: HTMLTextAreaElement | null) => {
+    internalInputRef.current = node;
+    if (externalInputRef) {
+      externalInputRef.current = node;
+    }
+  };
 
-  const isDisabled = !Object.keys(apiKeys).length;
+  const isInputDisabled = !Object.keys(apiKeys).length;
   const autoResize = () => {
-    const textarea = textareaRef.current;
+    const textarea = internalInputRef.current;
     if (!textarea) {
       return;
     }
@@ -35,11 +45,10 @@ export function ChatComposer({
   return (
     <form
       onSubmit={(event) => {
-        // call the chat handler
         event.preventDefault();
         onChat?.(message);
 
-        // start a chat for all providers with api keys
+        // start a chat for each providers with an api key
         for (const [providerId, providerApiKey] of typedEntries(apiKeys)) {
           const model = selectedProviderModels[providerId];
           if (!providerApiKey || !model) {
@@ -48,16 +57,16 @@ export function ChatComposer({
           startProviderChat({ providerId, providerApiKey, model, message });
         }
 
-        // clear the message and resize
+        // clear the message and reset the textarea height
         setMessage("");
         requestAnimationFrame(autoResize);
       }}
       className={cn("sticky", className)}
     >
       <Textarea
-        ref={textareaRef}
-        placeholder={isDisabled ? "Enter an API key to chat" : "Ask anything"}
-        disabled={isDisabled}
+        ref={setInputRef}
+        placeholder={isInputDisabled ? "Enter an API key to chat" : "Ask anything"}
+        disabled={isInputDisabled}
         rows={1}
         className={cn(
           "rounded-[20px] resize-none pt-2.5 pr-12",
@@ -71,11 +80,10 @@ export function ChatComposer({
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault(); // stop newline + native form submit
+            event.preventDefault(); // submit on enter
             if (!message.trim()) {
               return;
             }
-            // manually trigger submit
             event.currentTarget.form?.requestSubmit();
           }
         }}
