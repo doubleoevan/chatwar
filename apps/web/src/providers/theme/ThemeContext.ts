@@ -1,8 +1,8 @@
 import { createContext } from "react";
 import type { Theme } from "@/utils/theme";
+import { ThemeState } from "@/providers/theme/ThemeProvider";
 
-export type ThemeContextValue = {
-  theme: Theme;
+export type ThemeContextValue = ThemeState & {
   setTheme: (theme: Theme) => void;
 };
 

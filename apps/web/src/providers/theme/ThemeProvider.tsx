@@ -1,4 +1,6 @@
-import { ReactNode, useCallback, useEffect, useMemo, useReducer } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
+
 import {
   applyTheme,
   getTheme,
@@ -9,7 +11,7 @@ import {
 } from "@/utils/theme";
 import { ThemeContext } from "@/providers/theme/ThemeContext";
 
-type ThemeState = { theme: Theme };
+export type ThemeState = { theme: Theme };
 type ThemeAction = { type: "SET_THEME"; theme: Theme } | { type: "SYSTEM_THEME_UPDATED" };
 
 function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {

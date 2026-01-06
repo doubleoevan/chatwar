@@ -1,18 +1,28 @@
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+
+import type { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
+
 import {
   API_KEYS_STORAGE_KEY,
   getApiKey as getSavedApiKey,
   getApiKeys,
-  ProviderApiKeys,
+  type ProviderApiKeys,
   removeApiKey,
   storeApiKey,
 } from "@/utils/apiKeys";
-import { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
-import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
 import { getProviderModels } from "@/api";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError } from "@/utils/toast";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
+import { CredentialsContext } from "@/providers/credentials/CredentialsContext";
+
+export type CredentialsState = {
+  apiKeys: ProviderApiKeys;
+  loadingProviderIds: Set<ProviderId>;
+  providerModels: Partial<Record<ProviderId, ProviderModels>>;
+  providerErrors: Partial<Record<ProviderId, ApiError>>;
+};
 
 type CredentialsAction =
   | { type: "SET_API_KEYS"; apiKeys: ProviderApiKeys }
@@ -23,13 +33,6 @@ type CredentialsAction =
   | { type: "REMOVE_PROVIDER_MODELS"; providerId: ProviderId }
   | { type: "SET_PROVIDER_ERROR"; providerId: ProviderId; error: ApiError }
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
-
-export type CredentialsState = {
-  apiKeys: ProviderApiKeys;
-  loadingProviderIds: Set<ProviderId>;
-  providerModels: Partial<Record<ProviderId, ProviderModels>>;
-  providerErrors: Partial<Record<ProviderId, ApiError>>;
-};
 
 function credentialsReducer(state: CredentialsState, action: CredentialsAction): CredentialsState {
   switch (action.type) {
