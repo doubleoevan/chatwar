@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { cn } from "@chatwar/ui";
-import { ChartColumnIncreasing, MessageSquareMore } from "lucide-react";
+import { ChartColumnIncreasing, MessageSquareMore, Video } from "lucide-react";
 
 const tabBase =
   "flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-[background-color,border-color,opacity]";
@@ -24,6 +24,13 @@ export function Tabs() {
       >
         <ChartColumnIncreasing className="h-4 w-4" aria-hidden />
         <span>Analytics</span>
+      </NavLink>
+      <NavLink
+        to="/demo"
+        className={({ isActive }) => cn(tabBase, isActive ? tabActive : tabInactive)}
+      >
+        <Video className="h-4 w-4" aria-hidden />
+        <span>Demo</span>
       </NavLink>
     </nav>
   );

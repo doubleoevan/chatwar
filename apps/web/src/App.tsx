@@ -3,6 +3,7 @@ import { AppShell } from "@/layouts/AppShell";
 import { ChatPage } from "@/features/chat/ChatPage";
 import { AnalyticsPage } from "@/features/analytics/AnalyticsPage";
 import { AnalyticsProvider } from "@/providers/analytics";
+import { DemoPage } from "@/features/demo/DemoPage";
 
 /** App routes */
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
             </AnalyticsProvider>
           }
         />
+        <Route path="/demo" element={<DemoPage />} />
       </Route>
     </Routes>
   );
