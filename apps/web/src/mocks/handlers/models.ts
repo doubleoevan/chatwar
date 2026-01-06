@@ -1,14 +1,10 @@
 import { http, HttpResponse } from "msw";
-import type { ApiError, ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
 import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 import { PROVIDER_MODELS } from "@/mocks/data/providerModels";
 import { withLatency } from "@/mocks/utils/withLatency";
 
 export const PREFIX_BAD_KEY = "bad";
-
-function errorResponse(error: ApiError, status: number) {
-  return HttpResponse.json({ error }, { status });
-}
 
 export const providerHandlers = [
   http.get("/api/v1/providers/:providerId/models", async ({ params, request }) =>
@@ -16,26 +12,35 @@ export const providerHandlers = [
       // throw an error for a missing providerId
       const providerId = params.providerId as ProviderId | undefined;
       if (!providerId) {
-        return errorResponse({ code: "BAD_REQUEST", message: "Missing providerId" }, 400);
+        return HttpResponse.json(
+          { code: "BAD_REQUEST", message: "Missing providerId" },
+          { status: 400 },
+        );
       }
 
       // throw an error for a missing apiKey
       const apiKey = request.headers.get(PROVIDER_API_KEY_HEADER)?.trim();
       if (!apiKey) {
-        return errorResponse({ code: "BAD_REQUEST", message: "Provider API Key is required" }, 400);
+        return HttpResponse.json(
+          { code: "BAD_REQUEST", message: "Provider API Key is required" },
+          { status: 400 },
+        );
       }
 
       // throw an error for an invalid api key
       if (apiKey.startsWith(PREFIX_BAD_KEY)) {
-        return errorResponse({ code: "INVALID_API_KEY", message: "Invalid API key" }, 401);
+        return HttpResponse.json(
+          { code: "INVALID_API_KEY", message: "Invalid API key" },
+          { status: 401 },
+        );
       }
 
       // throw an error if models are not found
       const models = PROVIDER_MODELS[providerId];
       if (!models) {
-        return errorResponse(
+        return HttpResponse.json(
           { code: "BAD_REQUEST", message: `Unknown provider: ${providerId}` },
-          400,
+          { status: 400 },
         );
       }
 

@@ -60,6 +60,7 @@ export async function fetchJson<T>(
     headers.set(PROVIDER_API_KEY_HEADER, options.providerApiKey);
   }
 
+  // fetch the response
   let response: Response;
   try {
     response = await fetch(input, {
@@ -91,4 +92,68 @@ export async function fetchJson<T>(
     throw { code: "INTERNAL", message: "Invalid JSON response" } satisfies ApiError;
   }
   return body as T;
+}
+
+export async function streamJson(
+  input: string,
+  request: RequestInit = {},
+  options: ApiClientOptions = {},
+  {
+    onChunk,
+    onComplete,
+    onError,
+  }: {
+    onChunk: (chunk: string) => void;
+    onComplete: () => void;
+    onError: (error: ApiError) => void;
+  },
+) {
+  // set the provider api key header
+  const headers = new Headers(request.headers);
+  headers.set("Content-Type", "application/json");
+  if (options.providerApiKey) {
+    headers.set(PROVIDER_API_KEY_HEADER, options.providerApiKey);
+  }
+
+  // fetch the response
+  let response: Response;
+  try {
+    response = await fetch(input, {
+      ...request,
+      headers,
+      signal: options.signal ?? request.signal,
+    });
+  } catch (error) {
+    return onError({
+      code: "INTERNAL",
+      message: error instanceof Error ? error.message : "Network error",
+    });
+  }
+
+  // throw an error if necessary
+  if (!response.ok || !response.body) {
+    return onError(toApiError(response));
+  }
+
+  // stream the response as text
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunk = decoder.decode(value, { stream: true });
+      if (chunk) {
+        onChunk(chunk);
+      }
+    }
+    onComplete();
+  } catch (error) {
+    onError({
+      code: "INTERNAL",
+      message: error instanceof Error ? error.message : "Streaming error",
+    });
+  }
 }

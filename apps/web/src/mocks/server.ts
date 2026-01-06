@@ -1,4 +1,4 @@
 import { setupServer } from "msw/node";
-import { providerHandlers } from "@/mocks/handlers/models";
+import { handlers } from "@/mocks/handlers";
 
-export const server = setupServer(...providerHandlers);
+export const server = setupServer(...handlers);
