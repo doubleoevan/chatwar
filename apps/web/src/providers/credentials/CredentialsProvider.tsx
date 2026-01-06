@@ -34,6 +34,13 @@ type CredentialsAction =
   | { type: "SET_PROVIDER_ERROR"; providerId: ProviderId; error: ApiError }
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
 
+const initialState: CredentialsState = {
+  apiKeys: getApiKeys(),
+  loadingProviderIds: new Set<ProviderId>(),
+  providerModels: {},
+  providerErrors: {},
+};
+
 function credentialsReducer(state: CredentialsState, action: CredentialsAction): CredentialsState {
   switch (action.type) {
     case "SET_API_KEYS":
@@ -93,12 +100,7 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
 }
 
 export function CredentialsProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(credentialsReducer, {
-    apiKeys: getApiKeys(),
-    loadingProviderIds: new Set<ProviderId>(),
-    providerModels: {},
-    providerErrors: {},
-  });
+  const [state, dispatch] = useReducer(credentialsReducer, initialState);
 
   // store current provider models to check when loading
   const providerModelsRef = useRef(state.providerModels);

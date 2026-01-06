@@ -14,6 +14,8 @@ import { ThemeContext } from "@/providers/theme/ThemeContext";
 export type ThemeState = { theme: Theme };
 type ThemeAction = { type: "SET_THEME"; theme: Theme } | { type: "SYSTEM_THEME_UPDATED" };
 
+const initialState: ThemeState = { theme: getTheme() };
+
 function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
   switch (action.type) {
     case "SET_THEME":
@@ -31,7 +33,7 @@ function themeReducer(state: ThemeState, action: ThemeAction): ThemeState {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(themeReducer, { theme: getTheme() });
+  const [state, dispatch] = useReducer(themeReducer, initialState);
 
   // apply the initial theme
   useEffect(() => {
