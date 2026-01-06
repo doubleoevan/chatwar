@@ -16,8 +16,12 @@ export function ProviderModelSelect({
   const { providerModels } = useCredentials();
   const [modelId, setModelId] = useState<string | undefined>(undefined);
 
+  // hide the select while loading
   const modelsMetadata = providerModels[provider.id];
   const selectedModelId = modelId ?? modelsMetadata?.defaultModelId;
+  if (!selectedModelId) {
+    return null;
+  }
 
   return (
     <Select
