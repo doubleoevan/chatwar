@@ -3,6 +3,7 @@ import type { Provider } from "@/types/provider";
 import { cn, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@chatwar/ui";
 import { useState } from "react";
 import { useCredentials } from "@/providers/credentials";
+import { useChat } from "@/providers/chat/useChat";
 
 export function ProviderModelSelect({
   provider,
@@ -13,13 +14,17 @@ export function ProviderModelSelect({
   onModelSelect?: (providerId: ProviderId, modelId: string) => void;
   className?: string;
 }) {
-  const { providerModels } = useCredentials();
+  const { providerModels, loadingProviderIds } = useCredentials();
+  const { respondingProviderIds, votingProviderIds } = useChat();
   const [modelId, setModelId] = useState<string | undefined>(undefined);
 
-  // hide the select while loading
+  // hide the select while loading responding or voting
+  const isLoading = loadingProviderIds.has(provider.id);
+  const isResponding = respondingProviderIds.has(provider.id);
+  const isVoting = votingProviderIds.has(provider.id);
   const modelsMetadata = providerModels[provider.id];
   const selectedModelId = modelId ?? modelsMetadata?.defaultModelId;
-  if (!selectedModelId) {
+  if (isLoading || isResponding || isVoting || !selectedModelId) {
     return null;
   }
 

@@ -1,15 +1,13 @@
-// src/components/ChatWarIcon.tsx
 import { ReactNode } from "react";
+import { cn } from "@chatwar/ui";
 
-export function Spinner({ children }: { children: ReactNode }) {
+export function Spinner({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className="
-        inline-flex
-        perspective-dramatic
-        transform-3d
-        animate-[coinspin_900ms_linear_infinite]
-      "
+      className={cn(
+        "inline-flex perspective-dramatic transform-3d animate-[coinspin_900ms_linear_infinite]",
+        className,
+      )}
     >
       {children}
     </span>

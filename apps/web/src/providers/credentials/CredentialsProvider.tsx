@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
 import type { ApiError, ProviderId, ProviderModels } from "@chatwar/shared";
 
@@ -113,7 +112,7 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
 export function CredentialsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(credentialsReducer, initialState);
 
-  // store current provider models to check when loading
+  // use an instance field for current provider models to check when loading
   const providerModelsRef = useRef(state.providerModels);
   useEffect(() => {
     providerModelsRef.current = state.providerModels;
@@ -161,7 +160,7 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
           dispatch({ type: "SET_API_KEYS", apiKeys: getApiKeys() });
         }
       } catch (error) {
-        // no need to log an error if the request was aborted
+        // no need to log an error if the request was manually aborted
         if (
           options?.signal?.aborted ||
           (error instanceof DOMException && error.name === "AbortError")

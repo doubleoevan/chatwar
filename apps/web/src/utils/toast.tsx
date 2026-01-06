@@ -2,6 +2,19 @@ import { toast } from "sonner";
 import type { ApiError } from "@chatwar/shared";
 import { toApiErrorToast } from "@/utils/apiErrorToast";
 import { ReactNode } from "react";
+import { Spinner } from "@/components/Spinner";
+
+export function toastVoteMessage(message: string, icon: ReactNode) {
+  toast.success(
+    <div className="flex items-center justify-center">
+      {message}
+      <Spinner className="ml-2 text-2xl leading-none opacity-90">🏆</Spinner>
+    </div>,
+    {
+      icon,
+    },
+  );
+}
 
 export function toastApiError(
   error: ApiError,

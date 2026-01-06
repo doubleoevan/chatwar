@@ -5,6 +5,7 @@ import { Spinner } from "@/components/Spinner";
 import { useCredentials } from "@/providers/credentials";
 import { MessageCircleHeartIcon } from "lucide-react";
 import { VoteResponseButton } from "@/features/chat/components/VoteResponseButton";
+import { useChat } from "@/providers/chat/useChat";
 
 export function ProviderIcon({
   provider,
@@ -17,10 +18,7 @@ export function ProviderIcon({
 }) {
   const { Icon } = provider;
   const { loadingProviderIds } = useCredentials();
-
-  // TODO: get these from the chat context useChat()
-  const respondingProviderIds = new Set();
-  const votingProviderIds = new Set();
+  const { respondingProviderIds, votingProviderIds } = useChat();
 
   const isLoading = loadingProviderIds.has(provider.id);
   const isResponding = respondingProviderIds.has(provider.id);
