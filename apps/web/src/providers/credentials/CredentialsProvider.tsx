@@ -29,6 +29,7 @@ type CredentialsAction =
   | { type: "ADD_LOADING_PROVIDER"; providerId: ProviderId }
   | { type: "REMOVE_LOADING_PROVIDER"; providerId: ProviderId }
   | { type: "SET_PROVIDER_MODELS"; providerId: ProviderId; providerModels: ProviderModels }
+  | { type: "REMOVE_PROVIDER_KEY"; providerId: ProviderId }
   | { type: "REMOVE_PROVIDER_MODELS"; providerId: ProviderId }
   | { type: "SET_PROVIDER_ERROR"; providerId: ProviderId; error: ApiError }
   | { type: "REMOVE_PROVIDER_ERROR"; providerId: ProviderId };
@@ -80,6 +81,12 @@ function credentialsReducer(state: CredentialsState, action: CredentialsAction):
         providerModels: { ...state.providerModels, [providerId]: action.providerModels },
         providerErrors,
       };
+    }
+
+    case "REMOVE_PROVIDER_KEY": {
+      const apiKeys = { ...state.apiKeys };
+      delete apiKeys[action.providerId];
+      return { ...state, apiKeys };
     }
 
     case "REMOVE_PROVIDER_MODELS": {
@@ -237,6 +244,7 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
       type: "SET_API_KEYS",
       apiKeys: getApiKeys(),
     });
+    dispatch({ type: "REMOVE_PROVIDER_KEY", providerId });
     dispatch({ type: "REMOVE_PROVIDER_MODELS", providerId });
     dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
   }, []);

@@ -200,7 +200,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
   // use an instance field to abort streaming providers if necessary
   const abortControllersRef = useRef(new Map<ProviderId, AbortController>());
-
   const stopProviderChat = useCallback((providerId: ProviderId) => {
     const controller = abortControllersRef.current.get(providerId);
     if (controller) {
@@ -246,10 +245,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           dispatch({ type: "APPEND_PROVIDER_MESSAGE", providerId, message: chunk });
         },
         onComplete: () => {
-          // finished responding and ready to vote
+          // finished responding and ready to vote if we have more than one provider
           dispatch({ type: "REMOVE_RESPONDING_PROVIDER", providerId });
-          dispatch({ type: "ADD_VOTING_PROVIDER", providerId });
           abortControllersRef.current.delete(providerId);
+          if (typedKeys(apiKeys).length > 1) {
+            dispatch({ type: "ADD_VOTING_PROVIDER", providerId });
+          }
         },
         onError: (error) => {
           // can't vote on an incomplete response
@@ -288,7 +289,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         },
       });
     },
-    [stopProviderChat],
+    [apiKeys, stopProviderChat],
   );
 
   const selectProviderModel = useCallback((providerId: ProviderId, model: Model) => {
