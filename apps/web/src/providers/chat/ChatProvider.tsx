@@ -6,7 +6,7 @@ import { toApiError } from "@/utils/apiError";
 import { toastApiError, toastVoteMessage } from "@/utils/toast";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useCredentials } from "@/providers/credentials";
-import { typedEntries } from "@/utils/object";
+import { typedEntries, typedKeys } from "@/utils/object";
 
 export type ChatMessage = { role: "user"; message: string } | { role: "provider"; message: string };
 
@@ -174,7 +174,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { providerModels } = useCredentials();
+  const { apiKeys, providerModels } = useCredentials();
 
   // initialize selected models from credentials provider defaults
   useEffect(() => {
@@ -296,19 +296,27 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const voteProviderChat = useCallback(
-    (options: { providerId: ProviderId; providerApiKey: string; model: Model }) => {
+    (options: { winner: ProviderId; providerApiKey: string; model: Model }) => {
       // TODO: post winning provider and model to backend
-      const { providerId, providerApiKey, model } = options;
-      console.log({ providerId, providerApiKey, modelId: model.id, message: state.userMessage });
+      const { winner, model } = options;
+      const losers = new Set(typedKeys(apiKeys));
+      losers.delete(winner);
+      console.log({
+        winner,
+        losers,
+        modelId: model.id,
+        modelLabel: model.label,
+        message: state.userMessage,
+      });
 
       // show a victory toast
-      const provider = PROVIDER_CONFIGURATIONS[providerId];
+      const provider = PROVIDER_CONFIGURATIONS[winner];
       const message = `${provider.label} with ${model.label} wins!`;
       const { Icon } = provider;
       toastVoteMessage(message, <Icon />);
       dispatch({ type: "CLEAR_VOTING_PROVIDERS" });
     },
-    [state.userMessage],
+    [state.userMessage, apiKeys],
   );
 
   const removeProviderChat = useCallback(

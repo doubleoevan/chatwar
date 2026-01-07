@@ -24,7 +24,7 @@ export function VoteResponseButton({
     if (!providerApiKey || !model) {
       return;
     }
-    voteProviderChat({ providerId, providerApiKey, model });
+    voteProviderChat({ winner: providerId, providerApiKey, model });
     onVoteResponse?.(providerId);
   };
 
