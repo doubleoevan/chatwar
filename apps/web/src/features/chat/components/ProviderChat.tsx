@@ -1,6 +1,10 @@
+import { useEffect, useMemo } from "react";
 import { Button, cn, ScrollArea } from "@chatwar/ui";
 import type { Provider } from "@/types/provider";
 import { useChat } from "@/providers/chat/useChat";
+import { useAutoScroll } from "@/features/chat/hooks/useAutoScroll";
+
+const EMPTY_CHAT_MESSAGES: readonly { role: string; message: string }[] = [];
 
 export function ProviderChat({
   provider,
@@ -10,14 +14,28 @@ export function ProviderChat({
   onStartChatClick?: (providerId: Provider["id"]) => void;
 }) {
   const { providerChats } = useChat();
+  const { scrollRef, scrollToBottom } = useAutoScroll();
 
   const providerId = provider.id;
-  const chatMessages = providerChats[providerId] ?? [];
+  const chatMessages = providerChats[providerId] ?? EMPTY_CHAT_MESSAGES;
   const hasMessages = chatMessages.length > 0;
+
+  // track changes in the current streaming message to trigger autoscroll
+  const currentMessage = useMemo(() => {
+    return chatMessages[chatMessages.length - 1]?.message ?? "";
+  }, [chatMessages]);
+
+  // scroll to the bottom if it is near
+  useEffect(() => {
+    if (!hasMessages) {
+      return;
+    }
+    scrollToBottom();
+  }, [hasMessages, chatMessages.length, currentMessage, scrollToBottom]);
 
   return (
     <section className="rounded-md border bg-background">
-      <ScrollArea className={cn("max-h-48 p-2", hasMessages ? "h-48" : "h-auto")}>
+      <ScrollArea ref={scrollRef} className={cn("max-h-48 p-2", hasMessages ? "h-48" : "h-auto")}>
         {!hasMessages ? (
           <Button
             variant="link"
