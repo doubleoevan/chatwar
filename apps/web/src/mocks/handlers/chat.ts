@@ -79,7 +79,7 @@ export const chatHandlers = [
       );
     }
 
-    // stream the message as chunks of random length with random latency
+    // stream the messages as chunks of random length with random latency
     const stream = new ReadableStream<string>({
       async start(controller) {
         for (const message of messages) {
@@ -88,6 +88,7 @@ export const chatHandlers = [
             await randomDelay({ minimum: 20, range: 80 });
             controller.enqueue(chunk);
           }
+          controller.enqueue(" ");
         }
         controller.close();
       },
