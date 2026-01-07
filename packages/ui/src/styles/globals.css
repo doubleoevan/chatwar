@@ -1,3 +1,8 @@
+/* increase global font size */
+html {
+    font-size: 17px;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
