@@ -1,6 +1,6 @@
 /* increase global font size */
 html {
-    font-size: 17px;
+  font-size: 17px;
 }
 
 @tailwind base;
