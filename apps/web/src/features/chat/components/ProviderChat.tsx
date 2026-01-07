@@ -64,7 +64,9 @@ export function ProviderChat({
                   <div
                     className={cn(
                       "max-w-[85%] rounded-2xl px-3 py-2 leading-6 whitespace-pre-wrap wrap-break-word",
-                      isUser ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
+                      isUser
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-accent/50 text-foreground",
                     )}
                   >
                     <ChatMessage text={message.message} />
