@@ -3,6 +3,7 @@ import { Button, cn, ScrollArea } from "@chatwar/ui";
 import type { Provider } from "@/types/provider";
 import { useChat } from "@/providers/chat/useChat";
 import { useAutoScroll } from "@/features/chat/hooks/useAutoScroll";
+import { ChatMessage } from "@/features/chat/components/ChatMessage";
 
 const EMPTY_CHAT_MESSAGES: readonly { role: string; message: string }[] = [];
 
@@ -66,7 +67,7 @@ export function ProviderChat({
                       isUser ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
                     )}
                   >
-                    {message.message}
+                    <ChatMessage text={message.message} />
                   </div>
                 </div>
               );
