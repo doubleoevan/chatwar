@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "@fontsource-variable/inter";
 import "@/index.css";
 import "@chatwar/ui/styles.css";
 import App from "@/App";
@@ -25,7 +26,7 @@ if (GA_ID && !import.meta.env.DEV) {
   window.gtag =
     window.gtag ||
     ((...args: Parameters<Window["gtag"]>) => {
-      window.dataLayer.push(args);
+      window?.dataLayer?.push?.(args);
     });
 
   window.gtag("js", new Date());
