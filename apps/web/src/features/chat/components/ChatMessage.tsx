@@ -11,6 +11,7 @@ export function ChatMessage({ text }: { text: string }) {
         tracking-[-0.015em]
 
         prose-p:my-2
+        prose-p:leading-[1.65]
         prose-strong:font-medium
         prose-strong:text-foreground/90
         prose-em:not-italic
