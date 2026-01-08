@@ -2,21 +2,15 @@
 
 A fight club for LLMs. 🤫
 
----
-
 ## Overview
 
 ChatWar is an AI battleground for comparing large language models.
 It’s built as a monorepo with a web client, an API layer, and a design system library.
 
----
-
 ## Prerequisites
 
 - Node.js 18+
 - pnpm
-
----
 
 ## Local Development
 
@@ -50,8 +44,6 @@ Run only the API:
 pnpm dev:api
 ```
 
----
-
 ## Production
 
 Install dependencies:
@@ -71,8 +63,6 @@ Preview the production build locally:
 ```bash
 pnpm preview
 ```
-
----
 
 ## Environment Variables
 
