@@ -21,26 +21,31 @@ It’s built as a monorepo with a web client, an API layer, and a design system 
 ## Local Development
 
 Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 Create your local environment file:
+
 ```bash
 cp apps/web/.env.local.example apps/web/.env.local
 ```
 
 Run everything (web + api) in parallel:
+
 ```bash
 pnpm dev
 ```
 
 Run only the web app:
+
 ```bash
 pnpm dev:web
 ```
 
 Run only the API:
+
 ```bash
 pnpm dev:api
 ```
@@ -50,16 +55,19 @@ pnpm dev:api
 ## Production
 
 Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 Build production:
+
 ```bash
 pnpm build
 ```
 
 Preview the production build locally:
+
 ```bash
 pnpm preview
 ```
@@ -69,11 +77,13 @@ pnpm preview
 ## Environment Variables
 
 Local overrides should be placed in:
+
 ```bash
 apps/web/.env.local
 ```
 
 Example values are documented in:
+
 ```bash
 apps/web/.env.local.example
 ```
