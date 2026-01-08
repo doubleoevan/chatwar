@@ -79,6 +79,16 @@ export const chatHandlers = [
       );
     }
 
+    // return the response as one text if streaming is disabled
+    const isStreamingDisabled = import.meta.env.VITE_MSW_DISABLE_STREAMING === "on";
+    if (isStreamingDisabled) {
+      const responseText = messages.join(" ");
+      return HttpResponse.text(responseText, {
+        status: 200,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+
     // stream the messages as chunks of random length with random latency
     const stream = new ReadableStream<string>({
       async start(controller) {
