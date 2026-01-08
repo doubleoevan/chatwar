@@ -37,6 +37,7 @@ export const PROVIDER_CHATS: Record<ProviderId, string[]> = {
     "Inline code is common when explaining concepts, e.g. `Record<ProviderId, string[]>`, `useAutoScroll()`, and `scrollToBottom()`.\n\nSometimes they’ll call out ~~bad ideas~~ and *lightly emphasize* alternatives.",
     // blockquote + emoji
     "### Callouts\n\n> ⚠️ Treat streaming as an adversarial input. Render defensively.\n\nNormal text resumes here.",
+    "### Emoji / Unicode\n\nEmoji inline should not jump or resize text: 😄🔥🚀 ✅\n\nUnicode symbols should render cleanly: → ← • ✓ © ™ — …\n",
     // fenced code block with language hint + backticks inside string
     '### Sample Implementation\n\n```ts\nimport type { ProviderId } from "@chatwar/shared";\n\nexport function submitVote(providerId: ProviderId) {\n  if (!providerId) {\n    throw new Error("Missing provider id");\n  }\n\n  const tricky = "`backticks` inside a string";\n  console.log("Vote submitted for", providerId, tricky);\n}\n```\n\nDeepSeek almost always includes a **language hint** on code blocks.',
     // fenced code block WITHOUT language hint
