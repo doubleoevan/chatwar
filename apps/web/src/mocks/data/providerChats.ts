@@ -27,15 +27,39 @@ export const PROVIDER_CHATS: Record<ProviderId, string[]> = {
     "Elon’s team designed this one to be a bit more opinionated.",
   ],
   deepseek: [
-    "## DeepSeek: Developer-Oriented Responses\n\nDeepSeek often returns **structured, documentation-style Markdown** aimed at engineers.",
-    "### Typical Strengths\n\n- Clear explanations\n- Step-by-step breakdowns\n- Code-first answers\n- Minimal fluff",
+    // headings + bold + paragraphs
+    "## DeepSeek: Developer-Oriented Responses\n\nDeepSeek often returns **structured, documentation-style Markdown** aimed at engineers.\n\nThis second paragraph checks paragraph spacing and rhythm.",
+    // headings + list + nested list
+    "### Typical Strengths\n\n- Clear explanations\n- Step-by-step breakdowns\n- Code-first answers\n- Minimal fluff\n  - Nested bullet\n  - Another nested bullet",
+    // ordered list
     "### Example: How Provider Voting Works\n\nThe voting system can be summarized as follows:\n\n1. Collect responses from all providers\n2. Normalize them for display\n3. Allow the user to vote\n4. Persist the result for analytics",
-    "Inline code is common when explaining concepts, e.g. `Record<ProviderId, string[]>` or `useAutoScroll()`.",
-    '### Sample Implementation\n\n```ts\nimport type { ProviderId } from "@chatwar/shared";\n\nexport function submitVote(providerId: ProviderId) {\n  if (!providerId) {\n    throw new Error("Missing provider id");\n  }\n\n  console.log("Vote submitted for", providerId);\n}\n```\n\nDeepSeek almost always includes a **language hint** on code blocks.',
+    // inline code + emphasis + strikethrough
+    "Inline code is common when explaining concepts, e.g. `Record<ProviderId, string[]>`, `useAutoScroll()`, and `scrollToBottom()`.\n\nSometimes they’ll call out ~~bad ideas~~ and *lightly emphasize* alternatives.",
+    // blockquote + emoji
+    "### Callouts\n\n> ⚠️ Treat streaming as an adversarial input. Render defensively.\n\nNormal text resumes here.",
+    // fenced code block with language hint + backticks inside string
+    '### Sample Implementation\n\n```ts\nimport type { ProviderId } from "@chatwar/shared";\n\nexport function submitVote(providerId: ProviderId) {\n  if (!providerId) {\n    throw new Error("Missing provider id");\n  }\n\n  const tricky = "`backticks` inside a string";\n  console.log("Vote submitted for", providerId, tricky);\n}\n```\n\nDeepSeek almost always includes a **language hint** on code blocks.',
+    // fenced code block WITHOUT language hint
+    "### Code Fence Without Language\n\n```\nconsole.log('no language hint here');\n```\n",
+    // tables (GFM)
     "### Data Structures\n\nTables are frequently used to summarize technical tradeoffs:\n\n| Concept        | Purpose                    | Notes                  |\n|---------------|----------------------------|------------------------|\n| ProviderId    | Unique provider identifier | Enum-backed            |\n| Chat message  | Rendered markdown          | Streaming-safe         |\n| Vote payload  | User intent                | Stored server-side     |",
-    "⚠️ **Edge cases to consider**:\n\n- Unclosed code fences during streaming\n- Partial JSON snippets\n- Logs mixed with prose",
-    "Sometimes you’ll see pseudo-output mixed in:\n\n```text\n[stream] token=42\n[stream] token=43\n[complete] provider=deepseek\n```",
-    "Deprecated approaches may be called out explicitly using strikethrough:\n\n~~Parse Markdown into state~~ → Render directly at the UI layer.",
+    // JSON mixed with prose (not fenced)
+    '### Mixed JSON\n\nResult payload (often inline, not fenced):\n\n{"ok":true,"count":3,"provider":"deepseek"}\n',
+    // pseudo-output in text fence
+    "Sometimes you’ll see pseudo-output mixed in:\n\n```text\n[stream] token=42\n[stream] token=43\n[complete] provider=deepseek\n```\n",
+    // HTML-ish content (should render as text, not execute)
+    '### HTML-ish Content\n\nSome models output snippets like `<div class="note">hello</div>`.\n\nIt should be treated as plain text.',
+    // --- intentionally broken / streaming partials (key for streaming) ---
+    // unclosed emphasis
+    "### Streaming Partial: Unclosed Bold\n\nThis chunk ends mid token: **bold starts here",
+    // unclosed inline code
+    "### Streaming Partial: Unclosed Inline Code\n\nHere is `inline code that never closes",
+    // code fence started but not closed (classic streaming case)
+    "### Streaming Partial: Unclosed Code Fence\n\n```ts\nexport function partialFence() {\n  return 123;\n}\n",
+    // table header started but incomplete
+    "### Streaming Partial: Incomplete Table\n\n| A | B |\n|---|",
+    // list that may continue next chunk
+    "### Streaming Partial: List Continues\n\n- item one\n- item two\n- item three",
   ],
   perplexity: [
     "Perplexity blends search and generation into a single chat experience.",
