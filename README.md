@@ -32,13 +32,13 @@ Run everything (web + api) in parallel:
 pnpm dev
 ```
 
-Run only the web app:
+Run only the web app (optional):
 
 ```bash
 pnpm dev:web
 ```
 
-Run only the API:
+Run only the API (optional):
 
 ```bash
 pnpm dev:api
