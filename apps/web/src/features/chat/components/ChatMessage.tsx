@@ -26,6 +26,9 @@ export function ChatMessage({ text }: { text: string }) {
           h4: (props) => (
             <h4 className="mt-3 mb-1 text-[16px] font-semibold leading-tight" {...props} />
           ),
+          ul: (props) => <ul className="my-2 ml-5 list-disc space-y-1" {...props} />,
+          ol: (props) => <ol className="my-2 ml-5 list-decimal space-y-1" {...props} />,
+          li: (props) => <li className="leading-[1.6]" {...props} />,
         }}
       >
         {text}
