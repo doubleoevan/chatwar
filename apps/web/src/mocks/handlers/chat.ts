@@ -80,6 +80,7 @@ export const chatHandlers = [
     }
 
     // return the response as one text if streaming is disabled
+    // apps/web/.env.local must have VITE_MSW_DISABLE_STREAMING=on to opt out
     const isStreamingDisabled = import.meta.env.VITE_MSW_DISABLE_STREAMING === "on";
     if (isStreamingDisabled) {
       const responseText = messages.join(" ");

@@ -10,9 +10,9 @@ export async function randomDelay({
   minimum?: number;
   range?: number;
 } = {}) {
-  /* apps/web/.env.local must have VITE_MSW_LATENCY=on */
-  const isEnabled = import.meta.env.VITE_MSW_LATENCY === "on";
-  if (!isEnabled) {
+  // apps/web/.env.local must have VITE_MSW_DISABLE_LATENCY=on to opt out
+  const isLatencyDisabled = import.meta.env.VITE_MSW_DISABLE_LATENCY === "on";
+  if (isLatencyDisabled) {
     return delay(0);
   }
   const maximum = minimum + Math.max(0, range);
