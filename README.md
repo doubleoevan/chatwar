@@ -20,16 +20,16 @@ Install dependencies:
 pnpm install
 ```
 
-Create your local environment file (optional):
-
-```bash
-cp apps/web/.env.local.example apps/web/.env.local
-```
-
 Run everything (web + api) in parallel:
 
 ```bash
 pnpm dev
+```
+
+Create your local environment file (optional):
+
+```bash
+cp apps/web/.env.local.example apps/web/.env.local
 ```
 
 Run only the web app (optional):
@@ -52,16 +52,16 @@ Install dependencies:
 pnpm install
 ```
 
-Preview the production build locally (optional):
-
-```bash
-pnpm preview
-```
-
 Build production:
 
 ```bash
 pnpm build
+```
+
+Preview the production build locally (optional):
+
+```bash
+pnpm preview
 ```
 
 ## Environment Variables
