@@ -152,7 +152,7 @@ export function ProviderChat({
                     className={cn(
                       "min-w-0 max-w-[85%] rounded-2xl px-3 py-2 wrap-break-word",
                       isUser
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground py-0"
                         : "bg-accent/50 text-foreground",
                     )}
                   >
