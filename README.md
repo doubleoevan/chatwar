@@ -20,7 +20,7 @@ Install dependencies:
 pnpm install
 ```
 
-Create your local environment file:
+Create your local environment file (optional):
 
 ```bash
 cp apps/web/.env.local.example apps/web/.env.local
@@ -52,7 +52,7 @@ Install dependencies:
 pnpm install
 ```
 
-Preview the production build locally:
+Preview the production build locally (optional):
 
 ```bash
 pnpm preview
