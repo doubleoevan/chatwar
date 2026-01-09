@@ -1,0 +1,69 @@
+/* syntax highlighting styles */
+html .hljs {
+  background: var(--background-color);
+}
+
+html.light .hljs {
+  color: #24292e;
+}
+
+/* Keywords */
+html.light .hljs-doctag,
+html.light .hljs-keyword,
+html.light .hljs-meta .hljs-keyword,
+html.light .hljs-template-tag,
+html.light .hljs-template-variable,
+html.light .hljs-type,
+html.light .hljs-variable.language_ {
+  color: #d73a49;
+}
+
+/* Titles / functions / classes */
+html.light .hljs-title,
+html.light .hljs-title.class_,
+html.light .hljs-title.class_.inherited__,
+html.light .hljs-title.function_ {
+  color: #6f42c1;
+}
+
+/* Constants, numbers, operators */
+html.light .hljs-attr,
+html.light .hljs-attribute,
+html.light .hljs-literal,
+html.light .hljs-meta,
+html.light .hljs-number,
+html.light .hljs-operator,
+html.light .hljs-variable,
+html.light .hljs-selector-attr,
+html.light .hljs-selector-class,
+html.light .hljs-selector-id {
+  color: #005cc5;
+}
+
+/* Strings */
+html.light .hljs-regexp,
+html.light .hljs-string,
+html.light .hljs-meta .hljs-string {
+  color: #032f62;
+}
+
+/* Builtins */
+html.light .hljs-built_in,
+html.light .hljs-symbol {
+  color: #e36209;
+}
+
+/* Comments */
+html.light .hljs-comment,
+html.light .hljs-code,
+html.light .hljs-formula {
+  color: #6a737d;
+}
+
+/* Tags */
+html.light .hljs-name,
+html.light .hljs-quote,
+html.light .hljs-selector-tag,
+html.light .hljs-selector-pseudo {
+  color: #22863a;
+}

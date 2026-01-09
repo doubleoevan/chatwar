@@ -1,8 +1,4 @@
-/* increase global font size */
-html {
-  font-size: 17px;
-}
-
+/* design-system styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

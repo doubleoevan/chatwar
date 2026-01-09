@@ -1,6 +1,7 @@
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm"; // GitHub flavored Markdown
+import rehypeHighlight from "rehype-highlight"; // Code syntax highlighting
 import { normalizeMarkdown } from "@/utils/markdown";
 
 const components: Components = {
@@ -30,7 +31,7 @@ const components: Components = {
     />
   ),
 
-  // inline code only - block code styling is owned by <pre>
+  // code with syntax highlighting
   code: ({ className, children, ...props }) => {
     if (className) {
       return (
@@ -39,14 +40,11 @@ const components: Components = {
         </code>
       );
     }
-
     return (
       <code
         className="
           rounded-md
-          bg-muted
-          px-1.5
-          py-0.5
+          bg-background
           font-mono
           text-[0.9em]
           text-foreground/90
@@ -62,17 +60,13 @@ const components: Components = {
   pre: (props) => (
     <pre
       className="
-        my-1
+        mt-3 mb-1
+        p-2
         overflow-x-auto
         rounded-lg
-        bg-muted
-        p-3
+        bg-background
         text-[13px]
         leading-5
-
-        [&>code]:bg-transparent
-        [&>code]:p-0
-        [&>code]:text-inherit
       "
       {...props}
     />
@@ -121,7 +115,11 @@ export function ChatMessage({ text }: { text: string }) {
         tracking-[-0.015em]
       "
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
+        components={components}
+      >
         {normalizeMarkdown(text)}
       </ReactMarkdown>
     </article>

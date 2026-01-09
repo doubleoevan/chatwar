@@ -1,5 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "highlight.js/styles/github.css";
+import "highlight.js/styles/github-dark.css";
 import "@fontsource-variable/inter";
 import "@/index.css";
 import "@chatwar/ui/styles.css";
