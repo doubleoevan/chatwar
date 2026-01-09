@@ -60,6 +60,38 @@ const components: Components = {
       {...props}
     />
   ),
+  table: (props) => (
+    <div className="my-3 overflow-x-auto">
+      <table className="w-full border-collapse text-[14px]" {...props} />
+    </div>
+  ),
+  thead: (props) => <thead className="border-b border-border" {...props} />,
+  tr: (props) => <tr className="border-b last:border-0" {...props} />,
+  th: (props) => (
+    <th
+      className="
+        border-r last:border-r-0
+        px-3 py-2
+        text-left
+        font-semibold
+        text-foreground/90
+        whitespace-nowrap
+      "
+      {...props}
+    />
+  ),
+  td: (props) => (
+    <td
+      className="
+        border-r last:border-r-0
+        px-3 py-2
+        align-top
+        text-foreground/80
+        whitespace-nowrap
+      "
+      {...props}
+    />
+  ),
 };
 
 export function ChatMessage({ text }: { text: string }) {
