@@ -29,6 +29,19 @@ export function ChatMessage({ text }: { text: string }) {
           ul: (props) => <ul className="my-2 ml-5 list-disc space-y-1" {...props} />,
           ol: (props) => <ol className="my-2 ml-5 list-decimal space-y-1" {...props} />,
           li: (props) => <li className="leading-[1.6]" {...props} />,
+          blockquote: (props) => (
+            <blockquote
+              className="
+                my-3
+                border-l-2
+                border-border
+                pl-3
+                text-muted-foreground
+                leading-[1.6]
+              "
+              {...props}
+            />
+          ),
         }}
       >
         {text}
