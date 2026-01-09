@@ -52,16 +52,16 @@ Install dependencies:
 pnpm install
 ```
 
-Build production:
-
-```bash
-pnpm build
-```
-
 Preview the production build locally:
 
 ```bash
 pnpm preview
+```
+
+Build production:
+
+```bash
+pnpm build
 ```
 
 ## Environment Variables
