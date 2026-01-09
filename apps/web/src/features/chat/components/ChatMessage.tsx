@@ -46,6 +46,20 @@ const components: Components = {
       </code>
     );
   },
+  pre: (props) => (
+    <pre
+      className="
+      my-1
+      overflow-x-auto
+      rounded-lg
+      bg-muted
+      p-3
+      text-[13px]
+      leading-5
+    "
+      {...props}
+    />
+  ),
 };
 
 export function ChatMessage({ text }: { text: string }) {
