@@ -1,6 +1,6 @@
 import type { ProviderId } from "@chatwar/shared";
 import type { Provider } from "@/types/provider";
-import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@chatwar/ui";
+import { Button, cn, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { MessageCircleOff } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
 import { useChat } from "@/providers/chat";
@@ -26,37 +26,35 @@ export function RemoveApiKeyButton({
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              `
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            `
               border border-input
               bg-background
               hover:bg-primary
               hover:text-primary-foreground
               cursor-pointer
             `,
-              className,
-            )}
-            aria-label={`Remove this API Key`}
-            onClick={() => {
-              deleteApiKey(provider.id);
-              removeProviderChat(provider.id);
-              onApiKeyRemove?.(provider.id);
-            }}
-          >
-            <MessageCircleOff />
-          </Button>
-        </TooltipTrigger>
+            className,
+          )}
+          aria-label={`Remove this API Key`}
+          onClick={() => {
+            deleteApiKey(provider.id);
+            removeProviderChat(provider.id);
+            onApiKeyRemove?.(provider.id);
+          }}
+        >
+          <MessageCircleOff />
+        </Button>
+      </TooltipTrigger>
 
-        <TooltipContent side="bottom" align="end">
-          <span>Remove this API Key</span>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+      <TooltipContent side="bottom" align="end">
+        <span>Remove this API Key</span>
+      </TooltipContent>
+    </Tooltip>
   );
 }

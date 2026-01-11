@@ -106,7 +106,7 @@ export function ChatPage() {
               value={provider.id}
               className="mb-2 mx-2 border-0"
             >
-              <Card className="p-0 gap-0 bg-muted/70 dark:bg-muted relative">
+              <Card className="p-0 gap-0 bg-muted dark:bg-muted relative">
                 <header className="relative px-3 pt-2.5 min-h-10">
                   <AccordionTrigger className="w-full p-0 text-sm font-medium">
                     <ProviderIcon

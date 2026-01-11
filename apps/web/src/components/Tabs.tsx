@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
-import { cn } from "@chatwar/ui";
+import { cn, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { ChartColumnIncreasing, MessageSquareMore, Video } from "lucide-react";
+import { RECENT_VOTES_LIMIT } from "@chatwar/shared";
 
 const tabBase =
   "flex items-center gap-2 px-3 py-2 rounded-md text-sm border transition-[background-color,border-color,opacity]";
@@ -18,13 +19,22 @@ export function Tabs() {
         <MessageSquareMore className="h-4 w-4" aria-hidden />
         <span>Chat</span>
       </NavLink>
-      <NavLink
-        to="/analytics"
-        className={({ isActive }) => cn(tabBase, isActive ? tabActive : tabInactive)}
-      >
-        <ChartColumnIncreasing className="h-4 w-4" aria-hidden />
-        <span>Analytics</span>
-      </NavLink>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex">
+            <NavLink
+              to="/analytics"
+              className={({ isActive }) => cn(tabBase, isActive ? tabActive : tabInactive)}
+            >
+              <ChartColumnIncreasing className="h-4 w-4" aria-hidden />
+              <span>Analytics</span>
+            </NavLink>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" align="start">
+          See results from the last {RECENT_VOTES_LIMIT} votes
+        </TooltipContent>
+      </Tooltip>
       <NavLink
         to="/demo"
         className={({ isActive }) => cn(tabBase, isActive ? tabActive : tabInactive)}
