@@ -14,7 +14,7 @@ export function AppShell() {
 
       <main className="flex-1">
         <Tabs />
-        <Outlet /> {/* Routed page content */}
+        <Outlet /> {/* routed page content */}
       </main>
 
       <Footer />

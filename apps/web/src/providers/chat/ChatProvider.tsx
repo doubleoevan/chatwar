@@ -7,6 +7,7 @@ import { toastApiError, toastVoteMessage } from "@/utils/toast";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useCredentials } from "@/providers/credentials";
 import { typedEntries, typedKeys } from "@/utils/object";
+import { createProviderVote } from "@/api/votes";
 
 export type ChatMessage = { role: "user"; message: string } | { role: "provider"; message: string };
 
@@ -297,27 +298,53 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const voteProviderChat = useCallback(
-    (options: { winner: ProviderId; providerApiKey: string; model: Model }) => {
-      // TODO: post winning provider and model to backend
-      const { winner, model } = options;
-      const losers = new Set(typedKeys(apiKeys));
-      losers.delete(winner);
-      console.log({
-        winner,
-        losers,
-        modelId: model.id,
-        modelLabel: model.label,
-        message: state.userMessage,
-      });
+    async (options: { providerId: ProviderId; model: Model }) => {
+      const { providerId, model } = options;
+      try {
+        // initialize the competitors
+        const competitors = typedEntries(state.selectedProviderModels)
+          .filter(([, model]) => model)
+          .map(([competitorProviderId, model]) => ({
+            providerId: competitorProviderId,
+            modelId: model!.id,
+            modelLabel: model!.label,
+          }));
 
-      // show a victory toast
-      const provider = PROVIDER_CONFIGURATIONS[winner];
-      const message = `${provider.label} with ${model.label} wins!`;
-      const { Icon } = provider;
-      toastVoteMessage(message, <Icon />);
-      dispatch({ type: "CLEAR_VOTING_PROVIDERS" });
+        // post the winning vote
+        await createProviderVote({
+          winnerProviderId: providerId,
+          winnerModelId: model.id,
+          winnerModelLabel: model.label,
+          competitors,
+          message: state.userMessage,
+        });
+
+        // show a victory toast
+        const provider = PROVIDER_CONFIGURATIONS[providerId];
+        const message = `${provider.label} with ${model.label} wins!`;
+        const { Icon } = provider;
+        toastVoteMessage(message, <Icon />);
+        dispatch({ type: "CLEAR_VOTING_PROVIDERS" });
+      } catch (error) {
+        // save the error
+        const apiError = toApiError(error, {
+          code: "PROVIDER_FAILED",
+          message: "Failed to post provider vote",
+        });
+        dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
+
+        // show an error toast
+        toastApiError(apiError, {
+          providerId,
+          metadata: {
+            endpoint: "/api/v1/provider-votes",
+            modelId: model.id,
+            modelLabel: model.label,
+          },
+        });
+      }
     },
-    [state.userMessage, apiKeys],
+    [state.userMessage, state.selectedProviderModels],
   );
 
   const removeProviderChat = useCallback(

@@ -12,7 +12,7 @@ export type ChatContextValue = ChatState & {
     clearChat?: boolean; // optionally clear the pre-existing chat
   }) => void;
   stopProviderChat: (providerId: ProviderId) => void;
-  voteProviderChat: (args: { winner: ProviderId; providerApiKey: string; model: Model }) => void;
+  voteProviderChat: (args: { providerId: ProviderId; model: Model }) => void;
   removeProviderChat: (providerId: ProviderId) => void;
 };
 

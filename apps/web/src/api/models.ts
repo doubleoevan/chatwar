@@ -1,6 +1,10 @@
 import type { ProviderId, ProviderModels } from "@chatwar/shared";
 import { fetchJson } from "@/api/client";
 
+/**
+ * GET /api/v1/providers/${providerId}/models
+ * Used by CredentialsProvider
+ */
 export async function getProviderModels(args: {
   providerId: ProviderId;
   providerApiKey: string;

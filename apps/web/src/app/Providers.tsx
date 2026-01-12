@@ -5,6 +5,7 @@ import { ChatProvider } from "@/providers/chat";
 import { TooltipProvider } from "@chatwar/ui";
 import { CredentialsProvider } from "@/providers/credentials";
 import { RouteAnalytics } from "@/app/RouteAnalytics";
+import { AnalyticsProvider } from "@/providers/analytics";
 
 /** App context providers */
 export function AppProviders({ children }: { children: ReactNode }) {
@@ -14,7 +15,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <ThemeProvider>
         <TooltipProvider delayDuration={0}>
           <CredentialsProvider>
-            <ChatProvider>{children}</ChatProvider>
+            <ChatProvider>
+              <AnalyticsProvider>{children}</AnalyticsProvider>
+            </ChatProvider>
           </CredentialsProvider>
         </TooltipProvider>
       </ThemeProvider>

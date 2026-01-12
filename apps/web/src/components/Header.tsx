@@ -9,7 +9,7 @@ export function Header() {
         className="mx-auto flex h-14 items-center justify-between px-4 pr-2"
         aria-label="Primary navigation"
       >
-        {/* Left: Logo */}
+        {/* logo */}
         <Link
           to="/chat"
           className="flex items-center gap-2 font-semibold hover:opacity-90"
@@ -19,7 +19,7 @@ export function Header() {
           <span>ChatWar</span>
         </Link>
 
-        {/* Right: Settings */}
+        {/* settings menu */}
         <SettingsMenu />
       </nav>
     </header>

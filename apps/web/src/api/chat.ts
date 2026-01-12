@@ -1,6 +1,10 @@
 import type { ProviderId } from "@chatwar/shared";
 import { streamJson } from "@/api/client";
 
+/**
+ * POST /api/v1/providers/${providerId}/chat
+ * Used by ChatProvider
+ */
 export async function streamChat(args: {
   providerId: ProviderId;
   providerApiKey: string;
