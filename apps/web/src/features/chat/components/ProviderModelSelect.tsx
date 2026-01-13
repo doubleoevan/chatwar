@@ -48,6 +48,8 @@ export function ProviderModelSelect({
           py-0
           text-xs
           gap-2
+          bg-background
+          cursor-pointer
         `,
           className,
         )}
@@ -59,10 +61,10 @@ export function ProviderModelSelect({
       <SelectContent
         align="start"
         sideOffset={8}
-        className="w-auto min-w-(--radix-select-trigger-width)"
+        className="w-auto min-w-(--radix-select-trigger-width) bg-background"
       >
         {modelsMetadata.models.map((model) => (
-          <SelectItem key={model.id} value={model.id}>
+          <SelectItem key={model.id} value={model.id} className="cursor-pointer">
             {model.label}
           </SelectItem>
         ))}

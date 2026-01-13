@@ -4,10 +4,12 @@ import { cn } from "@chatwar/ui";
 export function AnalyticsSection({
   title,
   children,
+  tooltip,
   className,
 }: {
   title: string;
   children?: ReactNode;
+  tooltip?: ReactNode;
   className?: string;
 }) {
   return (
@@ -21,7 +23,7 @@ export function AnalyticsSection({
     >
       <header className="mb-2">
         <h2 id={title} className="text-base font-semibold leading-6 text-center">
-          {title}
+          {title} {tooltip && <>{tooltip}</>}
         </h2>
       </header>
 

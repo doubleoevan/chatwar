@@ -1,4 +1,4 @@
-import { RefreshCw } from "lucide-react";
+import { Info, RefreshCw } from "lucide-react";
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { AnalyticsSection } from "@/features/analytics/components/AnalyticsSection";
 import { useAnalytics } from "@/providers/analytics";
@@ -57,6 +57,7 @@ export function AnalyticsPage() {
               variant="outline"
               size="sm"
               className="
+                border
                 flex items-center p-2 m-1
                 cursor-pointer
                 hover:bg-primary
@@ -74,7 +75,32 @@ export function AnalyticsPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <AnalyticsSection title="Who Won" className="pt-5">
+        <AnalyticsSection
+          title="Who Won"
+          tooltip={
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-describedby="who-won-info"
+                  className="
+                    w-8 h-8
+                    rounded-full
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-primary-foreground
+                  "
+                >
+                  <Info />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent id="who-won-info" side="top" align="start">
+                Leaders based on percentage of competitions won
+              </TooltipContent>
+            </Tooltip>
+          }
+        >
           <VoteProviderLeaders className="min-h-64" />
         </AnalyticsSection>
 

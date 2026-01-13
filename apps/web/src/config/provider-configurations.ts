@@ -1,21 +1,27 @@
 import type { ProviderId } from "@chatwar/shared";
 import type { Provider } from "@/types/provider";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import OpenAIIcon from "@/assets/icons/providers/openai.svg?react";
 import OpenAISvg from "@/assets/icons/providers/openai.svg?raw";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import AnthropicIcon from "@/assets/icons/providers/anthropic.svg?react";
 import AnthropicSvg from "@/assets/icons/providers/anthropic.svg?raw";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import GeminiIcon from "@/assets/icons/providers/gemini.svg?react";
 import GeminiSvg from "@/assets/icons/providers/gemini.svg?raw";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import XAIIcon from "@/assets/icons/providers/xai.svg?react";
 import XAISvg from "@/assets/icons/providers/xai.svg?raw";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import DeepSeekIcon from "@/assets/icons/providers/deepseek.svg?react";
 import DeepSeekSvg from "@/assets/icons/providers/deepseek.svg?raw";
 
+// @ts-expect-error - vite svg imports are handled at build time
 import PerplexityIcon from "@/assets/icons/providers/perplexity.svg?react";
 import PerplexitySvg from "@/assets/icons/providers/perplexity.svg?raw";
 

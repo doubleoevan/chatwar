@@ -29,13 +29,36 @@ export function VoteProviderLeaders({
     },
     {} as Record<ProviderId, number>,
   );
+
+  // map provider ids to competition counts
+  const providerCompetitions = providerIds.reduce<Record<ProviderId, number>>(
+    (map, id) => {
+      map[id] = 0;
+      return map;
+    },
+    {} as Record<ProviderId, number>,
+  );
+
+  // iterate through the votes to update the win counts and competition counts
   for (const vote of votes) {
     providerWins[vote.winnerProviderId]++;
+    for (const competitor of vote.competitors) {
+      const providerId = competitor.providerId as ProviderId;
+      if (providerId in providerCompetitions) {
+        providerCompetitions[providerId]++;
+      }
+    }
   }
 
   // set the chart data
+  const data = providerIds.map((id) => {
+    const competitions = providerCompetitions[id] || 0;
+    if (competitions === 0) {
+      return 0;
+    }
+    return (providerWins[id] / competitions) * 100;
+  });
   const labels = providerIds.map((id) => PROVIDER_CONFIGURATIONS[id].label);
-  const data = providerIds.map((id) => providerWins[id]);
   const colors = providerIds.map((id) => PROVIDER_CONFIGURATIONS[id].color);
   const chartData = {
     labels,
@@ -72,6 +95,18 @@ export function VoteProviderLeaders({
       tooltip: getTooltip({
         isDark,
         getProviderId,
+        options: {
+          // @ts-expect-error - partial tooltip callbacks are okay at runtime
+          callbacks: {
+            label: (item) => {
+              const percentage = item.parsed.y as number;
+              const providerId = providerIds[item.dataIndex];
+              const wins = providerWins[providerId] ?? 0;
+              const competitions = providerCompetitions[providerId] ?? 0;
+              return `  ${percentage.toFixed(0)}% – ${wins} of ${competitions} votes`;
+            },
+          },
+        },
       }),
     },
     scales: {
