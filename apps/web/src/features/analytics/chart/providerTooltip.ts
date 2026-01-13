@@ -52,6 +52,7 @@ export function getTooltip<TType extends ChartType>({
     titleAlign: "center",
     borderWidth: 1,
     padding: 15,
+    bodySpacing: 10,
     ...(options ?? {}),
     callbacks: {
       ...tooltipCallbacks,

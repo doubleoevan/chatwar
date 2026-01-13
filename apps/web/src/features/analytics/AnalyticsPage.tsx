@@ -3,14 +3,37 @@ import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { AnalyticsSection } from "@/features/analytics/components/AnalyticsSection";
 import { useAnalytics } from "@/providers/analytics";
 import { useEffect } from "react";
-import { VoteWordsCloud } from "@/features/analytics/components/VoteWordsCloud";
 import { VoteProviderLeaders } from "@/features/analytics/components/VoteProviderLeaders";
-import { Chart as ChartJS } from "chart.js";
+import { VoteWordsCloud } from "@/features/analytics/components/VoteWordsCloud";
+import { VoteProviderDays } from "@/features/analytics/components/VoteProviderDays";
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip as ChartTooltip,
+} from "chart.js";
 
 // must run before any charts render
 ChartJS.defaults.font.family = "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 ChartJS.defaults.font.size = 15;
 ChartJS.defaults.color = "hsl(var(--foreground))";
+
+// register chart components for all analytics charts
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ChartTooltip,
+  Filler,
+  Legend,
+);
 
 export function AnalyticsPage() {
   const { isAnalyticsLoading, fetchVotes } = useAnalytics();
@@ -62,7 +85,9 @@ export function AnalyticsPage() {
           </AnalyticsSection>
         </div>
 
-        <AnalyticsSection title="When they Won">Winners by Day Line Chart</AnalyticsSection>
+        <AnalyticsSection title="When they Won">
+          <VoteProviderDays className="min-h-64" />
+        </AnalyticsSection>
       </div>
     </section>
   );

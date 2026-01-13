@@ -1,13 +1,5 @@
 import { cn } from "@chatwar/ui";
-import {
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  type ChartOptions,
-  LinearScale,
-  Tooltip,
-  type TooltipItem,
-} from "chart.js";
+import type { ChartOptions, TooltipItem } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import type { ProviderId } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
@@ -16,8 +8,6 @@ import { useTheme } from "@/providers/theme";
 import { typedKeys } from "@/utils/object";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 export function VoteProviderLeaders({
   className,
@@ -30,7 +20,7 @@ export function VoteProviderLeaders({
   const { votes, isAnalyticsLoading } = useAnalytics();
   const refreshCount = useLoadingRefresh(isAnalyticsLoading); // for rerendering on refresh
 
-  // map providers to win counts
+  // map provider ids to win counts
   const providerIds: ProviderId[] = typedKeys(PROVIDER_CONFIGURATIONS).reverse();
   const providerWins = providerIds.reduce<Record<ProviderId, number>>(
     (map, id) => {
@@ -110,7 +100,8 @@ export function VoteProviderLeaders({
         "pt-4",
         "bg-background",
         "rounded-xl",
-        "flex h-full w-full items-center justify-center",
+        "flex h-full w-full",
+        "items-center justify-center",
         className,
       )}
     >

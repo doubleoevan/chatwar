@@ -60,7 +60,7 @@ export type ProviderModelVote = {
   message: string;
 
   // fields hydrated server-side
+  createdAt: string;
   latitude?: number;
   longitude?: number;
-  createdAt?: string;
 };
