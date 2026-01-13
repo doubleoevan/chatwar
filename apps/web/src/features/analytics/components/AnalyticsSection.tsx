@@ -16,7 +16,6 @@ export function AnalyticsSection({
       className={cn(
         "rounded-xl border bg-muted p-3 dark:bg-muted",
         "flex flex-col items-stretch",
-        "min-h-56",
         className,
       )}
     >
@@ -26,7 +25,7 @@ export function AnalyticsSection({
         </h2>
       </header>
 
-      <div aria-hidden="true" className="flex-1">
+      <div aria-hidden="true" className="flex-1 border rounded-xl">
         {children}
       </div>
     </section>

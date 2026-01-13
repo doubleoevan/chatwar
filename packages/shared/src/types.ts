@@ -14,6 +14,8 @@ export type ProviderMetadata = {
   id: ProviderId;
   label: string;
   apiKeyUrl: string;
+  iconSvg: string;
+  color: [number, number, number];
 };
 
 export type ProviderModels = {

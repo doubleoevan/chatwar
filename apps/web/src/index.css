@@ -142,3 +142,14 @@
     transform: rotateY(360deg);
   }
 }
+
+[data-tippy-root] .tippy-box {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: var(--radius-md);
+}
+
+[data-tippy-root] .tippy-content {
+  padding: 0.25rem 0.5rem;
+}

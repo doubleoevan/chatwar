@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { cn } from "@chatwar/ui";
 import ReactWordcloud from "react-wordcloud";
 import { eng as ENGLISH_STOP_WORDS, removeStopwords } from "stopword";
 import { Filter } from "bad-words";
 import { useAnalytics } from "@/providers/analytics";
 import { ProviderModelVote } from "@chatwar/shared";
 import { useTheme } from "@/providers/theme";
+import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 
 type Word = { text: string; value: number };
 type Options = Record<string, unknown>;
@@ -40,30 +42,14 @@ function toWordCountItems(votes: ProviderModelVote[], maxWords?: number): Word[]
   const wordCountItems = Array.from(wordCounts.entries())
     .map(([text, value]) => ({ text, value }))
     .sort((first, second) => second.value - first.value);
-  if (maxWords) {
-    wordCountItems.slice(0, maxWords);
-  }
-  return wordCountItems;
+  return maxWords ? wordCountItems.slice(0, maxWords) : wordCountItems;
 }
 
-export function VotesWordsCloud({ options }: { options?: Options }) {
+export function VoteWordsCloud({ className, options }: { className?: string; options?: Options }) {
   // convert the vote messages into words
   const { theme } = useTheme();
   const { votes, isAnalyticsLoading } = useAnalytics();
-
-  // use a render count to force update the word cloud on refresh
-  const [renderCount, setRenderCount] = useState(0);
-  const analyticsLoadingRef = useRef(isAnalyticsLoading);
-
-  // update the render count when the analytics loading flag changes
-  useEffect(() => {
-    if (analyticsLoadingRef.current && !isAnalyticsLoading) {
-      queueMicrotask(() => {
-        setRenderCount((count) => count + 1);
-      });
-    }
-    analyticsLoadingRef.current = isAnalyticsLoading;
-  }, [isAnalyticsLoading]);
+  const refreshCount = useLoadingRefresh(isAnalyticsLoading); // for rerendering on refresh
 
   // use a ref and state to measure the parent container and set the word cloud size
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
@@ -75,7 +61,7 @@ export function VotesWordsCloud({ options }: { options?: Options }) {
       return;
     }
 
-    // set the size initially and also when the layout settles
+    // set the size initially and also after the layout settles
     const measure = () => {
       const boundaries = containerElement.getBoundingClientRect();
       const width = Math.floor(boundaries.width);
@@ -87,7 +73,7 @@ export function VotesWordsCloud({ options }: { options?: Options }) {
     measure();
     const frameId = requestAnimationFrame(measure);
 
-    // set the size on resize
+    // update the size on resize
     const resizeObserver = new ResizeObserver(measure);
     resizeObserver.observe(containerElement);
     return () => {
@@ -100,49 +86,42 @@ export function VotesWordsCloud({ options }: { options?: Options }) {
   const maxWords = size && size[0] < 500 ? 40 : size && size[0] < 700 ? 50 : 60;
   const wordCounts = useMemo(() => toWordCountItems(votes, maxWords), [votes, maxWords]);
 
-  // show default text if there are no counts
-  if (wordCounts.length === 0) {
-    return (
-      <div
-        className="
-          bg-background
-          rounded-xl
-          flex h-full w-full
-          items-center justify-center
-        "
-      >
-        {isAnalyticsLoading ? "Loading..." : "No votes yet"}
-      </div>
-    );
-  }
-
   // set the light and dark mode colors
   const isDark = theme === "dark";
   const colors = isDark
-    ? ["#e5e7eb", "#d1d5db", "#9ca3af", "#6b7280"] // light grays
+    ? ["#e5e7eb", "#d1d5db", "#9ca3af", "#6b7280"]
     : ["#475569", "#334155", "#1e293b", "#0f172a"];
 
   return (
     <div
       ref={setContainerElement}
-      className="
-        bg-background
-        rounded-xl
-        flex h-full w-full
-        items-center justify-center
-      "
+      className={cn(
+        "bg-background",
+        "rounded-xl",
+        "flex h-full w-full",
+        "items-center justify-center",
+        className,
+      )}
     >
       {wordCounts.length === 0 ? (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-foreground">
           {isAnalyticsLoading ? "Loading..." : "No votes yet"}
         </span>
       ) : (
         size && (
           <ReactWordcloud
-            key={renderCount}
+            key={refreshCount}
             words={wordCounts}
             minSize={size}
             size={size}
+            callbacks={{
+              onWordMouseOver: (_, event) => {
+                (event?.target as HTMLElement).style.cursor = "pointer";
+              },
+              onWordMouseOut: (_, event) => {
+                (event?.target as HTMLElement).style.cursor = "default";
+              },
+            }}
             options={{
               deterministic: true,
               rotations: 1,
