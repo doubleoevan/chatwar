@@ -15,13 +15,13 @@ export function AnalyticsSection({
       aria-labelledby={title}
       className={cn(
         "rounded-xl border bg-muted p-3 dark:bg-muted",
-        "flex flex-col items-center",
-        "min-h-48",
+        "flex flex-col items-stretch",
+        "min-h-56",
         className,
       )}
     >
       <header className="mb-2">
-        <h2 id={title} className="text-base font-semibold leading-6">
+        <h2 id={title} className="text-base font-semibold leading-6 text-center">
           {title}
         </h2>
       </header>

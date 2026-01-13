@@ -9,17 +9,31 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
   // openai
   {
     winnerProviderId: "openai",
+    winnerModelId: "gpt-4o",
+    winnerModelLabel: "GPT-4o",
+    competitors: [
+      { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
+      { providerId: "anthropic", modelId: "claude-3-5-sonnet", modelLabel: "Claude 3.5 Sonnet" },
+    ],
+    message:
+      "Explain the difference between Temporal workflows and traditional cron jobs, including retries, state management, and failure handling.",
+    latitude: 37.7749,
+    longitude: -122.4194,
+    createdAt: toHoursAgoDate(6),
+  },
+  {
+    winnerProviderId: "openai",
     winnerModelId: "gpt-4o-mini",
     winnerModelLabel: "GPT-4o mini",
     competitors: [
       { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
-      { providerId: "anthropic", modelId: "claude-3-5-sonnet", modelLabel: "Claude 3.5 Sonnet" },
       { providerId: "gemini", modelId: "gemini-1.5-pro", modelLabel: "Gemini 1.5 Pro" },
     ],
-    message: "Explain Temporal vs cron in simple terms.",
+    message:
+      "Generate a SQL query that finds duplicate rows based on multiple columns and explains why those duplicates exist.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(2),
+    createdAt: toHoursAgoDate(14),
   },
   {
     winnerProviderId: "openai",
@@ -29,23 +43,11 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
       { providerId: "perplexity", modelId: "pplx-70b", modelLabel: "Perplexity 70B" },
     ],
-    message: "Summarize the pros and cons of server-side rendering.",
+    message:
+      "Summarize the pros and cons of server-side rendering versus client-side rendering, focusing on performance, SEO, and developer experience.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(18),
-  },
-  {
-    winnerProviderId: "openai",
-    winnerModelId: "gpt-4o-mini",
-    winnerModelLabel: "GPT-4o mini",
-    competitors: [
-      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
-      { providerId: "xai", modelId: "grok-2", modelLabel: "Grok 2" },
-    ],
-    message: "Generate a SQL query to find duplicate rows.",
-    latitude: 37.7749,
-    longitude: -122.4194,
-    createdAt: toHoursAgoDate(36),
+    createdAt: toHoursAgoDate(22),
   },
 
   // anthropic
@@ -54,13 +56,14 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
     winnerModelId: "claude-3-5-sonnet",
     winnerModelLabel: "Claude 3.5 Sonnet",
     competitors: [
-      { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
       { providerId: "anthropic", modelId: "claude-3-5-sonnet", modelLabel: "Claude 3.5 Sonnet" },
+      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
     ],
-    message: "Write a commit message for analytics layout.",
+    message:
+      "Rewrite this commit message to clearly describe an analytics layout refactor while keeping it concise and professional.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(26),
+    createdAt: toHoursAgoDate(30),
   },
   {
     winnerProviderId: "anthropic",
@@ -70,10 +73,11 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       { providerId: "anthropic", modelId: "claude-3-opus", modelLabel: "Claude 3 Opus" },
       { providerId: "gemini", modelId: "gemini-1.5-pro", modelLabel: "Gemini 1.5 Pro" },
     ],
-    message: "Rewrite this paragraph to be more concise.",
+    message:
+      "Rewrite this paragraph to be more concise while preserving tone, intent, and technical accuracy.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(52),
+    createdAt: toHoursAgoDate(60),
   },
 
   // gemini
@@ -83,12 +87,27 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
     winnerModelLabel: "Gemini 1.5 Pro",
     competitors: [
       { providerId: "gemini", modelId: "gemini-1.5-pro", modelLabel: "Gemini 1.5 Pro" },
-      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
+      { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
     ],
-    message: "Explain how transformers work at a high level.",
+    message:
+      "Explain how transformer models work at a high level, including attention mechanisms and why they scale well.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(74),
+    createdAt: toHoursAgoDate(80),
+  },
+  {
+    winnerProviderId: "gemini",
+    winnerModelId: "gemini-1.5-pro",
+    winnerModelLabel: "Gemini 1.5 Pro",
+    competitors: [
+      { providerId: "gemini", modelId: "gemini-1.5-pro", modelLabel: "Gemini 1.5 Pro" },
+      { providerId: "anthropic", modelId: "claude-3-5-sonnet", modelLabel: "Claude 3.5 Sonnet" },
+    ],
+    message:
+      "Explain the difference between synchronous and asynchronous rendering in modern frontend frameworks.",
+    latitude: 37.7749,
+    longitude: -122.4194,
+    createdAt: toHoursAgoDate(92),
   },
 
   // xai
@@ -98,12 +117,13 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
     winnerModelLabel: "Grok 2",
     competitors: [
       { providerId: "xai", modelId: "grok-2", modelLabel: "Grok 2" },
-      { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
+      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
     ],
-    message: "Give a sarcastic explanation of blockchain.",
+    message:
+      "Give a sarcastic explanation of blockchain technology, highlighting hype, buzzwords, and real-world tradeoffs.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(90),
+    createdAt: toHoursAgoDate(100),
   },
 
   // deepseek
@@ -113,12 +133,13 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
     winnerModelLabel: "DeepSeek Coder",
     competitors: [
       { providerId: "deepseek", modelId: "deepseek-coder", modelLabel: "DeepSeek Coder" },
-      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
+      { providerId: "openai", modelId: "gpt-4o", modelLabel: "GPT-4o" },
     ],
-    message: "Convert this Python function to TypeScript.",
+    message:
+      "Convert this Python function to TypeScript, explaining how types improve safety and readability.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(110),
+    createdAt: toHoursAgoDate(120),
   },
 
   // perplexity
@@ -128,11 +149,12 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
     winnerModelLabel: "Perplexity 70B",
     competitors: [
       { providerId: "perplexity", modelId: "pplx-70b", modelLabel: "Perplexity 70B" },
-      { providerId: "anthropic", modelId: "claude-3-5-sonnet", modelLabel: "Claude 3.5 Sonnet" },
+      { providerId: "openai", modelId: "gpt-4o-mini", modelLabel: "GPT-4o mini" },
     ],
-    message: "Find sources for recent AI regulation changes.",
+    message:
+      "Find sources for recent AI regulation changes and summarize how they impact model training and deployment.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(132),
+    createdAt: toHoursAgoDate(144),
   },
 ];

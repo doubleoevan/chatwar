@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import React, { useCallback, useMemo, useReducer, useRef } from "react";
 import type { ApiError, ProviderModelVote } from "@chatwar/shared";
 import { getProviderVotes } from "@/api/votes";
 import { toApiError } from "@/utils/apiError";
@@ -89,17 +89,12 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
         },
       });
     } finally {
-      dispatch({ type: "SET_IS_LOADING", isAnalyticsLoading: false });
+      // only the latest request is allowed to turn off loading
+      if (abortRef.current === controller) {
+        dispatch({ type: "SET_IS_LOADING", isAnalyticsLoading: false });
+      }
     }
   }, []);
-
-  // initial load
-  useEffect(() => {
-    void fetchVotes();
-    return () => {
-      abortRef.current?.abort();
-    };
-  }, [fetchVotes]);
 
   // memoize context to avoid rerendering consumers
   const value = useMemo(

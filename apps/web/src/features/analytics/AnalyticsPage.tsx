@@ -3,9 +3,10 @@ import { Button, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { AnalyticsSection } from "@/features/analytics/components/AnalyticsSection";
 import { useAnalytics } from "@/providers/analytics";
 import { useEffect } from "react";
+import { VotesWordsCloud } from "@/features/analytics/components/VoteWordsCloud";
 
 export function AnalyticsPage() {
-  const { fetchVotes } = useAnalytics();
+  const { isAnalyticsLoading, fetchVotes } = useAnalytics();
 
   // initial load
   useEffect(() => {
@@ -31,6 +32,7 @@ export function AnalyticsPage() {
                 hover:bg-primary
                 hover:text-primary-foreground
               "
+              disabled={isAnalyticsLoading}
               onClick={fetchVotes}
             >
               <RefreshCw />
@@ -46,7 +48,9 @@ export function AnalyticsPage() {
 
         <div className="grid grid-cols-2 gap-4">
           <AnalyticsSection title="What Models">Models Pie Chart</AnalyticsSection>
-          <AnalyticsSection title="What Words">Words Tag Cloud</AnalyticsSection>
+          <AnalyticsSection title="What Words">
+            <VotesWordsCloud />
+          </AnalyticsSection>
         </div>
 
         <AnalyticsSection title="When they Won">Winners by Day Line Chart</AnalyticsSection>
