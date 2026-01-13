@@ -112,7 +112,7 @@ export function AnalyticsPage() {
         </div>
 
         <AnalyticsSection title="When they Won">
-          <VoteProviderDays className="min-h-64" />
+          <VoteProviderDays className="min-h-72" />
         </AnalyticsSection>
       </div>
     </section>
