@@ -166,6 +166,7 @@ export function VoteProviderLeaders({
     });
   };
 
+  // return the bar chart
   return (
     <div
       className={cn(

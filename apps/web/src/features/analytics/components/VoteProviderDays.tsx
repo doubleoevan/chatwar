@@ -188,7 +188,7 @@ export function VoteProviderDays({
     ...options,
   };
 
-  // return the chart
+  // return the line chart
   return (
     <div
       className={cn(

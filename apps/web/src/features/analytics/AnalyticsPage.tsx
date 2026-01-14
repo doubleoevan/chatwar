@@ -6,7 +6,9 @@ import { useEffect } from "react";
 import { VoteProviderLeaders } from "@/features/analytics/components/VoteProviderLeaders";
 import { VoteWordsCloud } from "@/features/analytics/components/VoteWordsCloud";
 import { VoteProviderDays } from "@/features/analytics/components/VoteProviderDays";
+import { VoteModelWinners } from "@/features/analytics/components/VoteModelWinners";
 import {
+  ArcElement,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
@@ -25,14 +27,15 @@ ChartJS.defaults.color = "hsl(var(--foreground))";
 
 // register chart components for all analytics charts
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
+  ArcElement,
   BarElement,
-  PointElement,
-  LineElement,
+  CategoryScale,
   ChartTooltip,
   Filler,
   Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
 );
 
 export function AnalyticsPage() {
@@ -105,9 +108,11 @@ export function AnalyticsPage() {
         </AnalyticsSection>
 
         <div className="grid grid-cols-2 gap-4">
-          <AnalyticsSection title="What Models">Models Pie Chart</AnalyticsSection>
+          <AnalyticsSection title="What Models">
+            <VoteModelWinners className="min-h-48" />
+          </AnalyticsSection>
           <AnalyticsSection title="What Words">
-            <VoteWordsCloud className="min-h-44" />
+            <VoteWordsCloud className="min-h-48" />
           </AnalyticsSection>
         </div>
 

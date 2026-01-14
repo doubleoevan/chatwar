@@ -1,9 +1,5 @@
+import { subHours } from "date-fns";
 import type { ProviderModelVote } from "@chatwar/shared";
-
-// helper
-function toHoursAgoDate(hours: number) {
-  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
-}
 
 export const PROVIDER_VOTES: ProviderModelVote[] = [
   // openai
@@ -19,7 +15,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Explain the difference between Temporal workflows and traditional cron jobs, including retries, state management, and failure handling.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(6),
+    createdAt: subHours(new Date(), 6).toISOString(),
   },
   {
     winnerProviderId: "openai",
@@ -33,7 +29,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Generate a SQL query that finds duplicate rows based on multiple columns and explains why those duplicates exist.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(14),
+    createdAt: subHours(new Date(), 14).toISOString(),
   },
   {
     winnerProviderId: "openai",
@@ -47,7 +43,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Summarize the pros and cons of server-side rendering versus client-side rendering, focusing on performance, SEO, and developer experience.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(22),
+    createdAt: subHours(new Date(), 22).toISOString(),
   },
 
   // anthropic
@@ -63,7 +59,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Rewrite this commit message to clearly describe an analytics layout refactor while keeping it concise and professional.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(30),
+    createdAt: subHours(new Date(), 30).toISOString(),
   },
   {
     winnerProviderId: "anthropic",
@@ -77,7 +73,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Rewrite this paragraph to be more concise while preserving tone, intent, and technical accuracy.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(60),
+    createdAt: subHours(new Date(), 60).toISOString(),
   },
 
   // gemini
@@ -93,7 +89,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Explain how transformer models work at a high level, including attention mechanisms and why they scale well.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(80),
+    createdAt: subHours(new Date(), 80).toISOString(),
   },
   {
     winnerProviderId: "gemini",
@@ -107,7 +103,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Explain the difference between synchronous and asynchronous rendering in modern frontend frameworks.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(92),
+    createdAt: subHours(new Date(), 92).toISOString(),
   },
 
   // xai
@@ -123,7 +119,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Give a sarcastic explanation of blockchain technology, highlighting hype, buzzwords, and real-world tradeoffs.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(100),
+    createdAt: subHours(new Date(), 100).toISOString(),
   },
 
   // deepseek
@@ -139,7 +135,7 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Convert this Python function to TypeScript, explaining how types improve safety and readability.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(120),
+    createdAt: subHours(new Date(), 120).toISOString(),
   },
 
   // perplexity
@@ -155,6 +151,6 @@ export const PROVIDER_VOTES: ProviderModelVote[] = [
       "Find sources for recent AI regulation changes and summarize how they impact model training and deployment.",
     latitude: 37.7749,
     longitude: -122.4194,
-    createdAt: toHoursAgoDate(144),
+    createdAt: subHours(new Date(), 144).toISOString(),
   },
 ];
