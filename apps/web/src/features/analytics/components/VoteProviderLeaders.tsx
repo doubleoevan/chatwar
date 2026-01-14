@@ -179,24 +179,26 @@ export function VoteProviderLeaders({
     >
       {/* provider legend */}
       <div className="pb-3 flex flex-wrap items-center justify-center">
-        {providerIds.map((id) => {
-          const provider = PROVIDER_CONFIGURATIONS[id];
+        {providerIds.map((providerId) => {
+          const provider = PROVIDER_CONFIGURATIONS[providerId];
           const [r, g, b] = provider.color;
           const Icon = provider.Icon;
           return (
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  key={id}
+                  key={providerId}
                   type="button"
-                  onClick={() => onShowHideProvider(id)}
+                  onClick={() => onShowHideProvider(providerId)}
                   className={cn(
                     "inline-flex items-center",
                     "gap-2 px-2 py-2.5",
                     "rounded-sm text-sm",
                     "transition-[background-color,border-color,opacity] cursor-pointer",
                     "border border-border/0 hover:border-input hover:bg-muted",
-                    !hideProviderIds.has(id) ? "opacity-100" : "opacity-40 hover:opacity-100",
+                    !hideProviderIds.has(providerId)
+                      ? "opacity-100"
+                      : "opacity-40 hover:opacity-100",
                   )}
                 >
                   <span
@@ -207,7 +209,14 @@ export function VoteProviderLeaders({
                       backgroundColor: `rgb(${r}, ${g}, ${b}, 0.7)`,
                     }}
                   />
-                  <span className="whitespace-nowrap">{provider.label}</span>
+                  <span
+                    className={cn(
+                      "whitespace-nowrap",
+                      hideProviderIds.has(providerId) && "line-through",
+                    )}
+                  >
+                    {provider.label}
+                  </span>
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" align="start">
