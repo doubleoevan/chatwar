@@ -147,6 +147,10 @@ export function VoteProviderDays({
               const index = items[0]?.dataIndex;
               return index == null ? "" : toTooltipLabel(dayKeys[index]);
             },
+            label: (context) => {
+              const winCount = Number(context.parsed.y ?? 0);
+              return `  ${winCount} ${winCount === 1 ? "win" : "wins"}`;
+            },
           },
         },
       }),

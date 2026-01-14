@@ -28,7 +28,7 @@ export function getTooltip<TType extends ChartType>({
 
   // add the provider icon and label to the tooltip
   const tooltipCallbacks: PartialCallbacks<TType> = {
-    label: (context) => `  ${context.raw} votes`,
+    label: (context) => `  ${context.raw} wins`,
     labelPointStyle: (context) => {
       const providerId = getProviderId(context);
       const icon = getProviderIcon(providerId, {
