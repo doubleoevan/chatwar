@@ -115,6 +115,7 @@ export function VoteWordsCloud({ className, options }: { className?: string; opt
             minSize={size}
             size={size}
             callbacks={{
+              getWordTooltip: (word: Word) => `${word.text} ${word.value}x`,
               onWordMouseOver: (_, event) => {
                 (event?.target as HTMLElement).style.cursor = "pointer";
               },
