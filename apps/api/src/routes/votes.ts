@@ -1,4 +1,5 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import { z } from "zod";
 import { prisma } from "../prisma.js";
 import {
   getVotesQuerySchema,
@@ -37,6 +38,8 @@ function toVoteResponse(row: {
     latitude: row.latitude ?? undefined,
     longitude: row.longitude ?? undefined,
   };
+
+  // keep to catch database shape drift
   const parsed = providerModelVoteResponseSchema.safeParse(vote);
   if (!parsed.success) {
     throw new Error(`Invalid ProviderModelVoteResponse: ${parsed.error.message}`);
@@ -44,84 +47,96 @@ function toVoteResponse(row: {
   return parsed.data;
 }
 
-export const votesRoutes: FastifyPluginAsync = async (app) => {
+export const votesRoutes: FastifyPluginAsyncZod = async (app) => {
   // GET /v1/provider-votes?limit=100
-  app.get("/v1/provider-votes", async (request, reply) => {
-    // parse the votes query
-    const votesQuery = getVotesQuerySchema.safeParse(request.query);
-    if (!votesQuery.success) {
-      return reply.status(400).send({ code: "BAD_REQUEST", message: "Invalid query params" });
-    }
+  app.get(
+    "/v1/provider-votes",
+    {
+      schema: {
+        tags: ["Votes"],
+        summary: "Get recent provider/model votes",
+        description: `Returns up to ${RECENT_VOTES_LIMIT} most recent votes.`,
+        querystring: getVotesQuerySchema,
+        response: {
+          200: z.array(providerModelVoteResponseSchema),
+        },
+      },
+    },
+    async (request, reply) => {
+      // fetch the votes data
+      const limit = clampLimit(request.query.limit);
+      const voteRows = await prisma.providerVote.findMany({
+        orderBy: { createdAt: "desc" },
+        take: limit,
+      });
 
-    // query for the latest votes
-    const limit = clampLimit(votesQuery.data.limit);
-    const rows = await prisma.providerVote.findMany({
-      orderBy: { createdAt: "desc" },
-      take: limit,
-    });
-
-    // return the votes response
-    const votes = rows.map((row) =>
-      toVoteResponse({
-        id: row.id,
-        winnerProviderId: row.winnerProviderId,
-        winnerModelId: row.winnerModelId,
-        winnerModelLabel: row.winnerModelLabel,
-        competitors: row.competitors,
-        message: row.message,
-        createdAt: row.createdAt,
-        latitude: row.latitude,
-        longitude: row.longitude,
-      }),
-    );
-    return reply.status(200).send(votes);
-  });
+      // return the votes response
+      const votes = voteRows.map((row) =>
+        toVoteResponse({
+          id: row.id,
+          winnerProviderId: row.winnerProviderId,
+          winnerModelId: row.winnerModelId,
+          winnerModelLabel: row.winnerModelLabel,
+          competitors: row.competitors,
+          message: row.message,
+          createdAt: row.createdAt,
+          latitude: row.latitude,
+          longitude: row.longitude,
+        }),
+      );
+      return reply.status(200).send(votes);
+    },
+  );
 
   // POST /v1/provider-votes
-  app.post("/v1/provider-votes", async (request, reply) => {
-    // parse the vote body
-    const voteBody = providerModelVoteCreateSchema.safeParse(request.body);
-    if (!voteBody.success) {
-      return reply.status(400).send({
-        code: "BAD_REQUEST",
-        message: "Missing or invalid vote payload",
-        issues: voteBody.error.issues,
-      });
-    }
-
-    // hydrate the server fields
-    const body = voteBody.data;
-    const createdAt = body.createdAt ?? new Date();
-    const latitude = typeof body.latitude === "number" ? body.latitude : undefined;
-    const longitude = typeof body.longitude === "number" ? body.longitude : undefined;
-
-    // save the vote data
-    const voteCreated = await prisma.providerVote.create({
-      data: {
-        winnerProviderId: body.winnerProviderId,
-        winnerModelId: body.winnerModelId,
-        winnerModelLabel: body.winnerModelLabel,
-        competitors: body.competitors,
-        message: body.message,
-        createdAt,
-        latitude,
-        longitude,
+  app.post(
+    "/v1/provider-votes",
+    {
+      schema: {
+        tags: ["Votes"],
+        summary: "Create a provider/model vote",
+        description: `Returns the new provider/model vote.`,
+        body: providerModelVoteCreateSchema,
+        response: {
+          201: providerModelVoteResponseSchema,
+        },
       },
-    });
+    },
+    async (request, reply) => {
+      // hydrate fields to add to the vote
+      const body = request.body;
+      const createdAt = body.createdAt ?? new Date();
+      const latitude = typeof body.latitude === "number" ? body.latitude : undefined;
+      const longitude = typeof body.longitude === "number" ? body.longitude : undefined;
 
-    // return the new vote
-    return reply.status(201).send(
-      toVoteResponse({
-        id: voteCreated.id,
-        winnerProviderId: voteCreated.winnerProviderId,
-        winnerModelId: voteCreated.winnerModelId,
-        winnerModelLabel: voteCreated.winnerModelLabel,
-        competitors: voteCreated.competitors,
-        message: voteCreated.message,
-        createdAt: voteCreated.createdAt,
-        latitude: voteCreated.latitude,
-        longitude: voteCreated.longitude,
-      }),
-    );
-  });
+      // save the new vote
+      const vote = await prisma.providerVote.create({
+        data: {
+          winnerProviderId: body.winnerProviderId,
+          winnerModelId: body.winnerModelId,
+          winnerModelLabel: body.winnerModelLabel,
+          competitors: body.competitors,
+          message: body.message,
+          createdAt,
+          latitude,
+          longitude,
+        },
+      });
+
+      // return the saved vote
+      return reply.status(201).send(
+        toVoteResponse({
+          id: vote.id,
+          winnerProviderId: vote.winnerProviderId,
+          winnerModelId: vote.winnerModelId,
+          winnerModelLabel: vote.winnerModelLabel,
+          competitors: vote.competitors,
+          message: vote.message,
+          createdAt: vote.createdAt,
+          latitude: vote.latitude,
+          longitude: vote.longitude,
+        }),
+      );
+    },
+  );
 };

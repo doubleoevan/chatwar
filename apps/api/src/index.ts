@@ -1,29 +1,24 @@
 import "dotenv/config";
-import Fastify from "fastify";
-import cors from "@fastify/cors";
-import { votesRoutes } from "./routes/votes.js";
+import { buildApp } from "./app.js";
+import colors from "picocolors";
 
-const app = Fastify({ logger: true });
-
-// For local dev, this is fine. When using the Vite proxy, CORS doesn't matter,
-// but enabling it keeps curl/browser direct calls painless.
-const corsOrigin = process.env.CORS_ORIGIN ?? true;
-await app.register(cors, {
-  origin: corsOrigin === "true" ? true : corsOrigin,
-});
-
-// health check
-app.get("/health", async () => ({ ok: true }));
-
-// register API routes
-await app.register(votesRoutes);
-
+const app = buildApp();
 const port = Number(process.env.PORT ?? 3001);
 const host = process.env.HOST ?? "0.0.0.0";
 
 try {
   await app.listen({ port, host });
-  app.log.info(`🚀 API listening on http://${host}:${port}`);
+
+  // print the api urls in dev
+  if (process.env.NODE_ENV !== "production") {
+    const apiUrl = `http://localhost:${port}`;
+    const swaggerUrl = `${apiUrl}/api-docs`;
+    const openapiUrl = `${apiUrl}/api-docs/json`;
+    console.log();
+    console.log(`  ${colors.green("API")}`);
+    console.log(`  ${colors.green("➜")}  Swagger: ${swaggerUrl}`);
+    console.log(`  ${colors.green("➜")}  OpenAPI: ${openapiUrl}`);
+  }
 } catch (err) {
   app.log.error(err);
   process.exit(1);
