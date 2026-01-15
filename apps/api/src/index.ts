@@ -1,6 +1,7 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import { votesRoutes } from "./routes/votes.js";
 
 const app = Fastify({ logger: true });
 
@@ -11,7 +12,11 @@ await app.register(cors, {
   origin: corsOrigin === "true" ? true : corsOrigin,
 });
 
+// health check
 app.get("/health", async () => ({ ok: true }));
+
+// register API routes
+await app.register(votesRoutes);
 
 const port = Number(process.env.PORT ?? 3001);
 const host = process.env.HOST ?? "0.0.0.0";

@@ -1,4 +1,4 @@
-/* Providers */
+/* shared type definitions between the web client and the api server */
 export const PROVIDERS = [
   "openai",
   "anthropic",
