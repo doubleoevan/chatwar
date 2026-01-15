@@ -5,12 +5,15 @@ A fight club for LLMs. 🤫
 ## Overview
 
 ChatWar is an AI battleground for comparing large language models.
-It’s built as a monorepo with a web client, an API layer, and a design system library.
+It’s built as a monorepo with a web client, an API, and shared packages.
+
+The default development experience is mock-first, with an opt-in full local stack.
 
 ## Prerequisites
 
 - Node.js 18+
 - pnpm
+- Docker Desktop (only required for dev:full)
 
 ## Local Development
 
@@ -20,60 +23,68 @@ Install dependencies:
 pnpm install
 ```
 
-Run everything (web + api) in parallel:
+### Default (mock mode)
+
+Runs the web app using MSW mocks. No API or database required.
 
 ```bash
 pnpm dev
 ```
 
-Create your local environment file (optional):
+Web: http://localhost:5173
+
+### Full local stack (API + Postgres)
+
+```bash
+pnpm dev:full
+```
+
+Services:
+
+- Web: http://localhost:5173
+- API: http://localhost:3001
+
+### Run services individually
+
+```bash
+pnpm dev:web:mock
+pnpm dev:web:localserver
+pnpm dev:api
+```
+
+## Database
+
+```bash
+pnpm db:up
+pnpm db:down
+pnpm db:reset
+```
+
+## Environment Variables
+
+API:
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+Web:
 
 ```bash
 cp apps/web/.env.local.example apps/web/.env.local
 ```
 
-Run only the web app (optional):
+## Prisma
 
 ```bash
-pnpm dev:web
-```
-
-Run only the API (optional):
-
-```bash
-pnpm dev:api
+pnpm --filter @chatwar/api exec prisma migrate dev
+pnpm --filter @chatwar/api exec prisma generate
 ```
 
 ## Production
 
-Install dependencies:
-
 ```bash
 pnpm install
-```
-
-Build production:
-
-```bash
 pnpm build
-```
-
-Preview the production build locally (optional):
-
-```bash
 pnpm preview
-```
-
-## Environment Variables
-
-Local overrides should be placed in:
-
-```bash
-apps/web/.env.local
-```
-
-Example values are documented in:
-
-```bash
-apps/web/.env.local.example
 ```

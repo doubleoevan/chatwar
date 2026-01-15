@@ -8,6 +8,7 @@
     "dev:mock": "pnpm dev:web:mock",
     "dev:full": "pnpm db:up && concurrently -n api,web -c blue,magenta \"pnpm dev:api\" \"pnpm dev:web:localserver\"",
     "dev:all": "pnpm -r --parallel dev",
+    "dev:help": "echo \"dev (mock), dev:full (db+api+web)\"",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d postgres",
