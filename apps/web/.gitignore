@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# local environment overrides (dotenv)
+apps/api/.env
+apps/api/.env.local
+apps/web/.env.local
+apps/web/.env.*.local
