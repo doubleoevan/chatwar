@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProviderId {
+  openai
+  anthropic
+  gemini
+  xai
+  deepseek
+  perplexity
+}
+
+model ProviderVote {
+  id               String     @id @default(cuid())
+
+  winnerProviderId ProviderId
+  winnerModelId    String
+  winnerModelLabel String
+
+  message          String
+  competitors      Json
+
+  createdAt        DateTime   @default(now())
+  latitude         Float?
+  longitude        Float?
+
+  @@index([createdAt])
+}

@@ -4,14 +4,22 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node --watch --enable-source-maps src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"(add eslint later)\"",
     "clean": "rm -rf dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "prisma": "^7.2.0"
+  },
   "devDependencies": {
+    "@types/node": "^24.10.4",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.0"
   }
 }

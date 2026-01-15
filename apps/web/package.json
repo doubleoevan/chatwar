@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --mode mock",
+    "dev:mock": "vite --host --mode mock",
+    "dev:localserver": "vite --host --mode localserver",
+    "dev:prod": "vite --host --mode prod",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
