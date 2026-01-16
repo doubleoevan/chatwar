@@ -190,16 +190,7 @@ export function VoteProviderDays({
 
   // return the line chart
   return (
-    <div
-      className={cn(
-        "p-4",
-        "bg-background",
-        "rounded-xl",
-        "flex h-full w-full",
-        "items-center justify-center",
-        className,
-      )}
-    >
+    <div className={cn("p-4 items-center justify-center", className)}>
       <Line key={refreshCount} data={chartData} options={chartOptions} />
     </div>
   );

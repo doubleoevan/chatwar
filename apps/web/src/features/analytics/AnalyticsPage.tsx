@@ -7,6 +7,8 @@ import { VoteProviderLeaders } from "@/features/analytics/components/VoteProvide
 import { VoteWordsCloud } from "@/features/analytics/components/VoteWordsCloud";
 import { VoteProviderDays } from "@/features/analytics/components/VoteProviderDays";
 import { VoteModelWinners } from "@/features/analytics/components/VoteModelWinners";
+import { VoteProviderMap } from "@/features/analytics/components/VoteProviderMap";
+
 import {
   ArcElement,
   BarElement,
@@ -118,6 +120,35 @@ export function AnalyticsPage() {
 
         <AnalyticsSection title="When they Won">
           <VoteProviderDays className="min-h-72" />
+        </AnalyticsSection>
+
+        <AnalyticsSection
+          title="Where they Won"
+          tooltip={
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-describedby="who-won-info"
+                  className="
+                    w-8 h-8
+                    rounded-full
+                    cursor-pointer
+                    hover:bg-primary
+                    hover:text-primary-foreground
+                  "
+                >
+                  <Info />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent id="who-won-info" side="top" align="start">
+                Approximate location based on anonymized IP data
+              </TooltipContent>
+            </Tooltip>
+          }
+        >
+          <VoteProviderMap className="min-h-64" />
         </AnalyticsSection>
       </div>
     </section>

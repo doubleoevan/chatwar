@@ -27,7 +27,14 @@ export function AnalyticsSection({
         </h2>
       </header>
 
-      <div aria-hidden="true" className="flex-1 border rounded-xl">
+      <div
+        aria-hidden="true"
+        className={`
+          flex flex-1 
+          *:flex *:h-full *:w-full
+          border rounded-xl bg-background
+        `}
+      >
         {children}
       </div>
     </section>

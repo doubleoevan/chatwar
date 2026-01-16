@@ -167,15 +167,7 @@ export function VoteProviderLeaders({
 
   // return the bar chart
   return (
-    <div
-      className={cn(
-        "pt-3",
-        "bg-background",
-        "rounded-xl",
-        "flex flex-col h-full w-full",
-        className,
-      )}
-    >
+    <div className={cn("pt-3 flex-col", className)}>
       {/* provider legend */}
       <div className="pb-3 flex flex-wrap items-center justify-center">
         {providerIds.map((providerId) => {

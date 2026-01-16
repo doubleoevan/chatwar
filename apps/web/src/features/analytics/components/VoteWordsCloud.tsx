@@ -93,16 +93,7 @@ export function VoteWordsCloud({ className, options }: { className?: string; opt
     : ["#475569", "#334155", "#1e293b", "#0f172a"];
 
   return (
-    <div
-      ref={setContainerElement}
-      className={cn(
-        "bg-background",
-        "rounded-xl",
-        "flex h-full w-full",
-        "items-center justify-center",
-        className,
-      )}
-    >
+    <div ref={setContainerElement} className={cn("items-center justify-center", className)}>
       {wordCounts.length === 0 ? (
         <span className="text-foreground">
           {isAnalyticsLoading ? "Loading..." : "No votes yet"}

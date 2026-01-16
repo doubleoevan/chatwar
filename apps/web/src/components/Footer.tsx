@@ -1,5 +1,7 @@
 import { ExternalLink } from "@/components/ExternalLink";
 
+const REPO_URL = "https://github.com/doubleoevan/chatwar";
+
 export function Footer() {
   return (
     <footer className="border-t">
@@ -7,8 +9,7 @@ export function Footer() {
         <p>ChatWar is a selfish project for the author’s own personal growth.</p>
         <p>Your API keys stay on your device.</p>
         <p>
-          The code can be found{" "}
-          <ExternalLink href="https://github.com/doubleoevan/chatwar">here</ExternalLink>.
+          The code can be found <ExternalLink href={REPO_URL}>here</ExternalLink>.
         </p>
       </div>
     </footer>

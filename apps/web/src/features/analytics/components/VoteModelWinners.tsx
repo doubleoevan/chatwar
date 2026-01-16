@@ -126,15 +126,7 @@ export function VoteModelWinners({
 
   // return the pie chart
   return (
-    <div
-      className={cn(
-        "p-2 bg-background",
-        "rounded-xl",
-        "flex h-full w-full",
-        "items-center justify-center",
-        className,
-      )}
-    >
+    <div className={cn("p-2 items-center justify-center", className)}>
       {isAnalyticsLoading ? (
         <>Loading...</>
       ) : (
