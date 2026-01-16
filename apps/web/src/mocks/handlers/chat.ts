@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
-import { PROVIDER_API_KEY_HEADER, ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
+import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 import { PROVIDER_CHATS } from "@/mocks/data/providerChats";
 import { randomDelay } from "@/mocks";
 

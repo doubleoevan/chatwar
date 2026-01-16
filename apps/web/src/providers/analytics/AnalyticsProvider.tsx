@@ -1,19 +1,19 @@
 import React, { useCallback, useMemo, useReducer, useRef } from "react";
-import type { ApiError, ProviderModelVote } from "@chatwar/shared";
+import type { ApiError, ProviderModelVoteResponse } from "@chatwar/shared";
 import { getProviderVotes } from "@/api/votes";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError } from "@/utils/toast";
 import { AnalyticsContext } from "@/providers/analytics/AnalyticsContext";
 
 export type AnalyticsState = {
-  votes: ProviderModelVote[];
+  votes: ProviderModelVoteResponse[];
   isAnalyticsLoading: boolean;
   error: ApiError | null;
 };
 
 type AnalyticsAction =
   | { type: "SET_IS_LOADING"; isAnalyticsLoading: boolean }
-  | { type: "SET_VOTES"; votes: ProviderModelVote[] }
+  | { type: "SET_VOTES"; votes: ProviderModelVoteResponse[] }
   | { type: "SET_ERROR"; error: ApiError }
   | { type: "CLEAR_ERROR" };
 

@@ -1,8 +1,8 @@
 import React from "react";
-import type { ProviderModelVote } from "@chatwar/shared";
+import type { ProviderModelVoteResponse } from "@chatwar/shared";
 
 export type AnalyticsContextValue = {
-  votes: ProviderModelVote[];
+  votes: ProviderModelVoteResponse[];
   isAnalyticsLoading: boolean;
   fetchVotes: () => Promise<void>;
 };

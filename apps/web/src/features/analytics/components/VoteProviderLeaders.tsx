@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { cn, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { ChartOptions, TooltipItem } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { ProviderId } from "@chatwar/shared";
+import type { ProviderId } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";

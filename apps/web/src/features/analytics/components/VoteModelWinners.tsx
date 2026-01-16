@@ -2,7 +2,7 @@ import { cn } from "@chatwar/ui";
 import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 import { Pie } from "react-chartjs-2";
 
-import type { ProviderId, ProviderModelVote } from "@chatwar/shared";
+import type { ProviderId, ProviderModelVoteResponse } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
@@ -31,7 +31,7 @@ export function VoteModelWinners({
 
   // map provider models to their win counts
   const providerModelWins = new Map<ProviderModelKey, ProviderModelWins>();
-  for (const vote of (votes ?? []) as ProviderModelVote[]) {
+  for (const vote of (votes ?? []) as ProviderModelVoteResponse[]) {
     const { winnerProviderId, winnerModelId, winnerModelLabel } = vote;
     const providerModel = `${winnerProviderId}:${winnerModelId}` as const;
     const wins = providerModelWins.get(providerModel);

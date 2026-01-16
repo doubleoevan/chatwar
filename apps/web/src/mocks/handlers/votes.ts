@@ -1,9 +1,14 @@
 import { http, HttpResponse } from "msw";
-import { ProviderId, ProviderModelVote, PROVIDERS, RECENT_VOTES_LIMIT } from "@chatwar/shared";
+import type {
+  ProviderId,
+  ProviderModelVoteCreate,
+  ProviderModelVoteResponse,
+} from "@chatwar/shared";
+import { PROVIDERS, RECENT_VOTES_LIMIT } from "@chatwar/shared";
 import { withLatency } from "@/mocks/utils/withLatency";
 import { PROVIDER_VOTES } from "@/mocks/data/providerVotes";
 
-const votes: ProviderModelVote[] = [...PROVIDER_VOTES]; // local state for testing
+const votes: ProviderModelVoteResponse[] = [...PROVIDER_VOTES]; // local state for testing
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -13,11 +18,11 @@ function isProviderId(value: unknown): value is ProviderId {
   return typeof value === "string" && PROVIDERS.includes(value as ProviderId);
 }
 
-function validateVoteBody(body: unknown): body is ProviderModelVote {
+function validateVoteBody(body: unknown): body is ProviderModelVoteCreate {
   if (!body || typeof body !== "object") {
     return false;
   }
-  const voteBody = body as Partial<ProviderModelVote>;
+  const voteBody = body as Partial<ProviderModelVoteCreate>;
   return (
     isProviderId(voteBody.winnerProviderId) &&
     isNonEmptyString(voteBody.winnerModelId) &&
@@ -58,9 +63,10 @@ export const voteHandlers = [
       }
 
       // hydrate server-side fields
-      const voteBody: ProviderModelVote = {
+      const voteBody: ProviderModelVoteResponse = {
         ...body,
-        createdAt: body.createdAt ?? new Date().toISOString(),
+        id: crypto.randomUUID(),
+        createdAt: (body.createdAt ?? new Date()).toISOString(),
         latitude: body.latitude ?? Math.random() * 180 - 90,
         longitude: body.longitude ?? Math.random() * 360 - 180,
       };

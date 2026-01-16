@@ -4,7 +4,7 @@ import ReactWordcloud from "react-wordcloud";
 import { eng as ENGLISH_STOP_WORDS, removeStopwords } from "stopword";
 import { Filter } from "bad-words";
 import { useAnalytics } from "@/providers/analytics";
-import { ProviderModelVote } from "@chatwar/shared";
+import type { ProviderModelVoteResponse } from "@chatwar/shared";
 import { useTheme } from "@/providers/theme";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 
@@ -20,7 +20,7 @@ function toWords(message: string): string[] {
     .filter(Boolean);
 }
 
-function toWordCountItems(votes: ProviderModelVote[], maxWords?: number): Word[] {
+function toWordCountItems(votes: ProviderModelVoteResponse[], maxWords?: number): Word[] {
   // convert the vote messages into a word counts map
   // filtering out stop words and bad words
   const wordCounts = new Map<string, number>();

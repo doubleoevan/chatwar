@@ -1,4 +1,9 @@
-import { ProviderId, ProviderModelVote, RECENT_VOTES_LIMIT } from "@chatwar/shared";
+import {
+  type ProviderId,
+  type ProviderModelVoteCreate,
+  type ProviderModelVoteResponse,
+  RECENT_VOTES_LIMIT,
+} from "@chatwar/shared";
 import { fetchJson } from "@/api/client";
 
 /**
@@ -11,7 +16,7 @@ export async function getProviderVotes({
 }: {
   limit?: number;
   signal?: AbortSignal;
-}): Promise<ProviderModelVote[]> {
+}): Promise<ProviderModelVoteResponse[]> {
   // set the limit to the lower of the passed in limit and the max limit
   // enforce the same limit on the api side
   const params = new URLSearchParams();
@@ -20,7 +25,7 @@ export async function getProviderVotes({
   const query = params.toString();
 
   // fetch the votes
-  return fetchJson<ProviderModelVote[]>(
+  return fetchJson<ProviderModelVoteResponse[]>(
     `/api/v1/provider-votes${query ? `?${query}` : ""}`,
     { method: "GET" },
     { signal },
@@ -35,11 +40,11 @@ export async function createProviderVote(args: {
   winnerProviderId: ProviderId;
   winnerModelId: string;
   winnerModelLabel: string;
-  competitors: ProviderModelVote["competitors"];
+  competitors: ProviderModelVoteCreate["competitors"];
   message: string;
   signal?: AbortSignal;
-}): Promise<ProviderModelVote> {
-  return fetchJson<ProviderModelVote>(
+}): Promise<ProviderModelVoteCreate> {
+  return fetchJson<ProviderModelVoteCreate>(
     "/api/v1/provider-votes",
     {
       method: "POST",

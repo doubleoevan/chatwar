@@ -2,7 +2,7 @@ import { cn } from "@chatwar/ui";
 import { type ChartOptions, type TooltipItem } from "chart.js";
 import { eachDayOfInterval, format, parse, parseISO, startOfDay } from "date-fns";
 import { Line } from "react-chartjs-2";
-import type { ProviderId, ProviderModelVote } from "@chatwar/shared";
+import type { ProviderId, ProviderModelVoteResponse } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
@@ -33,16 +33,17 @@ function toTooltipLabel(dayKey: string) {
   return format(date, "MMM d, yyyy");
 }
 
+type DayKey = string;
+type DayWins = Partial<Record<DayKey, number>>;
+type ProviderDayWins = Record<ProviderId, DayWins>;
+
 // converts the votes into labels, day keys, and provider day wins
-function toChartData(votes: ProviderModelVote[], providerIds: ProviderId[]) {
+function toChartData(votes: ProviderModelVoteResponse[], providerIds: ProviderId[]) {
   // map provider ids to day win counts
-  const providerDayWins: Record<ProviderId, Record<string, number>> = providerIds.reduce(
-    (map, id) => {
-      map[id] = {};
-      return map;
-    },
-    {} as Record<ProviderId, Record<string, number>>,
-  );
+  const providerDayWins: ProviderDayWins = providerIds.reduce((map, id) => {
+    map[id] = {};
+    return map;
+  }, {} as ProviderDayWins);
 
   // iterate through the votes to update the provider day wins
   // and set the minimum and maximum day to use for the day range

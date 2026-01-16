@@ -4,10 +4,9 @@ import { prisma } from "../prisma.js";
 import {
   getVotesQuerySchema,
   providerModelVoteCreateSchema,
-  type ProviderModelVoteResponse,
   providerModelVoteResponseSchema,
-} from "../schemas/votes.js";
-import { RECENT_VOTES_LIMIT } from "@chatwar/shared";
+  RECENT_VOTES_LIMIT,
+} from "@chatwar/shared";
 
 // restrict the limit to > 0 and <= RECENT_VOTES_LIMIT
 function clampLimit(limit: number | undefined) {
@@ -26,7 +25,7 @@ function toVoteResponse(row: {
   createdAt: Date;
   latitude: number | null;
   longitude: number | null;
-}): ProviderModelVoteResponse {
+}) {
   const vote = {
     id: row.id,
     winnerProviderId: row.winnerProviderId,

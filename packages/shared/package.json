@@ -11,6 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "react": "^19.2.3"
+    "react": "^19.2.3",
+    "zod": "^4.3.5"
   }
 }

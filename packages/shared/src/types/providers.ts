@@ -45,22 +45,3 @@ export type Model = {
   /** Used to guide users toward sane defaults */
   recommended?: boolean;
 };
-
-export type ProviderModelVote = {
-  winnerProviderId: ProviderId;
-  winnerModelId: string;
-  winnerModelLabel: string;
-
-  // all competitors including the winner
-  competitors: Array<{
-    providerId: ProviderId;
-    modelId: string;
-    modelLabel: string;
-  }>;
-  message: string;
-
-  // fields hydrated server-side
-  createdAt: string;
-  latitude?: number;
-  longitude?: number;
-};

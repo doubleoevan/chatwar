@@ -1,7 +1,7 @@
 import { subHours } from "date-fns";
-import type { ProviderModelVote } from "@chatwar/shared";
+import type { ProviderModelVoteResponse } from "@chatwar/shared";
 
-export const PROVIDER_VOTES: ProviderModelVote[] = [
+export const PROVIDER_VOTES: ProviderModelVoteResponse[] = [
   // openai
   {
     winnerProviderId: "openai",
