@@ -184,7 +184,7 @@ export function VoteProviderLeaders({
           const [r, g, b] = provider.color;
           const Icon = provider.Icon;
           return (
-            <Tooltip>
+            <Tooltip key={providerId}>
               <TooltipTrigger asChild>
                 <button
                   key={providerId}
