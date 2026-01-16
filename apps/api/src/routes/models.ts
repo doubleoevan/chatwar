@@ -1,4 +1,5 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import type { GetProviderModelsParams } from "@chatwar/shared";
 import { getProviderModelsParamsSchema, providerModelsSchema } from "@chatwar/shared";
 
 export const modelsRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -16,7 +17,7 @@ export const modelsRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { providerId } = request.params;
+      const { providerId } = request.params as GetProviderModelsParams;
 
       // Stub: empty list for now
       const response = {

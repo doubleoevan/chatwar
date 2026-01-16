@@ -1,6 +1,5 @@
 import { http, HttpResponse } from "msw";
-import type { ProviderId } from "@chatwar/shared";
-import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
+import { getProviderModelsParamsSchema, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 import { PROVIDER_MODELS } from "@/mocks/data/providerModels";
 import { withLatency } from "@/mocks/utils/withLatency";
 
@@ -10,10 +9,10 @@ export const providerHandlers = [
   http.get("/api/v1/providers/:providerId/models", async ({ params, request }) =>
     withLatency(async () => {
       // throw an error for a missing providerId
-      const providerId = params.providerId as ProviderId | undefined;
-      if (!providerId) {
+      const parsed = getProviderModelsParamsSchema.safeParse(params);
+      if (!parsed.success) {
         return HttpResponse.json(
-          { code: "BAD_REQUEST", message: "Missing providerId" },
+          { code: "BAD_REQUEST", message: "Invalid or missing providerId" },
           { status: 400 },
         );
       }
@@ -36,6 +35,7 @@ export const providerHandlers = [
       }
 
       // throw an error if models are not found
+      const { providerId } = parsed.data;
       const models = PROVIDER_MODELS[providerId];
       if (!models) {
         return HttpResponse.json(
