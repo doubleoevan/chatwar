@@ -2,7 +2,7 @@
   "name": "chatwar",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.26.1",
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "pnpm dev:mock",
     "dev:mock": "pnpm dev:web:mock",
