@@ -7,6 +7,7 @@ import {
   providerModelVoteResponseSchema,
   RECENT_VOTES_LIMIT,
 } from "@chatwar/shared";
+import { getLocation } from "../lib/location";
 
 // restrict the limit to > 0 and <= RECENT_VOTES_LIMIT
 function clampLimit(limit: number | undefined) {
@@ -23,6 +24,9 @@ function toVoteResponse(row: {
   competitors: unknown;
   message: string;
   createdAt: Date;
+  country: string | null;
+  region: string | null;
+  city: string | null;
   latitude: number | null;
   longitude: number | null;
 }) {
@@ -34,6 +38,9 @@ function toVoteResponse(row: {
     competitors: row.competitors,
     message: row.message,
     createdAt: row.createdAt.toISOString(),
+    country: row.country ?? undefined,
+    region: row.region ?? undefined,
+    city: row.city ?? undefined,
     latitude: row.latitude ?? undefined,
     longitude: row.longitude ?? undefined,
   };
@@ -70,19 +77,7 @@ export const votesRoutes: FastifyPluginAsyncZod = async (app) => {
       });
 
       // return the votes response
-      const votes = voteRows.map((row) =>
-        toVoteResponse({
-          id: row.id,
-          winnerProviderId: row.winnerProviderId,
-          winnerModelId: row.winnerModelId,
-          winnerModelLabel: row.winnerModelLabel,
-          competitors: row.competitors,
-          message: row.message,
-          createdAt: row.createdAt,
-          latitude: row.latitude,
-          longitude: row.longitude,
-        }),
-      );
+      const votes = voteRows.map(toVoteResponse);
       return reply.status(200).send(votes);
     },
   );
@@ -104,9 +99,9 @@ export const votesRoutes: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       // hydrate fields to add to the vote
       const body = request.body;
-      const createdAt = body.createdAt ?? new Date();
-      const latitude = typeof body.latitude === "number" ? body.latitude : undefined;
-      const longitude = typeof body.longitude === "number" ? body.longitude : undefined;
+      const createdAt = new Date();
+      const location = getLocation(request);
+      const { country, region, city, latitude, longitude } = location ?? {};
 
       // save the new vote
       const vote = await prisma.providerVote.create({
@@ -117,25 +112,16 @@ export const votesRoutes: FastifyPluginAsyncZod = async (app) => {
           competitors: body.competitors,
           message: body.message,
           createdAt,
+          country,
+          region,
+          city,
           latitude,
           longitude,
         },
       });
 
       // return the saved vote
-      return reply.status(201).send(
-        toVoteResponse({
-          id: vote.id,
-          winnerProviderId: vote.winnerProviderId,
-          winnerModelId: vote.winnerModelId,
-          winnerModelLabel: vote.winnerModelLabel,
-          competitors: vote.competitors,
-          message: vote.message,
-          createdAt: vote.createdAt,
-          latitude: vote.latitude,
-          longitude: vote.longitude,
-        }),
-      );
+      return reply.status(201).send(toVoteResponse(vote));
     },
   );
 };

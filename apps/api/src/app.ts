@@ -12,7 +12,10 @@ import { modelsRoutes } from "./routes/models.js";
 import { chatRoutes } from "./routes/chat.js";
 
 export function buildApp() {
-  const app = Fastify({ logger: true });
+  const app = Fastify({
+    logger: true,
+    trustProxy: true, // trust proxy headers for ip location
+  });
 
   // Zod validation and serialization
   app.setValidatorCompiler(validatorCompiler);

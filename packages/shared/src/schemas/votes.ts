@@ -14,9 +14,6 @@ export const providerModelVoteCreateSchema = z.object({
   winnerModelLabel: NonEmptyString,
   competitors: z.array(competitorSchema).min(1),
   message: NonEmptyString,
-  createdAt: z.coerce.date().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
 });
 
 export const providerModelVoteResponseSchema = z.object({
@@ -27,6 +24,9 @@ export const providerModelVoteResponseSchema = z.object({
   competitors: z.array(competitorSchema),
   message: NonEmptyString,
   createdAt: z.string(),
+  country: z.string().optional(),
+  region: z.string().optional(),
+  city: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
 });

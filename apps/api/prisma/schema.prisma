@@ -26,6 +26,9 @@ model ProviderVote {
   competitors      Json
 
   createdAt        DateTime   @default(now())
+  country          String?
+  region           String?
+  city             String?
   latitude         Float?
   longitude        Float?
 
