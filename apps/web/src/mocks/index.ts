@@ -1,7 +1,7 @@
 export * from "./latency";
 
 export async function enableMocks() {
-  if (import.meta.env.MODE !== "development") {
+  if (import.meta.env.MODE !== "mock") {
     return;
   }
 
