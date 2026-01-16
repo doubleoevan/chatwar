@@ -2,11 +2,10 @@ import { cn } from "@chatwar/ui";
 import { type ChartOptions, type TooltipItem } from "chart.js";
 import { eachDayOfInterval, format, parse, parseISO, startOfDay } from "date-fns";
 import { Line } from "react-chartjs-2";
-import type { ProviderId, ProviderModelVoteResponse } from "@chatwar/shared";
+import { ProviderId, ProviderModelVoteResponse, PROVIDERS } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
-import { typedKeys } from "@/utils/object";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 
@@ -85,7 +84,7 @@ export function VoteProviderDays({
   const refreshCount = useLoadingRefresh(isAnalyticsLoading);
 
   // set the chart data
-  const providerIds: ProviderId[] = typedKeys(PROVIDER_CONFIGURATIONS).reverse();
+  const providerIds = [...PROVIDERS].reverse();
   const { labels, dayKeys, providerDayWins } = toChartData(votes, providerIds);
   const datasets = providerIds.map((id) => {
     const [r, g, b] = PROVIDER_CONFIGURATIONS[id].color;

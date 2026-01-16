@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { cn, Tooltip, TooltipContent, TooltipTrigger } from "@chatwar/ui";
 import { ChartOptions, TooltipItem } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import type { ProviderId } from "@chatwar/shared";
+import { ProviderId, PROVIDERS } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
-import { typedKeys } from "@/utils/object";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 
@@ -33,7 +32,7 @@ export function VoteProviderLeaders({
 
   // track the provider ids to hide and show
   const [hideProviderIds, setHideProviderIds] = useState<Set<ProviderId>>(() => new Set());
-  const providerIds: ProviderId[] = typedKeys(PROVIDER_CONFIGURATIONS).reverse();
+  const providerIds = [...PROVIDERS].reverse();
   const showProviderIds = providerIds.filter((id) => !hideProviderIds.has(id));
   const refreshKey = `${refreshCount}-${Array.from(hideProviderIds).sort().join(",")}`;
 

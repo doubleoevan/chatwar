@@ -1,10 +1,10 @@
 export const PROVIDERS = [
   "openai",
-  "anthropic",
   "gemini",
-  "xai",
   "deepseek",
+  "anthropic",
   "perplexity",
+  "xai",
 ] as const;
 
 export type ProviderId = (typeof PROVIDERS)[number];
