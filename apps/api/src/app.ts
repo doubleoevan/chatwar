@@ -8,6 +8,8 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import { votesRoutes } from "./routes/votes.js";
+import { modelsRoutes } from "./routes/models.js";
+import { chatRoutes } from "./routes/chat.js";
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -41,6 +43,8 @@ export function buildApp() {
 
   // routes typed by Zod
   app.withTypeProvider<ZodTypeProvider>().register(votesRoutes);
+  app.withTypeProvider<ZodTypeProvider>().register(modelsRoutes);
+  app.withTypeProvider<ZodTypeProvider>().register(chatRoutes);
 
   // swagger ui routes
   app.register(import("@fastify/swagger-ui"), {

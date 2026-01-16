@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-import { PROVIDERS } from "../types/providers";
-
-export const providerIdSchema = z.enum(PROVIDERS);
-
-const NonEmptyString = z.string().trim().min(1);
+import { NonEmptyString, providerIdSchema } from "./common";
 
 export const competitorSchema = z.object({
   providerId: providerIdSchema,
