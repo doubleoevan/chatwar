@@ -9,8 +9,8 @@ export const providerHandlers = [
   http.get("/api/v1/providers/:providerId/models", async ({ params, request }) =>
     withLatency(async () => {
       // throw an error for a missing providerId
-      const parsed = getProviderModelsParamsSchema.safeParse(params);
-      if (!parsed.success) {
+      const validParams = getProviderModelsParamsSchema.safeParse(params);
+      if (!validParams.success) {
         return HttpResponse.json(
           { code: "BAD_REQUEST", message: "Invalid or missing providerId" },
           { status: 400 },
@@ -35,7 +35,7 @@ export const providerHandlers = [
       }
 
       // throw an error if models are not found
-      const { providerId } = parsed.data;
+      const { providerId } = validParams.data;
       const models = PROVIDER_MODELS[providerId];
       if (!models) {
         return HttpResponse.json(

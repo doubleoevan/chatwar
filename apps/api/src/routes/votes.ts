@@ -39,11 +39,11 @@ function toVoteResponse(row: {
   };
 
   // keep to catch database shape drift
-  const parsed = providerModelVoteResponseSchema.safeParse(vote);
-  if (!parsed.success) {
-    throw new Error(`Invalid ProviderModelVoteResponse: ${parsed.error.message}`);
+  const validVote = providerModelVoteResponseSchema.safeParse(vote);
+  if (!validVote.success) {
+    throw new Error(`Invalid ProviderModelVoteResponse: ${validVote.error.message}`);
   }
-  return parsed.data;
+  return validVote.data;
 }
 
 export const votesRoutes: FastifyPluginAsyncZod = async (app) => {

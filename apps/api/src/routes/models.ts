@@ -27,12 +27,12 @@ export const modelsRoutes: FastifyPluginAsyncZod = async (app) => {
       };
 
       // Defensive validation
-      const parsed = providerModelsSchema.safeParse(response);
-      if (!parsed.success) {
-        throw new Error(`Invalid ProviderModels: ${parsed.error.message}`);
+      const validResponse = providerModelsSchema.safeParse(response);
+      if (!validResponse.success) {
+        throw new Error(`Invalid ProviderModels: ${validResponse.error.message}`);
       }
 
-      return reply.status(200).send(parsed.data);
+      return reply.status(200).send(validResponse.data);
     },
   );
 };

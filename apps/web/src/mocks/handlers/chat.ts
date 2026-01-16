@@ -1,6 +1,5 @@
 import { http, HttpResponse } from "msw";
-import type { ProviderId } from "@chatwar/shared";
-import { PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
+import { chatParamsSchema, chatRequestSchema, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 import { PROVIDER_CHATS } from "@/mocks/data/providerChats";
 import { randomDelay } from "@/mocks";
 
@@ -37,8 +36,8 @@ function toChunks(
 export const chatHandlers = [
   http.post("/api/v1/providers/:providerId/chat", async ({ params, request }) => {
     // throw an error for a missing providerId
-    const providerId = params.providerId as ProviderId | undefined;
-    if (!providerId) {
+    const validParams = chatParamsSchema.safeParse(params);
+    if (!validParams.success) {
       return HttpResponse.json(
         { error: { code: "BAD_REQUEST", message: "Missing providerId" } },
         { status: 400 },
@@ -49,29 +48,22 @@ export const chatHandlers = [
     const apiKey = request.headers.get(PROVIDER_API_KEY_HEADER)?.trim();
     if (!apiKey) {
       return HttpResponse.json(
-        { error: { code: "BAD_REQUEST", message: "Provider API Key is required" } },
-        { status: 400 },
+        { error: { code: "UNAUTHORIZED", message: "Provider API Key is required" } },
+        { status: 401 },
       );
     }
 
-    // throw an error for a missing modelId
-    const { modelId, message } = (await request.json()) as { modelId?: string; message?: string };
-    if (!modelId?.trim()) {
+    // throw an error for an invalid request body
+    const validBody = chatRequestSchema.safeParse(await request.json());
+    if (!validBody.success) {
       return HttpResponse.json(
-        { error: { code: "BAD_REQUEST", message: "Missing modelId" } },
+        { error: { code: "BAD_REQUEST", message: "Invalid request body" } },
         { status: 400 },
       );
     }
 
-    // throw an error for a missing message
-    if (!message?.trim()) {
-      return HttpResponse.json(
-        { error: { code: "BAD_REQUEST", message: "Missing message" } },
-        { status: 400 },
-      );
-    }
-
-    // throw an error for a missing messages
+    // throw an error for a provider missing messages
+    const { providerId } = validParams.data;
     const messages = PROVIDER_CHATS[providerId];
     if (!messages?.length) {
       return HttpResponse.json(

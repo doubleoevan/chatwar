@@ -1,27 +1,27 @@
-import type { ProviderId } from "@chatwar/shared";
+import type { ChatParams, ChatRequest } from "@chatwar/shared";
 import { streamJson } from "@/api/client";
 
 /**
- * POST /api/v1/providers/${providerId}/chat
+ * POST /api/v1/providers/:providerId/chat
  * Used by ChatProvider
  */
-export async function streamChat(args: {
-  providerId: ProviderId;
-  providerApiKey: string;
-  modelId: string;
-  message: string;
-  onChunk: (chunk: string) => void;
-  onComplete: () => void;
-  onError: (error: Error) => void;
-  signal?: AbortSignal;
-}) {
-  const { providerId, providerApiKey, modelId, message, signal, onChunk, onComplete, onError } =
-    args;
+export async function streamChat(
+  args: ChatParams & {
+    providerApiKey: string;
+    body: ChatRequest;
+    onChunk: (chunk: string) => void;
+    onComplete: () => void;
+    onError: (error: Error) => void;
+    signal?: AbortSignal;
+  },
+) {
+  const { providerId, providerApiKey, body, signal, onChunk, onComplete, onError } = args;
+
   return streamJson(
     `/api/v1/providers/${providerId}/chat`,
     {
       method: "POST",
-      body: JSON.stringify({ modelId, message }),
+      body: JSON.stringify(body),
     },
     {
       providerApiKey,
