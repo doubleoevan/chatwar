@@ -8,6 +8,7 @@ import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
+import { toCssColor } from "@/utils/color";
 
 // converts the timestamp to a key as the start of its day in local time
 function toDayKey(timestamp: string) {
@@ -87,13 +88,15 @@ export function VoteProviderDays({
   const providerIds = [...PROVIDERS].reverse();
   const { labels, dayKeys, providerDayWins } = toChartData(votes, providerIds);
   const datasets = providerIds.map((id) => {
-    const [r, g, b] = PROVIDER_CONFIGURATIONS[id].color;
+    const { color } = PROVIDER_CONFIGURATIONS[id];
+    const borderColor = toCssColor(color);
+    const backgroundColor = toCssColor(color, 0.7);
     const data = dayKeys.map((dayKey) => providerDayWins[id][dayKey] ?? 0);
     return {
       label: PROVIDER_CONFIGURATIONS[id].label,
       data,
-      borderColor: `rgb(${r}, ${g}, ${b})`,
-      backgroundColor: `rgba(${r}, ${g}, ${b}, 0.7)`,
+      borderColor,
+      backgroundColor,
       pointRadius: 3,
       pointHoverRadius: 5,
       borderWidth: 2,

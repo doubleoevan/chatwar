@@ -148,7 +148,7 @@ export function AnalyticsPage() {
             </Tooltip>
           }
         >
-          <VoteProviderMap className="min-h-64" />
+          <VoteProviderMap className="min-h-72" />
         </AnalyticsSection>
       </div>
     </section>

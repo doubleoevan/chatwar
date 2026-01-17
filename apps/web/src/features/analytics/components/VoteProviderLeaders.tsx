@@ -8,6 +8,7 @@ import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
+import { toCssColor } from "@/utils/color";
 
 export function VoteProviderLeaders({
   className,
@@ -88,8 +89,8 @@ export function VoteProviderLeaders({
     datasets: [
       {
         data,
-        borderColor: colors.map(([r, g, b]) => `rgb(${r}, ${g}, ${b})`),
-        backgroundColor: colors.map(([r, g, b]) => `rgba(${r}, ${g}, ${b}, 0.7)`),
+        borderColor: colors.map((color) => toCssColor(color)),
+        backgroundColor: colors.map((color) => toCssColor(color, 0.7)),
         borderWidth: 2,
         borderRadius: 10,
       },
@@ -172,8 +173,7 @@ export function VoteProviderLeaders({
       <div className="pb-3 flex flex-wrap items-center justify-center">
         {providerIds.map((providerId) => {
           const provider = PROVIDER_CONFIGURATIONS[providerId];
-          const [r, g, b] = provider.color;
-          const Icon = provider.Icon;
+          const { color, Icon } = provider;
           return (
             <Tooltip key={providerId}>
               <TooltipTrigger asChild>
@@ -196,8 +196,8 @@ export function VoteProviderLeaders({
                     aria-hidden="true"
                     className="h-3 w-4 rounded-xs border"
                     style={{
-                      borderColor: `rgb(${r}, ${g}, ${b})`,
-                      backgroundColor: `rgb(${r}, ${g}, ${b}, 0.7)`,
+                      borderColor: toCssColor(color),
+                      backgroundColor: toCssColor(color, 0.7),
                     }}
                   />
                   <span

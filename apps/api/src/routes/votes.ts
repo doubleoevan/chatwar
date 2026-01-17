@@ -15,6 +15,9 @@ function clampLimit(limit: number | undefined) {
   return Math.min(Math.max(limitValue, 1), RECENT_VOTES_LIMIT);
 }
 
+const randomLatitude = () => Math.round((Math.random() * 180 - 90) * 10) / 10;
+const randomLongitude = () => Math.round((Math.random() * 360 - 180) * 10) / 10;
+
 // converts a row of vote data into a vote response
 function toVoteResponse(row: {
   id: string;
@@ -101,7 +104,14 @@ export const votesRoutes: FastifyPluginAsyncZod = async (app) => {
       const body = request.body;
       const createdAt = new Date();
       const location = getLocation(request);
-      const { country, region, city, latitude, longitude } = location ?? {};
+      const { country, region, city } = location ?? {};
+
+      // set mock latitude and longitude if not in production
+      const isDev = process.env.NODE_ENV !== "production";
+      const requestLatitude = typeof body.latitude === "number" ? body.latitude : undefined;
+      const requestLongitude = typeof body.longitude === "number" ? body.longitude : undefined;
+      const latitude = isDev ? (requestLatitude ?? randomLatitude()) : location.latitude;
+      const longitude = isDev ? (requestLongitude ?? randomLongitude()) : location.longitude;
 
       // save the new vote
       const vote = await prisma.providerVote.create({

@@ -9,6 +9,7 @@ import { useTheme } from "@/providers/theme";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
 import { typedKeys } from "@/utils/object";
+import { toCssColor } from "@/utils/color";
 
 type ProviderModelKey = `${ProviderId}:${string}`;
 type ProviderModelWins = {
@@ -73,8 +74,8 @@ export function VoteModelWinners({
     datasets: [
       {
         data,
-        backgroundColor: colors.map(([r, g, b]) => `rgb(${r}, ${g}, ${b})`),
-        hoverBackgroundColor: colors.map(([r, g, b]) => `rgba(${r}, ${g}, ${b}, 0.7)`),
+        backgroundColor: colors.map((color) => toCssColor(color)),
+        hoverBackgroundColor: colors.map((color) => toCssColor(color, 0.7)),
         borderWidth: 1,
         borderColor: isDark ? "#e5e7eb" : "#0f172a",
         hoverOffset: 8,

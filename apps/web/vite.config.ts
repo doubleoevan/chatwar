@@ -12,7 +12,6 @@ export default defineConfig(({ mode }) => {
       react(),
       svgr({
         svgrOptions: {
-          // optional, but nice defaults
           icon: true,
           ref: true,
         },
@@ -25,12 +24,14 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      port: 5173,
+      strictPort: true,
       proxy: isLocalServer
         ? {
             "/api": {
               target: "http://localhost:3001",
               changeOrigin: true,
-              rewrite: (path) => path.replace(/^\/api/, ""),
+              rewrite: (urlPath) => urlPath.replace(/^\/api/, ""),
             },
           }
         : undefined,
