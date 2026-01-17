@@ -1,4 +1,4 @@
-import type { ChatParams, ChatRequest } from "@chatwar/shared";
+import type { ChatParams } from "@chatwar/shared";
 import { streamJson } from "@/api/client";
 
 /**
@@ -8,20 +8,21 @@ import { streamJson } from "@/api/client";
 export async function streamChat(
   args: ChatParams & {
     providerApiKey: string;
-    body: ChatRequest;
+    modelId: string;
+    message: string;
     onChunk: (chunk: string) => void;
     onComplete: () => void;
     onError: (error: Error) => void;
     signal?: AbortSignal;
   },
 ) {
-  const { providerId, providerApiKey, body, signal, onChunk, onComplete, onError } = args;
-
+  const { providerId, providerApiKey, modelId, message, signal, onChunk, onComplete, onError } =
+    args;
   return streamJson(
     `/api/v1/providers/${providerId}/chat`,
     {
       method: "POST",
-      body: JSON.stringify(body),
+      body: JSON.stringify({ modelId, message }),
     },
     {
       providerApiKey,
