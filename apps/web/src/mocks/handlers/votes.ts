@@ -66,7 +66,7 @@ export const voteHandlers = [
       const voteBody: ProviderModelVoteResponse = {
         ...body,
         id: crypto.randomUUID(),
-        createdAt: (body.createdAt ?? new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
         latitude: body.latitude ?? Math.random() * 180 - 90,
         longitude: body.longitude ?? Math.random() * 360 - 180,
       };
