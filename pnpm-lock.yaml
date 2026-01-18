@@ -74,6 +74,9 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
+      eventsource-parser:
+        specifier: ^3.0.6
+        version: 3.0.6
       fastify:
         specifier: ^5.6.2
         version: 5.6.2
@@ -156,6 +159,9 @@ importers:
       bad-words:
         specifier: ^4.0.0
         version: 4.0.0
+      can-ndjson-stream:
+        specifier: ^1.0.2
+        version: 1.0.2
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -2071,6 +2077,12 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
+  can-namespace@1.0.0:
+    resolution: {integrity: sha512-1sBY/SLwwcmxz3NhyVhLjt2uD/dZ7V1mII82/MIXSDn5QXnslnosJnjlP8+yTx2uTCRvw1jlFDElRs4pX7AG5w==}
+
+  can-ndjson-stream@1.0.2:
+    resolution: {integrity: sha512-//tM8wcTV42SyD1JGua7WMVftZEeTwapcHJTTe3vJwuVywXD01CJbdEkgwRYjy2evIByVJV21ZKBdSv5ygIw1w==}
+
   caniuse-lite@1.0.30001761:
     resolution: {integrity: sha512-JF9ptu1vP2coz98+5051jZ4PwQgd2ni8A+gYSN7EA7dPKIMf0pDlSUxhdmVOaV3/fYK5uWBkgSXJaRLr4+3A6g==}
 
@@ -2544,6 +2556,10 @@ packages:
   esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
+
+  eventsource-parser@3.0.6:
+    resolution: {integrity: sha512-Vo1ab+QXPzZ4tCa8SwIHJFaSzy4R6SHf7BY79rFBDf0idraZWAkYrDjDj8uWaSm3S2TK+hJ7/t1CEmZ7jXw+pg==}
+    engines: {node: '>=18.0.0'}
 
   expect-type@1.3.0:
     resolution: {integrity: sha512-knvyeauYhqjOYvQ66MznSMs83wmHrCycNEN6Ao+2AeYEfxUIkuiVxdEa1qlGEPK+We3n0THiDciYSsCcgW/DoA==}
@@ -6425,6 +6441,12 @@ snapshots:
 
   camelcase@6.3.0: {}
 
+  can-namespace@1.0.0: {}
+
+  can-ndjson-stream@1.0.2:
+    dependencies:
+      can-namespace: 1.0.0
+
   caniuse-lite@1.0.30001761: {}
 
   ccount@2.0.1: {}
@@ -7026,6 +7048,8 @@ snapshots:
       '@types/estree': 1.0.8
 
   esutils@2.0.3: {}
+
+  eventsource-parser@3.0.6: {}
 
   expect-type@1.3.0: {}
 

@@ -260,11 +260,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           dispatch({ type: "REMOVE_VOTING_PROVIDER", providerId });
 
           // no need to log an error if the request was manually aborted
-          if (
-            controller.signal.aborted ||
-            (error instanceof DOMException && error.name === "AbortError")
-          ) {
-            return; // no need to log or show anything if this was intentional
+          if (controller.signal.aborted) {
+            return;
           }
 
           // save the error

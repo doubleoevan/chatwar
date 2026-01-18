@@ -35,8 +35,8 @@ export function toApiErrorToast(error: ApiError): ApiErrorToast {
       };
     default:
       return {
-        title: "Something went wrong",
-        description: error.message,
+        title: error.message,
+        description: "",
       };
   }
 }

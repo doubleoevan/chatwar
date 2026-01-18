@@ -1,4 +1,4 @@
-import type { ChatParams } from "@chatwar/shared";
+import type { ApiError, ChatParams } from "@chatwar/shared";
 import { streamJson } from "@/api/client";
 
 /**
@@ -12,7 +12,7 @@ export async function streamChat(
     message: string;
     onChunk: (chunk: string) => void;
     onComplete: () => void;
-    onError: (error: Error) => void;
+    onError: (error: ApiError) => void;
     signal?: AbortSignal;
   },
 ) {
@@ -31,9 +31,7 @@ export async function streamChat(
     {
       onChunk,
       onComplete,
-      onError: (apiError) => {
-        onError(new Error(apiError.message));
-      },
+      onError,
     },
   );
 }

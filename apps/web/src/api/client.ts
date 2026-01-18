@@ -1,3 +1,4 @@
+import ndjsonStream from "can-ndjson-stream";
 import type { ApiError } from "@chatwar/shared";
 import { CACHE_HEADER, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 
@@ -5,6 +6,10 @@ type ApiErrorResponse = { error: ApiError };
 
 function isRecord(error: unknown): error is Record<string, unknown> {
   return typeof error === "object" && error !== null;
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof Error && error.name === "AbortError";
 }
 
 function isApiError(error: unknown): error is ApiError {
@@ -29,16 +34,40 @@ async function toJson(response: Response): Promise<unknown | null> {
   }
 }
 
+function toResponseError(body: unknown, response: Response): ApiError {
+  if (isApiErrorResponse(body)) {
+    return body.error;
+  }
+  if (isApiError(body)) {
+    return body;
+  }
+  return toApiError(response);
+}
+
 function toApiError(response: Response): ApiError {
   switch (response.status) {
     case 400:
       return { code: "BAD_REQUEST", message: "Bad request" };
     case 401:
       return { code: "UNAUTHORIZED", message: "Unauthorized" };
+    case 402:
+      return { code: "PAYMENT_REQUIRED", message: "Billing required or quota exhausted" };
     case 403:
       return { code: "FORBIDDEN", message: "Forbidden" };
     case 404:
       return { code: "NOT_FOUND", message: "Not found" };
+    case 408:
+      return { code: "TIMEOUT", message: "Request timed out" };
+    case 409:
+      return { code: "CONFLICT", message: "Conflict" };
+    case 429:
+      return { code: "RATE_LIMITED", message: "Rate limited" };
+    case 500:
+      return { code: "INTERNAL", message: "Server error" };
+    case 502:
+    case 503:
+    case 504:
+      return { code: "UPSTREAM_UNAVAILABLE", message: "Provider temporarily unavailable" };
     default:
       return { code: "INTERNAL", message: "Unexpected server error" };
   }
@@ -82,13 +111,7 @@ export async function fetchJson<T>(
   // throw an error if necessary
   const body = await toJson(response);
   if (!response.ok) {
-    if (isApiErrorResponse(body)) {
-      throw body.error;
-    }
-    if (isApiError(body)) {
-      throw body;
-    }
-    throw toApiError(response);
+    throw toResponseError(body, response);
   }
 
   // return the body as JSON
@@ -112,13 +135,14 @@ export async function streamJson(
     onError: (error: ApiError) => void;
   },
 ) {
-  // set the provider api key header
+  // set the headers
   const headers = new Headers(request.headers);
-  if (!headers.has("Content-Type") && request.body) {
-    headers.set("Content-Type", "application/json");
-  }
+  headers.set("Content-Type", "application/json");
   if (options.providerApiKey) {
     headers.set(PROVIDER_API_KEY_HEADER, options.providerApiKey);
+  }
+  if (options.useCache === false) {
+    headers.set(CACHE_HEADER, "no-cache");
   }
 
   // fetch the response
@@ -130,6 +154,9 @@ export async function streamJson(
       signal: options.signal ?? request.signal,
     });
   } catch (error) {
+    if (isAbortError(error)) {
+      return;
+    }
     onError({
       code: "INTERNAL",
       message: error instanceof Error ? error.message : "Network error",
@@ -140,84 +167,50 @@ export async function streamJson(
   // handle http errors
   if (!response.ok) {
     const body = await toJson(response);
-    if (isApiErrorResponse(body)) {
-      onError(body.error);
-      return;
-    }
-    if (isApiError(body)) {
-      onError(body);
-      return;
-    }
-    onError(toApiError(response));
-    return;
-  }
-
-  // handle non-streaming JSON responses gracefully
-  const contentType = response.headers.get("content-type") ?? "";
-  if (contentType.includes("application/json")) {
-    const body = await toJson(response);
-    if (isApiErrorResponse(body)) {
-      onError(body.error);
-      return;
-    }
-    if (isApiError(body)) {
-      onError(body);
-      return;
-    }
-    if (isRecord(body)) {
-      if (typeof body.message === "string") {
-        onChunk(body.message);
-        onComplete();
-        return;
-      }
-      if (typeof body.text === "string") {
-        onChunk(body.text);
-        onComplete();
-        return;
-      }
-    }
-    onError({
-      code: "INTERNAL",
-      message: "Unexpected JSON response for streaming endpoint",
-    });
+    const responseError = toResponseError(body, response);
+    onError(responseError);
     return;
   }
 
   // check if the response has a body before streaming it
   if (!response.body) {
-    onError({
-      code: "INTERNAL",
-      message: "Missing response body",
-    });
+    onError({ code: "INTERNAL", message: "Missing response body" });
     return;
   }
 
   // stream the response as text
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
+  const reader = ndjsonStream(response.body).getReader();
   try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
         break;
       }
-      const chunk = decoder.decode(value, { stream: true });
-      if (chunk) {
-        onChunk(chunk);
+      if (value.error) {
+        onError(value.error as ApiError);
+        return;
       }
-    }
-    const lastChunk = decoder.decode();
-    if (lastChunk) {
-      onChunk(lastChunk);
+      if (value.chunk) {
+        onChunk(value.chunk);
+        continue;
+      }
+      if (value.done === true) {
+        onComplete();
+        return;
+      }
     }
     onComplete();
   } catch (error) {
+    if (isAbortError(error)) {
+      return;
+    }
     onError({
       code: "INTERNAL",
       message: error instanceof Error ? error.message : "Streaming error",
     });
   } finally {
     try {
+      await reader.cancel();
       reader.releaseLock();
     } catch {
       // ignore
