@@ -41,15 +41,6 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         });
       }
 
-      // validate the message
-      const { modelId, message } = request.body;
-      if (!message.trim()) {
-        return reply.status(400).send({
-          code: "INVALID_MESSAGE",
-          message: "Message cannot be empty.",
-        });
-      }
-
       // stop streaming if the client disconnects
       let closed = false;
       let started = false;
@@ -79,6 +70,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         started = true;
 
         // stream the chat response
+        const { modelId, message } = request.body;
         for await (const chunk of streamProviderChat({
           providerId: request.params.providerId,
           apiKey,
