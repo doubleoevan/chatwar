@@ -3,6 +3,11 @@ import type { ApiError } from "@chatwar/shared";
 import { CACHE_HEADER, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 
 type ApiErrorResponse = { error: ApiError };
+type ChatStreamEvent =
+  | { chunk: string }
+  | { done: true }
+  | { error: ApiError }
+  | Record<string, unknown>;
 
 function isRecord(error: unknown): error is Record<string, unknown> {
   return typeof error === "object" && error !== null;
@@ -186,15 +191,20 @@ export async function streamJson(
       if (done) {
         break;
       }
-      if (value.error) {
-        onError(value.error as ApiError);
+      const event = value as ChatStreamEvent;
+      if (isApiErrorResponse(event)) {
+        onError(event.error);
         return;
       }
-      if (value.chunk) {
-        onChunk(value.chunk);
+      if (isApiError(event)) {
+        onError(event);
+        return;
+      }
+      if ("chunk" in event && typeof event.chunk === "string") {
+        onChunk(event.chunk);
         continue;
       }
-      if (value.done === true) {
+      if ("done" in event && event.done === true) {
         onComplete();
         return;
       }
