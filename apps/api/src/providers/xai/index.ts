@@ -1,7 +1,7 @@
 import type { ProviderAdapter } from "../types";
 import { createXAIChatStream, getXAIModels } from "./client";
 import { normalizeXAIModels } from "./adapters";
-import { streamChatCompletions } from "../common/chat";
+import { streamChatDeltas } from "../common/chat";
 
 export const xaiAdapter: ProviderAdapter = {
   id: "xai",
@@ -14,7 +14,7 @@ export const xaiAdapter: ProviderAdapter = {
   streamChat({ apiKey, modelId, message, signal }) {
     async function* stream(): AsyncIterable<string> {
       const response = await createXAIChatStream({ apiKey, modelId, message, signal });
-      yield* streamChatCompletions(response);
+      yield* streamChatDeltas(response);
     }
     return stream();
   },

@@ -65,7 +65,7 @@ export async function* streamChatEvents(response: Response): AsyncIterable<unkno
 }
 
 // streams chat completion deltas
-export async function* streamChatCompletions(response: Response): AsyncIterable<string> {
+export async function* streamChatDeltas(response: Response): AsyncIterable<string> {
   if (!response.ok) {
     const error = await response.text().catch(() => "");
     throw new Error(

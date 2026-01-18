@@ -1,7 +1,7 @@
 import type { ProviderAdapter } from "../types";
 import { createPerplexityChatStream, getPerplexityModels } from "./client";
 import { normalizePerplexityModels } from "./adapters";
-import { streamChatCompletions } from "../common/chat";
+import { streamChatDeltas } from "../common/chat";
 
 export const perplexityAdapter: ProviderAdapter = {
   id: "perplexity",
@@ -14,7 +14,7 @@ export const perplexityAdapter: ProviderAdapter = {
   streamChat({ apiKey, modelId, message, signal }) {
     async function* stream(): AsyncIterable<string> {
       const response = await createPerplexityChatStream({ apiKey, modelId, message, signal });
-      yield* streamChatCompletions(response);
+      yield* streamChatDeltas(response);
     }
     return stream();
   },

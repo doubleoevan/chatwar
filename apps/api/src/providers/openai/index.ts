@@ -1,7 +1,7 @@
 import type { ProviderAdapter } from "../types";
 import { createOpenAIChatStream, getOpenAIModels } from "./client";
 import { normalizeOpenAIModels } from "./adapters";
-import { streamChatCompletions } from "../common/chat";
+import { streamChatDeltas } from "../common/chat";
 
 export const openaiAdapter: ProviderAdapter = {
   id: "openai",
@@ -14,7 +14,7 @@ export const openaiAdapter: ProviderAdapter = {
   streamChat({ apiKey, modelId, message, signal }) {
     async function* stream(): AsyncIterable<string> {
       const response = await createOpenAIChatStream({ apiKey, modelId, message, signal });
-      yield* streamChatCompletions(response);
+      yield* streamChatDeltas(response);
     }
     return stream();
   },

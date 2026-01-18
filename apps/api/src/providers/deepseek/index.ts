@@ -1,7 +1,7 @@
 import type { ProviderAdapter } from "../types";
 import { createDeepseekChatStream, getDeepseekModels } from "./client";
 import { normalizeDeepseekModels } from "./adapters";
-import { streamChatCompletions } from "../common/chat";
+import { streamChatDeltas } from "../common/chat";
 
 export const deepseekAdapter: ProviderAdapter = {
   id: "deepseek",
@@ -14,7 +14,7 @@ export const deepseekAdapter: ProviderAdapter = {
   streamChat({ apiKey, modelId, message, signal }) {
     async function* stream(): AsyncIterable<string> {
       const response = await createDeepseekChatStream({ apiKey, modelId, message, signal });
-      yield* streamChatCompletions(response);
+      yield* streamChatDeltas(response);
     }
     return stream();
   },
