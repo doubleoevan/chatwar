@@ -1,7 +1,7 @@
 import type { GetOpenAIModelsResponse, OpenAIModel } from "./client";
 import type { Model, ProviderId, ProviderModels } from "@chatwar/shared";
 
-// model ID tokens to filter out non-chat models
+// use model ID tokens to filter out non-chat models
 const NON_CHAT_MODEL_ID_TOKENS = [
   "embedding",
   "moderation",
@@ -14,7 +14,7 @@ const NON_CHAT_MODEL_ID_TOKENS = [
   "realtime",
   "search", // drop this to support search models
 ] as const;
-const LIMIT_MODELS = 6; // limit to the top models
+const LIMIT_MODELS = 6; // limit the number of models to show
 
 // filters out non-chat models
 function toChatModels(models: OpenAIModel[]): OpenAIModel[] {
@@ -39,7 +39,7 @@ export function normalizeOpenAIModels(args: {
   payload: GetOpenAIModelsResponse;
 }): ProviderModels {
   // filter to chat-capable models and prioritize the newest system-owned models
-  const responseModels = args.payload.data;
+  const responseModels = [...args.payload.data];
   const chatModels = toChatModels(responseModels).sort((firstModel, secondModel) => {
     // prioritize system-owned models
     const systemModel =

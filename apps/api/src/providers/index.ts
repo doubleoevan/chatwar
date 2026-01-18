@@ -1,9 +1,10 @@
 import type { ProviderAdapter } from "./types";
 import { openaiAdapter } from "./openai";
-// import { anthropicAdapter } from "./anthropic";
+import { anthropicAdapter } from "./anthropic";
 
 const PROVIDER_ADAPTERS: Record<string, ProviderAdapter> = {
   [openaiAdapter.id]: openaiAdapter,
+  [anthropicAdapter.id]: anthropicAdapter,
 };
 
 export function getProviderAdapter(providerId: string): ProviderAdapter {
