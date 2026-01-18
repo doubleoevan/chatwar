@@ -15,6 +15,5 @@ export type ProviderChatArgs = {
 export type ProviderAdapter = {
   id: ProviderId;
   getModels: (args: GetModelsArgs) => Promise<ProviderModels>;
-  normalizeModels: (args: { providerId: string; payload: unknown }) => unknown;
   streamChat: (args: ProviderChatArgs) => AsyncIterable<string>;
 };

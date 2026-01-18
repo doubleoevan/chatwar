@@ -30,6 +30,7 @@ export async function getPerplexityModels(args: {
 }
 
 export async function validatePerplexityApiKey(apiKey: string): Promise<void> {
+  // post a validation chat message
   const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
@@ -44,10 +45,47 @@ export async function validatePerplexityApiKey(apiKey: string): Promise<void> {
     }),
   });
 
+  // throw an error if the request failed
   if (!response.ok) {
     const error = await response.text().catch(() => "");
+    const parsedError = JSON.parse(error);
     throw new Error(
-      `Perplexity API key validation failed: ${response.status} ${response.statusText} ${error}`.trim(),
+      parsedError?.error?.message ??
+        `Perplexity validation failed: ${response.status} ${response.statusText}`,
     );
   }
+}
+
+export async function createPerplexityChatStream(args: {
+  apiKey: string;
+  modelId: string;
+  message: string;
+  signal?: AbortSignal;
+}): Promise<Response> {
+  // post the chat message
+  const response = await fetch("https://api.perplexity.ai/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${args.apiKey}`,
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    body: JSON.stringify({
+      model: args.modelId,
+      stream: true,
+      messages: [{ role: "user", content: args.message }],
+    }),
+    signal: args.signal,
+  });
+
+  // throw an error if the request failed or return the response
+  if (!response.ok) {
+    const error = await response.text().catch(() => "");
+    const parsedError = JSON.parse(error);
+    throw new Error(
+      parsedError?.error?.message ??
+        `Perplexity chat failed: ${response.status} ${response.statusText}`,
+    );
+  }
+  return response;
 }

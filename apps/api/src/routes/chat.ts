@@ -25,9 +25,9 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         params: chatParamsSchema,
         body: chatRequestSchema,
         response: {
-          // Swagger can’t represent a stream well; we document the *event* schema.
           200: z.union([chatStreamChunkSchema, chatStreamDoneSchema]),
           400: apiErrorSchema,
+          502: apiErrorSchema,
         },
       },
     },
@@ -50,26 +50,37 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         });
       }
 
-      // add headers for streaming
-      reply.raw.writeHead(200, {
-        "Content-Type": "application/x-ndjson; charset=utf-8",
-        "Cache-Control": "no-cache, no-transform",
-        Connection: "keep-alive",
-      });
-
       // stop streaming if the client disconnects
       let closed = false;
-      request.raw.on("close", () => {
+      let started = false;
+      const abortController = new AbortController();
+      request.raw.on("aborted", () => {
         closed = true;
         abortController.abort();
       });
+      reply.raw.on("close", () => {
+        closed = true;
+        if (!reply.raw.writableEnded) {
+          abortController.abort();
+        }
+      });
 
-      // stream the chat response
-      const abortController = new AbortController();
-      const { providerId } = request.params;
+      // write the response as newline-delimited JSON
+      const write = (event: unknown) => {
+        reply.raw.write(`${JSON.stringify(event)}\n`);
+      };
       try {
+        // add headers for streaming
+        reply.raw.writeHead(200, {
+          "Content-Type": "application/x-ndjson; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          Connection: "keep-alive",
+        });
+        started = true;
+
+        // stream the chat response
         for await (const chunk of streamProviderChat({
-          providerId,
+          providerId: request.params.providerId,
           apiKey,
           modelId,
           message,
@@ -78,19 +89,36 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
           if (closed) {
             return;
           }
-          reply.raw.write(JSON.stringify({ chunk }) + "\n");
+          write({ chunk });
         }
-        if (!closed) {
-          reply.raw.write(JSON.stringify({ done: true }) + "\n");
+        write({ done: true });
+        reply.raw.end();
+      } catch (error) {
+        // ignore errors if the client disconnected
+        app.log.error(error);
+        if (closed) {
+          return;
+        }
+
+        // write an error response if streaming failed
+        const message = error instanceof Error ? error.message : "Provider request failed";
+        if (started) {
+          write({
+            error: {
+              code: "UPSTREAM_UNAVAILABLE",
+              message,
+            },
+          });
+          write({ done: true });
           reply.raw.end();
+          return;
         }
-      } catch (err) {
-        app.log.error(err);
-        if (!closed) {
-          // end the stream with an error
-          reply.raw.write(JSON.stringify({ done: true }) + "\n");
-          reply.raw.end();
-        }
+
+        // return a 502 error if streaming didn't start
+        reply.status(502).send({
+          code: "UPSTREAM_UNAVAILABLE",
+          message,
+        });
       }
     },
   );
