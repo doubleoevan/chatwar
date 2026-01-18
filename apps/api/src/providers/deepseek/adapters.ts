@@ -16,8 +16,8 @@ export function normalizeDeepseekModels(args: {
   payload: GetDeepseekModelsResponse;
 }): ProviderModels {
   // convert the DeepSeek models into Chatwar models
-  const requestModels = [...args.payload.data];
-  const models: Model[] = requestModels
+  const responseModels = [...args.payload.data];
+  const models: Model[] = responseModels
     .map((model) => ({
       id: model.id,
       label: toLabel(model.id),

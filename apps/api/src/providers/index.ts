@@ -3,12 +3,14 @@ import { openaiAdapter } from "./openai";
 import { anthropicAdapter } from "./anthropic";
 import { geminiAdapter } from "./gemini";
 import { deepseekAdapter } from "./deepseek";
+import { xaiAdapter } from "./xai";
 
 const PROVIDER_ADAPTERS: Record<string, ProviderAdapter> = {
   [openaiAdapter.id]: openaiAdapter,
   [anthropicAdapter.id]: anthropicAdapter,
   [geminiAdapter.id]: geminiAdapter,
   [deepseekAdapter.id]: deepseekAdapter,
+  [xaiAdapter.id]: xaiAdapter,
 };
 
 export function getProviderAdapter(providerId: string): ProviderAdapter {

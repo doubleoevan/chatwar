@@ -22,8 +22,8 @@ export function normalizeAnthropicModels(args: {
   payload: GetAnthropicModelsResponse;
 }): ProviderModels {
   // sort newest models first
-  const requestModels = [...args.payload.data];
-  const newestModels = requestModels.sort(
+  const responseModels = [...args.payload.data];
+  const newestModels = responseModels.sort(
     (firstModel, secondModel) =>
       Date.parse(secondModel.created_at) - Date.parse(firstModel.created_at),
   );

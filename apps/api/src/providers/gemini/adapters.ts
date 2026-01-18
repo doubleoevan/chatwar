@@ -144,9 +144,9 @@ export function normalizeGeminiModels(args: {
   providerId: ProviderId;
   payload: GetGeminiModelsResponse;
 }): ProviderModels {
-  // filter to chat models
-  const requestModels = args.payload.models ?? [];
-  const chatModels = requestModels.filter(isChatModel);
+  // filter response models to chat models
+  const responseModels = args.payload.models ?? [];
+  const chatModels = responseModels.filter(isChatModel);
 
   // choose the best model per group (first in ranked order)
   const groupModels = new Map<string, GeminiModel>();
@@ -181,7 +181,7 @@ export function normalizeGeminiModels(args: {
   // set the default model and return the models response
   const defaultModelId =
     models[0]?.id ??
-    toModelName(chatModels[0]?.name ?? requestModels[0]?.name ?? "gemini-1.5-flash");
+    toModelName(chatModels[0]?.name ?? responseModels[0]?.name ?? "gemini-1.5-flash");
   return {
     providerId: args.providerId,
     defaultModelId,

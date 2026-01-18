@@ -38,7 +38,7 @@ export function normalizeOpenAIModels(args: {
   providerId: ProviderId;
   payload: GetOpenAIModelsResponse;
 }): ProviderModels {
-  // filter to chat-capable models and prioritize the newest system-owned models
+  // filter response models to chat models and prioritize the newest system-owned models
   const responseModels = [...args.payload.data];
   const chatModels = toChatModels(responseModels).sort((firstModel, secondModel) => {
     // prioritize system-owned models

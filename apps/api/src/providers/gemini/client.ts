@@ -26,6 +26,7 @@ export type GetGeminiModelsResponse = {
 };
 
 export async function getGeminiModels(args: { apiKey: string }): Promise<GetGeminiModelsResponse> {
+  // make the request
   const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models", {
     method: "GET",
     headers: {
@@ -34,6 +35,7 @@ export async function getGeminiModels(args: { apiKey: string }): Promise<GetGemi
     },
   });
 
+  // throw an error if the request failed
   if (!response.ok) {
     const error = await response.text().catch(() => "");
     throw new Error(
@@ -41,5 +43,6 @@ export async function getGeminiModels(args: { apiKey: string }): Promise<GetGemi
     );
   }
 
+  // return the response
   return (await response.json()) as GetGeminiModelsResponse;
 }

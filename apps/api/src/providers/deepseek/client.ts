@@ -12,6 +12,7 @@ export type GetDeepseekModelsResponse = {
 export async function getDeepseekModels(args: {
   apiKey: string;
 }): Promise<GetDeepseekModelsResponse> {
+  // make the request
   const response = await fetch("https://api.deepseek.com/v1/models", {
     method: "GET",
     headers: {
@@ -20,6 +21,7 @@ export async function getDeepseekModels(args: {
     },
   });
 
+  // throw an error if the request failed
   if (!response.ok) {
     const error = await response.text().catch(() => "");
     throw new Error(
@@ -27,5 +29,6 @@ export async function getDeepseekModels(args: {
     );
   }
 
+  // return the response
   return (await response.json()) as GetDeepseekModelsResponse;
 }
