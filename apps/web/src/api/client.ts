@@ -114,7 +114,9 @@ export async function streamJson(
 ) {
   // set the provider api key header
   const headers = new Headers(request.headers);
-  headers.set("Content-Type", "application/json");
+  if (!headers.has("Content-Type") && request.body) {
+    headers.set("Content-Type", "application/json");
+  }
   if (options.providerApiKey) {
     headers.set(PROVIDER_API_KEY_HEADER, options.providerApiKey);
   }
@@ -128,15 +130,66 @@ export async function streamJson(
       signal: options.signal ?? request.signal,
     });
   } catch (error) {
-    return onError({
+    onError({
       code: "INTERNAL",
       message: error instanceof Error ? error.message : "Network error",
     });
+    return;
   }
 
-  // throw an error if necessary
-  if (!response.ok || !response.body) {
-    return onError(toApiError(response));
+  // handle http errors
+  if (!response.ok) {
+    const body = await toJson(response);
+    if (isApiErrorResponse(body)) {
+      onError(body.error);
+      return;
+    }
+    if (isApiError(body)) {
+      onError(body);
+      return;
+    }
+    onError(toApiError(response));
+    return;
+  }
+
+  // handle non-streaming JSON responses gracefully
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    const body = await toJson(response);
+    if (isApiErrorResponse(body)) {
+      onError(body.error);
+      return;
+    }
+    if (isApiError(body)) {
+      onError(body);
+      return;
+    }
+    if (isRecord(body)) {
+      if (typeof body.message === "string") {
+        onChunk(body.message);
+        onComplete();
+        return;
+      }
+      if (typeof body.text === "string") {
+        onChunk(body.text);
+        onComplete();
+        return;
+      }
+    }
+    onError({
+      code: "INTERNAL",
+      message: "Unexpected JSON response for streaming endpoint",
+    });
+    return;
+  }
+
+  // check if the response has a body before streaming it
+  if (!response.body) {
+    onError({
+      code: "INTERNAL",
+      message: "Missing response body",
+    });
+    return;
   }
 
   // stream the response as text
@@ -153,11 +206,21 @@ export async function streamJson(
         onChunk(chunk);
       }
     }
+    const lastChunk = decoder.decode();
+    if (lastChunk) {
+      onChunk(lastChunk);
+    }
     onComplete();
   } catch (error) {
     onError({
       code: "INTERNAL",
       message: error instanceof Error ? error.message : "Streaming error",
     });
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {
+      // ignore
+    }
   }
 }
