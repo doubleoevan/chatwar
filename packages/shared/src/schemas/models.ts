@@ -21,9 +21,6 @@ export const modelSchema = z.object({
       streaming: z.boolean().optional(),
     })
     .optional(),
-
-  /** used to choose default */
-  recommended: z.boolean().optional(),
 });
 
 export const providerModelsSchema = z.object({

@@ -1,2 +1,2 @@
-export const PROVIDER_API_KEY_HEADER = "X-Provider-Api-Key";
-export const CACHE_HEADER = "Cache-Control";
+export const PROVIDER_API_KEY_HEADER = "x-provider-api-key";
+export const CACHE_HEADER = "cache-control";
