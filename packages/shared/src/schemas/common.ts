@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { PROVIDERS } from "../types/providers";
 import { API_ERROR_CODES } from "../types/errors";
+import { PROVIDERS } from "../types/providers";
 
 export const providerIdSchema = z.enum(PROVIDERS);
 

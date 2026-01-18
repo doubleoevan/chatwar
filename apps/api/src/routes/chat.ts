@@ -6,11 +6,9 @@ import {
   chatRequestSchema,
   chatStreamChunkSchema,
   chatStreamDoneSchema,
+  PROVIDER_API_KEY_HEADER,
 } from "@chatwar/shared";
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
+import { streamProviderChat } from "../services/chat";
 
 export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -34,10 +32,17 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      const { providerId } = request.params;
-      const { modelId, message } = request.body;
+      // validate the API key header
+      const apiKey = request.headers[PROVIDER_API_KEY_HEADER] as string | undefined;
+      if (!apiKey) {
+        return reply.status(400).send({
+          code: "INVALID_API_KEY",
+          message: `Missing required header: ${PROVIDER_API_KEY_HEADER}`,
+        });
+      }
 
       // validate the message
+      const { modelId, message } = request.body;
       if (!message.trim()) {
         return reply.status(400).send({
           code: "INVALID_MESSAGE",
@@ -56,25 +61,36 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       let closed = false;
       request.raw.on("close", () => {
         closed = true;
+        abortController.abort();
       });
 
-      // mock the streaming for now TODO: replace with real provider calls
-      const chunks = [
-        `Mock stream from ${providerId}/${modelId}.\n\n`,
-        `You said: "${message}"\n\n`,
-        `Next: real provider calls + real streaming.\n`,
-      ];
-      for (const chunk of chunks) {
-        if (closed) {
-          return;
+      // stream the chat response
+      const abortController = new AbortController();
+      const { providerId } = request.params;
+      try {
+        for await (const chunk of streamProviderChat({
+          providerId,
+          apiKey,
+          modelId,
+          message,
+          signal: abortController.signal,
+        })) {
+          if (closed) {
+            return;
+          }
+          reply.raw.write(JSON.stringify({ chunk }) + "\n");
         }
-        reply.raw.write(JSON.stringify({ chunk }) + "\n");
-        await sleep(200);
-      }
-
-      if (!closed) {
-        reply.raw.write(JSON.stringify({ done: true }) + "\n");
-        reply.raw.end();
+        if (!closed) {
+          reply.raw.write(JSON.stringify({ done: true }) + "\n");
+          reply.raw.end();
+        }
+      } catch (err) {
+        app.log.error(err);
+        if (!closed) {
+          // end the stream with an error
+          reply.raw.write(JSON.stringify({ done: true }) + "\n");
+          reply.raw.end();
+        }
       }
     },
   );
