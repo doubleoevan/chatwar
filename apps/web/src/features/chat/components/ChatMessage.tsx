@@ -43,8 +43,9 @@ const components: Components = {
     return (
       <code
         className="
+          w-fit
           rounded-md
-          bg-background
+          bg-accent/50
           font-mono
           text-[0.9em]
           text-foreground/90
@@ -60,11 +61,12 @@ const components: Components = {
   pre: (props) => (
     <pre
       className="
+        w-fit
         mt-3 mb-1
         p-2
         overflow-x-auto
         rounded-lg
-        bg-background
+        bg-accent/50
         text-[13px]
         leading-5
       "

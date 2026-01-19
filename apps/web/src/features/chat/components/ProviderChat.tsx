@@ -26,11 +26,11 @@ export function ProviderChat({
 
   // measure content with a ref to set the expanded height
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [expandedHeight, setExpandedHeight] = useState<number>(192); // tailwind class h-48 fallback
+  const [expandedHeight, setExpandedHeight] = useState<number>(288); // tailwind class h-72 fallback
 
   // set the height and expanded height class
-  const heightClass = isExpanded ? null : hasMessages ? "h-48" : "h-auto";
-  const expandedHeightClass = isExpanded ? null : "max-h-48";
+  const heightClass = isExpanded ? null : hasMessages ? "h-72" : "h-auto";
+  const expandedHeightClass = isExpanded ? null : "max-h-72";
 
   // track changes in the current streaming message to trigger autoscroll
   const currentMessage = useMemo(() => {
@@ -141,20 +141,17 @@ export function ProviderChat({
             Ask a question to start chatting with {provider.label}.
           </Button>
         ) : (
-          <div ref={contentRef} className="space-y-2">
+          <div ref={contentRef} className="mx-auto max-w-4xl space-y-2">
             {chatMessages.map((message, index) => {
               const isUser = message.role === "user";
               return (
-                <div
-                  key={index}
-                  className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}
-                >
+                <div key={index} className={cn("flex", isUser ? "justify-end" : "justify-start")}>
                   <div
                     className={cn(
-                      "min-w-0 max-w-[85%] rounded-2xl px-3 py-2 wrap-break-word",
+                      "rounded-xl p-2 wrap-break-word",
                       isUser
-                        ? "bg-primary text-primary-foreground py-0"
-                        : "bg-accent/50 text-foreground",
+                        ? "max-w-[85%] bg-primary text-primary-foreground py-0"
+                        : "w-full bg-background text-foreground",
                     )}
                   >
                     <ChatMessage text={message.content} />

@@ -77,7 +77,7 @@ export function VoteModelWinners({
         backgroundColor: colors.map((color) => toCssColor(color)),
         hoverBackgroundColor: colors.map((color) => toCssColor(color, 0.7)),
         borderWidth: 1,
-        borderColor: isDark ? "#e5e7eb" : "#0f172a",
+        borderColor: isDark ? "#e5e7eb" : "#eceff6",
         hoverOffset: 8,
       },
     ],
