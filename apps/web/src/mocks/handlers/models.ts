@@ -6,7 +6,7 @@ import { withLatency } from "@/mocks/utils/withLatency";
 export const PREFIX_BAD_KEY = "bad";
 
 export const providerHandlers = [
-  http.get("/api/v1/providers/:providerId/models", async ({ params, request }) =>
+  http.get("/v1/providers/:providerId/models", async ({ params, request }) =>
     withLatency(async () => {
       // throw an error for a missing providerId
       const validParams = getProviderModelsParamsSchema.safeParse(params);

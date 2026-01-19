@@ -78,6 +78,25 @@ function toApiError(response: Response): ApiError {
   }
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+function toApiUrl(url: string): string {
+  // already absolute (or data:, blob:, etc.) — leave it
+  const isAbsoluteUrl = /^https?:\/\//i.test(url);
+  if (isAbsoluteUrl) {
+    return url;
+  }
+
+  // no base configured — keep relative (dev proxy / same-origin)
+  if (!API_BASE_URL) {
+    return url;
+  }
+
+  // join without double slashes
+  const baseUrl = API_BASE_URL.replace(/\/$/, "");
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${baseUrl}${path}`;
+}
+
 export type ApiClientOptions = {
   providerApiKey?: string;
   useCache?: boolean;
@@ -85,7 +104,7 @@ export type ApiClientOptions = {
 };
 
 export async function fetchJson<T>(
-  input: string,
+  url: string,
   request: RequestInit = {},
   options: ApiClientOptions = {},
 ): Promise<T> {
@@ -101,7 +120,8 @@ export async function fetchJson<T>(
   // fetch the response
   let response: Response;
   try {
-    response = await fetch(input, {
+    const apiUrl = toApiUrl(url);
+    response = await fetch(apiUrl, {
       ...request,
       headers,
       signal: options.signal ?? request.signal,
@@ -127,7 +147,7 @@ export async function fetchJson<T>(
 }
 
 export async function streamJson(
-  input: string,
+  url: string,
   request: RequestInit = {},
   options: ApiClientOptions = {},
   {
@@ -155,7 +175,8 @@ export async function streamJson(
   // fetch the response
   let response: Response;
   try {
-    response = await fetch(input, {
+    const apiUrl = toApiUrl(url);
+    response = await fetch(apiUrl, {
       ...request,
       headers,
       signal: options.signal ?? request.signal,

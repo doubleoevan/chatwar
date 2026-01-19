@@ -85,7 +85,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: "SET_ERROR", error: apiError });
       toastApiError(apiError, {
         metadata: {
-          endpoint: "/api/v1/provider-votes",
+          endpoint: "/v1/provider-votes",
         },
       });
     } finally {

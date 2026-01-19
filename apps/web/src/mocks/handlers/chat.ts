@@ -34,7 +34,7 @@ function toChunks(
 }
 
 export const chatHandlers = [
-  http.post("/api/v1/providers/:providerId/chat", async ({ params, request }) => {
+  http.post("/v1/providers/:providerId/chat", async ({ params, request }) => {
     // throw an error for a missing providerId
     const validParams = chatParamsSchema.safeParse(params);
     if (!validParams.success) {

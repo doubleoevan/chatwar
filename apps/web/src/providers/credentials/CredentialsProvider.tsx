@@ -190,7 +190,7 @@ export function CredentialsProvider({ children }: { children: ReactNode }) {
           icon: <Icon />,
           metadata: {
             action,
-            endpoint: `/api/v1/providers/${providerId}/models`,
+            endpoint: `/v1/providers/${providerId}/models`,
           },
         });
       } finally {

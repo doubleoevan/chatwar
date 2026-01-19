@@ -67,6 +67,6 @@ describe("CredentialsProvider with an invalid API key", () => {
     expect(apiError.code).toBe("INVALID_API_KEY");
     expect(options.providerId).toBe(providerId);
     expect(options.metadata.action).toBe("saveApiKey");
-    expect(options.metadata.endpoint).toBe(`/api/v1/providers/${providerId}/models`);
+    expect(options.metadata.endpoint).toBe(`/v1/providers/${providerId}/models`);
   });
 });

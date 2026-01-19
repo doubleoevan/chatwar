@@ -7,7 +7,7 @@ import {
 import { fetchJson } from "@/api/client";
 
 /**
- * GET /api/v1/provider-votes
+ * GET /v1/provider-votes
  * Used by AnalyticsProvider
  */
 export async function getProviderVotes({
@@ -26,14 +26,14 @@ export async function getProviderVotes({
 
   // fetch the votes
   return fetchJson<ProviderModelVoteResponse[]>(
-    `/api/v1/provider-votes${query ? `?${query}` : ""}`,
+    `/v1/provider-votes${query ? `?${query}` : ""}`,
     { method: "GET" },
     { signal },
   );
 }
 
 /**
- * POST /api/v1/provider-votes
+ * POST /v1/provider-votes
  * Used by ChatProvider
  */
 export async function createProviderVote(args: {
@@ -45,7 +45,7 @@ export async function createProviderVote(args: {
   signal?: AbortSignal;
 }): Promise<ProviderModelVoteCreate> {
   return fetchJson<ProviderModelVoteCreate>(
-    "/api/v1/provider-votes",
+    "/v1/provider-votes",
     {
       method: "POST",
       headers: {

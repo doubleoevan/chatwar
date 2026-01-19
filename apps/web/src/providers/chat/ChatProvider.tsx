@@ -293,7 +293,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             providerId,
             icon: <Icon />,
             metadata: {
-              endpoint: `/api/v1/providers/${providerId}/chat`,
+              endpoint: `/v1/providers/${providerId}/chat`,
               modelId: model.id,
               modelLabel: model.label,
               messages,
@@ -315,7 +315,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             providerId,
             icon: <Icon />,
             metadata: {
-              endpoint: `/api/v1/providers/${providerId}/chat`,
+              endpoint: `/v1/providers/${providerId}/chat`,
               modelId: model.id,
               modelLabel: model.label,
               messages,
@@ -371,7 +371,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         toastApiError(apiError, {
           providerId,
           metadata: {
-            endpoint: "/api/v1/provider-votes",
+            endpoint: "/v1/provider-votes",
             modelId: model.id,
             modelLabel: model.label,
           },

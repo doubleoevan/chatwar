@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: isLocalServer
         ? {
-            "/api": {
+            "/v1": {
               target: "http://localhost:3001",
               changeOrigin: true,
               rewrite: (urlPath) => urlPath.replace(/^\/api/, ""),

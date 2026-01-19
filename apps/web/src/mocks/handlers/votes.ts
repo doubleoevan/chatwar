@@ -42,8 +42,8 @@ function validateVoteBody(body: unknown): body is ProviderModelVoteCreate {
 }
 
 export const voteHandlers = [
-  // POST /api/v1/provider-votes
-  http.post("/api/v1/provider-votes", async ({ request }) =>
+  // POST /v1/provider-votes
+  http.post("/v1/provider-votes", async ({ request }) =>
     withLatency(async () => {
       // validate the vote request body
       let body: unknown;
@@ -78,8 +78,8 @@ export const voteHandlers = [
     }),
   ),
 
-  // GET /api/v1/provider-votes
-  http.get("/api/v1/provider-votes", async ({ request }) =>
+  // GET /v1/provider-votes
+  http.get("/v1/provider-votes", async ({ request }) =>
     withLatency(async () => {
       // sort the results by created at time
       const results = [...votes].sort((first, second) => {

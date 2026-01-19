@@ -2,7 +2,7 @@ import type { GetProviderModelsParams, ProviderModels } from "@chatwar/shared";
 import { fetchJson } from "@/api/client";
 
 /**
- * GET /api/v1/providers/${providerId}/models
+ * GET /v1/providers/${providerId}/models
  * Used by CredentialsProvider
  */
 export async function getProviderModels(
@@ -13,7 +13,7 @@ export async function getProviderModels(
   },
 ): Promise<ProviderModels> {
   return fetchJson<ProviderModels>(
-    `/api/v1/providers/${args.providerId}/models`,
+    `/v1/providers/${args.providerId}/models`,
     { method: "GET" },
     { providerApiKey: args.providerApiKey, useCache: args.useCache, signal: args.signal },
   );

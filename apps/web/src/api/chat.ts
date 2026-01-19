@@ -2,7 +2,7 @@ import type { ApiError, ChatMessage, ChatParams, ChatRequest } from "@chatwar/sh
 import { streamJson } from "@/api/client";
 
 /**
- * POST /api/v1/providers/:providerId/chat
+ * POST /v1/providers/:providerId/chat
  * Used by ChatProvider
  */
 export async function streamChat(
@@ -30,7 +30,7 @@ export async function streamChat(
   } = args;
   const body = { modelId, messages } satisfies ChatRequest;
   return streamJson(
-    `/api/v1/providers/${providerId}/chat`,
+    `/v1/providers/${providerId}/chat`,
     {
       method: "POST",
       body: JSON.stringify(body),
