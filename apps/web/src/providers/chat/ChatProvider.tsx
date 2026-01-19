@@ -26,6 +26,7 @@ type ChatAction =
   | { type: "CLEAR_PROVIDER_CHAT"; providerId: ProviderId }
   | { type: "ADD_PROVIDER_MESSAGE"; providerId: ProviderId }
   | { type: "APPEND_PROVIDER_MESSAGE"; providerId: ProviderId; message: string }
+  | { type: "ADD_PROVIDER_ERROR_MESSAGE"; providerId: ProviderId; message: string }
   | { type: "ADD_RESPONDING_PROVIDER"; providerId: ProviderId }
   | { type: "REMOVE_RESPONDING_PROVIDER"; providerId: ProviderId }
   | { type: "ADD_VOTING_PROVIDER"; providerId: ProviderId }
@@ -113,6 +114,17 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
             ...chats.slice(0, -1),
             { ...providerChat, content: providerChat.content + action.message },
           ],
+        },
+      };
+    }
+
+    case "ADD_PROVIDER_ERROR_MESSAGE": {
+      const providerChat = state.providerChats[action.providerId] ?? [];
+      return {
+        ...state,
+        providerChats: {
+          ...state.providerChats,
+          [action.providerId]: [...providerChat, { role: "error", content: action.message }],
         },
       };
     }
@@ -271,6 +283,28 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             message: "Failed to stream provider response",
           });
           dispatch({ type: "SET_PROVIDER_ERROR", providerId, error: apiError });
+
+          // show an error toast
+          const provider = PROVIDER_CONFIGURATIONS[providerId];
+          const { Icon } = provider;
+          toastApiError(apiError, {
+            providerId,
+            icon: <Icon />,
+            metadata: {
+              endpoint: `/api/v1/providers/${providerId}/chat`,
+              modelId: model.id,
+              modelLabel: model.label,
+              messages,
+            },
+          });
+        },
+        onEventError: (apiError) => {
+          // show the error in the chat
+          dispatch({
+            type: "ADD_PROVIDER_ERROR_MESSAGE",
+            providerId,
+            message: apiError.message,
+          });
 
           // show an error toast
           const provider = PROVIDER_CONFIGURATIONS[providerId];

@@ -13,11 +13,21 @@ export async function streamChat(
     onChunk: (chunk: string) => void;
     onComplete: () => void;
     onError: (error: ApiError) => void;
+    onEventError?: (error: ApiError) => void; // errors to display in the chat
     signal?: AbortSignal;
   },
 ) {
-  const { providerId, providerApiKey, modelId, messages, signal, onChunk, onComplete, onError } =
-    args;
+  const {
+    providerId,
+    providerApiKey,
+    modelId,
+    messages,
+    signal,
+    onChunk,
+    onComplete,
+    onError,
+    onEventError,
+  } = args;
   const body = { modelId, messages } satisfies ChatRequest;
   return streamJson(
     `/api/v1/providers/${providerId}/chat`,
@@ -33,6 +43,7 @@ export async function streamChat(
       onChunk,
       onComplete,
       onError,
+      onEventError,
     },
   );
 }

@@ -6,6 +6,7 @@ import {
   chatRequestSchema,
   chatStreamChunkSchema,
   chatStreamDoneSchema,
+  chatStreamErrorSchema,
   PROVIDER_API_KEY_HEADER,
 } from "@chatwar/shared";
 import { streamProviderChat } from "../services/chat";
@@ -25,7 +26,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         params: chatParamsSchema,
         body: chatRequestSchema,
         response: {
-          200: z.union([chatStreamChunkSchema, chatStreamDoneSchema]),
+          200: z.union([chatStreamChunkSchema, chatStreamDoneSchema, chatStreamErrorSchema]),
           400: apiErrorSchema,
           502: apiErrorSchema,
         },

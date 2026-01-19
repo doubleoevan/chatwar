@@ -134,10 +134,12 @@ export async function streamJson(
     onChunk,
     onComplete,
     onError,
+    onEventError,
   }: {
     onChunk: (chunk: string) => void;
     onComplete: () => void;
     onError: (error: ApiError) => void;
+    onEventError?: (error: ApiError) => void;
   },
 ) {
   // set the headers
@@ -193,10 +195,18 @@ export async function streamJson(
       }
       const event = value as ChatStreamEvent;
       if (isApiErrorResponse(event)) {
+        if (onEventError) {
+          onEventError(event.error);
+          continue;
+        }
         onError(event.error);
         return;
       }
       if (isApiError(event)) {
+        if (onEventError) {
+          onEventError(event);
+          continue;
+        }
         onError(event);
         return;
       }

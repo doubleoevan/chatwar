@@ -5,8 +5,9 @@ import type { Provider } from "@/types/provider";
 import { useChat } from "@/providers/chat/useChat";
 import { useAutoScroll } from "@/features/chat/hooks/useAutoScroll";
 import { ChatMessage } from "@/features/chat/components/ChatMessage";
+import type { ChatMessage as ChatMessageType } from "@chatwar/shared";
 
-const EMPTY_CHAT_MESSAGES: readonly { role: string; content: string }[] = [];
+const EMPTY_CHAT_MESSAGES: readonly ChatMessageType[] = [];
 
 export function ProviderChat({
   provider,
