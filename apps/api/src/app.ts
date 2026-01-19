@@ -14,14 +14,14 @@ import { chatRoutes } from "./routes/chat.js";
 export function buildApp() {
   const app = Fastify({
     logger: true,
-    trustProxy: true, // trust proxy headers for ip location
+    trustProxy: true, // trust proxy headers for ip location (Render / proxies)
   });
 
   // Zod validation and serialization
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  // openapi spec generator for apps to consume
+  // OpenAPI spec generator
   app.register(swagger, {
     openapi: {
       openapi: "3.0.3",
@@ -34,11 +34,39 @@ export function buildApp() {
     transform: jsonSchemaTransform,
   });
 
-  // fine for local dev, CORS doesn't matter when using vite proxy,
-  // but enabling it keeps curl/browser direct calls painless.
-  const corsOrigin = process.env.CORS_ORIGIN ?? true;
+  // build a normalized CORS allowlist from the CORS_ORIGIN env var
+  const allowlist = new Set(
+    (process.env.CORS_ORIGIN ?? "")
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  );
+  if (!allowlist.size && process.env.NODE_ENV === "production") {
+    app.log.warn("CORS_ORIGIN is empty in production");
+  }
+
+  // enforce a strict CORS policy with an explicit origin allowlist
   app.register(cors, {
-    origin: corsOrigin === "true" ? true : corsOrigin,
+    origin: (origin, originCallback) => {
+      // allow requests without an Origin header for curl and server-to-server
+      if (!origin) {
+        originCallback(null, true);
+        return;
+      }
+      if (allowlist.has(origin)) {
+        originCallback(null, true);
+        return;
+      }
+      app.log.warn({ origin }, "CORS origin blocked");
+      originCallback(null, false);
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: [
+      "content-type",
+      "x-provider-api-key", // provider api key header
+    ],
+    credentials: false,
+    maxAge: 86400, // cache preflight for 24h
   });
 
   // health check route
