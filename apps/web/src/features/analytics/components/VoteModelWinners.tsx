@@ -3,12 +3,12 @@ import type { ChartData, ChartOptions, TooltipItem } from "chart.js";
 import { Pie } from "react-chartjs-2";
 
 import type { ProviderId, ProviderModelVoteResponse } from "@chatwar/shared";
+import { typedKeys } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useAnalytics } from "@/providers/analytics";
 import { useTheme } from "@/providers/theme";
 import { useLoadingRefresh } from "@/features/analytics/hooks/useLoadingRefresh";
 import { getTooltip } from "@/features/analytics/chart/providerTooltip";
-import { typedKeys } from "@/utils/object";
 import { toCssColor } from "@/utils/color";
 
 type ProviderModelKey = `${ProviderId}:${string}`;

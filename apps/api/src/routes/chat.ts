@@ -8,10 +8,34 @@ import {
   chatStreamDoneSchema,
   chatStreamErrorSchema,
   PROVIDER_API_KEY_HEADER,
+  typedEntries,
 } from "@chatwar/shared";
 import { streamProviderChat } from "../services/chat";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+
+type CorsResult = {
+  headers?: Record<string, string | string[]>;
+};
+type CorsOptionsFunction = (req: FastifyRequest) => Promise<CorsResult>;
+
+// manually apply cors headers to streaming responses
+async function addCorsHeaders(app: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
+  const corsOptions = (app as unknown as { corsOptions?: CorsOptionsFunction }).corsOptions;
+  if (!corsOptions) {
+    return;
+  }
+  const cors = await corsOptions(request);
+  for (const [key, value] of typedEntries(cors.headers ?? {})) {
+    reply.header(key, value);
+  }
+}
 
 export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
+  app.options("/v1/providers/:providerId/chat", async (request, reply) => {
+    await addCorsHeaders(app, request, reply);
+    return reply.code(204).send();
+  });
+
   app.post(
     "/v1/providers/:providerId/chat",
     {
@@ -64,12 +88,14 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       };
       try {
         // add headers for streaming
+        await addCorsHeaders(app, request, reply);
         reply
           .code(200)
           .header("Content-Type", "application/x-ndjson; charset=utf-8")
           .header("Cache-Control", "no-cache, no-transform")
           .header("Connection", "keep-alive")
           .header("X-Accel-Buffering", "no");
+        reply.hijack();
         // ensure headers go out immediately
         reply.raw.flushHeaders?.();
         started = true;

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import type { ApiError, ChatMessage, Model, ProviderId } from "@chatwar/shared";
+import { typedEntries, typedKeys } from "@chatwar/shared";
 import { streamChat } from "@/api/chat";
 import { ChatContext } from "@/providers/chat/ChatContext";
 import { toApiError } from "@/utils/apiError";
 import { toastApiError, toastVoteMessage } from "@/utils/toast";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useCredentials } from "@/providers/credentials";
-import { typedEntries, typedKeys } from "@/utils/object";
 import { createProviderVote } from "@/api/votes";
 
 export type ChatState = {

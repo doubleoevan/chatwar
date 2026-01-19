@@ -3,7 +3,7 @@ import React, { useCallback, useRef, useState } from "react";
 import { ArrowUp, Square } from "lucide-react";
 import { useCredentials } from "@/providers/credentials";
 import { useChat } from "@/providers/chat";
-import { typedEntries, typedKeys } from "@/utils/object";
+import { typedEntries, typedKeys } from "@chatwar/shared";
 
 const MAX_HEIGHT_TEXTAREA = 200;
 

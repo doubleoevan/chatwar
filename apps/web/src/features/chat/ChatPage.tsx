@@ -12,7 +12,7 @@ import { useCredentials } from "@/providers/credentials";
 import { ProviderCredentials } from "@/features/chat/components/ProviderCredentials";
 
 import type { ProviderId } from "@chatwar/shared";
-import { PROVIDERS } from "@chatwar/shared";
+import { PROVIDERS, typedKeys } from "@chatwar/shared";
 import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { RemoveApiKeyButton } from "@/features/chat/components/RemoveApiKeyButton";
 import { ProviderModelSelect } from "@/features/chat/components/ProviderModelSelect";
@@ -20,7 +20,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { ChatComposer } from "@/features/chat/components/ChatComposer";
 import { ProviderIcon } from "@/features/chat/components/ProviderIcon";
 import { sortProviders } from "@/utils/provider";
-import { typedKeys } from "@/utils/object";
 
 export function ChatPage() {
   const { apiKeys } = useCredentials();
