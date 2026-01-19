@@ -61,13 +61,13 @@ export function buildApp() {
       }
 
       // reject everything else
-      return callback(new Error(`CORS blocked for origin: ${origin}`), false);
+      return callback(null, false);
     },
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["content-type", "authorization", PROVIDER_API_KEY_HEADER, CACHE_HEADER],
     exposedHeaders: [],
     credentials: false,
-    maxAge: 86400,
+    maxAge: 60 * 60 * 24, // 24 hours
   });
 
   // add compression globally but remember to disable for streaming routes
