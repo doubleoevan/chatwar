@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type PerplexityModel = {
   id: string;
@@ -49,12 +50,7 @@ export async function validatePerplexityApiKey(apiKey: string): Promise<void> {
 
   // throw an error if the request failed
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Perplexity validation failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Perplexity validation failed", response });
   }
 }
 
@@ -82,12 +78,7 @@ export async function createPerplexityChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Perplexity chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Perplexity chat failed", response });
   }
   return response;
 }

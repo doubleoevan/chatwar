@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type XAIModel = {
   id: string;
@@ -24,12 +25,7 @@ export async function getXAIModels(args: { apiKey: string }): Promise<GetXAIMode
 
   // throw an error if the request failed
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `xAI get models failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "xAI get models failed", response });
   }
   return (await response.json()) as GetXAIModelsResponse;
 }
@@ -58,11 +54,7 @@ export async function createXAIChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ?? `xAI chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "xAI chat failed", response });
   }
   return response;
 }

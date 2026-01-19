@@ -15,6 +15,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
   app.post(
     "/v1/providers/:providerId/chat",
     {
+      config: { compress: false }, // streaming responses must not be compressed
       schema: {
         tags: ["Chat"],
         summary: "Stream chat response",
@@ -67,7 +68,9 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
           "Content-Type": "application/x-ndjson; charset=utf-8",
           "Cache-Control": "no-cache, no-transform",
           Connection: "keep-alive",
+          "X-Accel-Buffering": "no",
         });
+        reply.raw.flushHeaders?.();
         started = true;
 
         // stream the chat response

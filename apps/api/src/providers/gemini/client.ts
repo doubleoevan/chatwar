@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type GeminiModel = {
   // resource name, e.g. "models/gemini-1.5-flash-001"
@@ -49,12 +50,7 @@ export async function getGeminiModels(args: { apiKey: string }): Promise<GetGemi
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Gemini get models failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Gemini get models failed", response });
   }
   return (await response.json()) as GetGeminiModelsResponse;
 }
@@ -83,12 +79,7 @@ export async function createGeminiChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Gemini chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Gemini chat failed", response });
   }
   return response;
 }

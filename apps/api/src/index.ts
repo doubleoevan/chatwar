@@ -19,7 +19,7 @@ try {
     console.log(`  ${colors.green("➜")}  Swagger: ${swaggerUrl}`);
     console.log(`  ${colors.green("➜")}  OpenAPI: ${openapiUrl}`);
   }
-} catch (err) {
-  app.log.error(err);
+} catch (error) {
+  app.log.error(error);
   process.exit(1);
 }

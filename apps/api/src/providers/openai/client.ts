@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type OpenAIModel = {
   id: string;
@@ -23,12 +24,7 @@ export async function getOpenAIModels(args: { apiKey: string }): Promise<GetOpen
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `OpenAI get models failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "OpenAI get models failed", response });
   }
   // return the response
   return (await response.json()) as GetOpenAIModelsResponse;
@@ -58,12 +54,7 @@ export async function createOpenAIChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `OpenAI chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "OpenAI get models failed", response });
   }
   return response;
 }

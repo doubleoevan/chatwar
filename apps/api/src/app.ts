@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import swagger from "@fastify/swagger";
+import compress from "@fastify/compress";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
   jsonSchemaTransform,
@@ -67,6 +68,11 @@ export function buildApp() {
     ],
     credentials: false,
     maxAge: 86400, // cache preflight for 24h
+  });
+
+  // add compression globally for non-streaming routes
+  app.register(compress, {
+    global: true,
   });
 
   // health check route

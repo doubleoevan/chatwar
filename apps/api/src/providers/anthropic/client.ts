@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type AnthropicModel = {
   id: string;
@@ -26,12 +27,7 @@ export async function getAnthropicModels(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Anthropic get models failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Anthropic get models failed", response });
   }
   return (await response.json()) as GetAnthropicModelsResponse;
 }
@@ -63,12 +59,7 @@ export async function createAnthropicChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Anthropic chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Anthropic chat failed", response });
   }
   return response;
 }

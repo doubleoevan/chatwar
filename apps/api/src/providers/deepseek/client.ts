@@ -1,4 +1,5 @@
 import { ChatMessage } from "@chatwar/shared";
+import { toUpstreamError } from "../../lib/upstreamError";
 
 export type DeepseekModel = {
   id: string;
@@ -25,12 +26,7 @@ export async function getDeepseekModels(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Deepseek get models failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Deepseek get models failed", response });
   }
   return (await response.json()) as GetDeepseekModelsResponse;
 }
@@ -60,12 +56,7 @@ export async function createDeepseekChatStream(args: {
 
   // throw an error if the request failed or return the response
   if (!response.ok) {
-    const error = await response.text().catch(() => "");
-    const parsedError = JSON.parse(error);
-    throw new Error(
-      parsedError?.error?.message ??
-        `Deepseek chat failed: ${response.status} ${response.statusText}`,
-    );
+    throw await toUpstreamError({ message: "Deepseek chat failed", response });
   }
   return response;
 }
