@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --out-dir dist",
+    "build": "tsup src/index.ts --format esm --dts --tsconfig tsconfig.build.json --out-dir dist",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit"
