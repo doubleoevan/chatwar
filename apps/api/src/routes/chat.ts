@@ -1,3 +1,4 @@
+import type { OutgoingHttpHeaders } from "node:http";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import {
@@ -8,31 +9,35 @@ import {
   chatStreamDoneSchema,
   chatStreamErrorSchema,
   PROVIDER_API_KEY_HEADER,
-  typedEntries,
 } from "@chatwar/shared";
 import { streamProviderChat } from "../services/chat";
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyRequest } from "fastify";
 
 type CorsResult = {
   headers?: Record<string, string | string[]>;
 };
 type CorsOptionsFunction = (req: FastifyRequest) => Promise<CorsResult>;
 
-// manually apply cors headers to streaming responses
-async function addCorsHeaders(app: FastifyInstance, request: FastifyRequest, reply: FastifyReply) {
+// return cors headers for the request
+async function toCorsHeaders(
+  app: FastifyInstance,
+  request: FastifyRequest,
+): Promise<OutgoingHttpHeaders> {
   const corsOptions = (app as unknown as { corsOptions?: CorsOptionsFunction }).corsOptions;
-  if (!corsOptions) {
-    return;
-  }
-  const cors = await corsOptions(request);
-  for (const [key, value] of typedEntries(cors.headers ?? {})) {
-    reply.header(key, value);
-  }
+  const cors = corsOptions ? await corsOptions(request) : undefined;
+  return (cors?.headers ?? {}) as OutgoingHttpHeaders;
 }
 
 export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
   app.options("/v1/providers/:providerId/chat", async (request, reply) => {
-    await addCorsHeaders(app, request, reply);
+    const corsHeaders = await toCorsHeaders(app, request);
+    for (const [key, value] of Object.entries(corsHeaders) as Array<
+      [string, OutgoingHttpHeaders[string]]
+    >) {
+      if (value !== undefined) {
+        reply.header(key, value);
+      }
+    }
     return reply.code(204).send();
   });
 
@@ -88,15 +93,15 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       };
       try {
         // add headers for streaming
-        await addCorsHeaders(app, request, reply);
-        reply
-          .code(200)
-          .header("Content-Type", "application/x-ndjson; charset=utf-8")
-          .header("Cache-Control", "no-cache, no-transform")
-          .header("Connection", "keep-alive")
-          .header("X-Accel-Buffering", "no");
+        const corsHeaders = await toCorsHeaders(app, request);
         reply.hijack();
-        // ensure headers go out immediately
+        reply.raw.writeHead(200, {
+          ...corsHeaders,
+          "content-type": "application/x-ndjson; charset=utf-8",
+          "cache-control": "no-cache, no-transform",
+          connection: "keep-alive",
+          "x-accel-buffering": "no",
+        });
         reply.raw.flushHeaders?.();
         started = true;
 
@@ -118,12 +123,12 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         reply.raw.end();
       } catch (error) {
         // ignore errors if the client disconnected
-        app.log.error(error);
         if (closed) {
           return;
         }
 
         // write an error response if streaming failed
+        app.log.error(error);
         const message = error instanceof Error ? error.message : "Provider request failed";
         if (started) {
           write({
