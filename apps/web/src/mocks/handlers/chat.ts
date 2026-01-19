@@ -77,10 +77,7 @@ export const chatHandlers = [
     const isStreamingDisabled = import.meta.env.VITE_MSW_DISABLE_STREAMING === "on";
     if (isStreamingDisabled) {
       const responseText = messages.join(" ");
-      return HttpResponse.text(responseText, {
-        status: 200,
-        headers: { "Content-Type": "text/plain" },
-      });
+      return HttpResponse.json({ chunk: responseText }, { status: 200 });
     }
 
     // stream the messages as chunks of random length with random latency
@@ -90,9 +87,13 @@ export const chatHandlers = [
           const chunks = toChunks(message);
           for (const chunk of chunks) {
             await randomDelay({ minimum: 20, range: 80 });
-            controller.enqueue(chunk);
+            controller.enqueue(JSON.stringify({ chunk }));
+            controller.enqueue("\n");
           }
-          controller.enqueue(" ");
+
+          // preserve the original spaces between message strings
+          controller.enqueue(JSON.stringify({ chunk: " " }));
+          controller.enqueue("\n");
         }
         controller.close();
       },

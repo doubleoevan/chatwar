@@ -1,4 +1,4 @@
-import type { ProviderId, ProviderModels } from "@chatwar/shared";
+import type { ChatMessage, ProviderId, ProviderModels } from "@chatwar/shared";
 
 export type GetModelsArgs = {
   apiKey: string;
@@ -8,7 +8,7 @@ export type GetModelsArgs = {
 export type ProviderChatArgs = {
   apiKey: string;
   modelId: string;
-  message: string;
+  messages: ChatMessage[];
   signal?: AbortSignal;
 };
 

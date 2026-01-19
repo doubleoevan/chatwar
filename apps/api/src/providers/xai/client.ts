@@ -1,3 +1,5 @@
+import { ChatMessage } from "@chatwar/shared";
+
 export type XAIModel = {
   id: string;
   object: "model";
@@ -35,7 +37,7 @@ export async function getXAIModels(args: { apiKey: string }): Promise<GetXAIMode
 export async function createXAIChatStream(args: {
   apiKey: string;
   modelId: string;
-  message: string;
+  messages: ChatMessage[];
   signal?: AbortSignal;
 }): Promise<Response> {
   // post the chat message
@@ -48,8 +50,8 @@ export async function createXAIChatStream(args: {
     },
     body: JSON.stringify({
       model: args.modelId,
+      messages: args.messages,
       stream: true,
-      messages: [{ role: "user", content: args.message }],
     }),
     signal: args.signal,
   });

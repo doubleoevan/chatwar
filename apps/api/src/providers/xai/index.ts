@@ -11,9 +11,9 @@ export const xaiAdapter: ProviderAdapter = {
     return normalizeXAIModels({ providerId, payload });
   },
 
-  streamChat({ apiKey, modelId, message, signal }) {
+  streamChat({ apiKey, modelId, messages, signal }) {
     async function* stream(): AsyncIterable<string> {
-      const response = await createXAIChatStream({ apiKey, modelId, message, signal });
+      const response = await createXAIChatStream({ apiKey, modelId, messages, signal });
       yield* streamChatDeltas(response);
     }
     return stream();

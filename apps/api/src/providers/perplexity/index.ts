@@ -11,9 +11,9 @@ export const perplexityAdapter: ProviderAdapter = {
     return normalizePerplexityModels({ providerId, payload });
   },
 
-  streamChat({ apiKey, modelId, message, signal }) {
+  streamChat({ apiKey, modelId, messages, signal }) {
     async function* stream(): AsyncIterable<string> {
-      const response = await createPerplexityChatStream({ apiKey, modelId, message, signal });
+      const response = await createPerplexityChatStream({ apiKey, modelId, messages, signal });
       yield* streamChatDeltas(response);
     }
     return stream();

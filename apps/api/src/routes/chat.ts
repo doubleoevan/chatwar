@@ -70,12 +70,12 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
         started = true;
 
         // stream the chat response
-        const { modelId, message } = request.body;
+        const { modelId, messages } = request.body;
         for await (const chunk of streamProviderChat({
           providerId: request.params.providerId,
           apiKey,
           modelId,
-          message,
+          messages,
           signal: abortController.signal,
         })) {
           if (closed) {

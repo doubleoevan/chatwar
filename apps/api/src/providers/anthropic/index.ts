@@ -11,9 +11,9 @@ export const anthropicAdapter: ProviderAdapter = {
     return normalizeAnthropicModels({ providerId, payload });
   },
 
-  streamChat({ apiKey, modelId, message, signal }) {
+  streamChat({ apiKey, modelId, messages, signal }) {
     async function* stream(): AsyncIterable<string> {
-      const response = await createAnthropicChatStream({ apiKey, modelId, message, signal });
+      const response = await createAnthropicChatStream({ apiKey, modelId, messages, signal });
       yield* streamAnthropicChat(response);
     }
     return stream();

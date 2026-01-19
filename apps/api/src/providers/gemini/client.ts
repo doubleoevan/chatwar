@@ -1,3 +1,5 @@
+import { ChatMessage } from "@chatwar/shared";
+
 export type GeminiModel = {
   // resource name, e.g. "models/gemini-1.5-flash-001"
   name: string;
@@ -25,6 +27,16 @@ export type GetGeminiModelsResponse = {
   nextPageToken?: string;
 };
 
+// converts Chatwar messages into Gemini contents
+function toGeminiContents(messages: ChatMessage[]) {
+  return messages
+    .map((message) => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [{ text: message.content }],
+    }))
+    .filter((content) => content.parts[0].text.trim().length > 0);
+}
+
 export async function getGeminiModels(args: { apiKey: string }): Promise<GetGeminiModelsResponse> {
   // make the request
   const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models", {
@@ -50,7 +62,7 @@ export async function getGeminiModels(args: { apiKey: string }): Promise<GetGemi
 export async function createGeminiChatStream(args: {
   apiKey: string;
   modelId: string; // "gemini-2.0-flash" or "models/gemini-2.0-flash"
-  message: string;
+  messages: ChatMessage[];
   signal?: AbortSignal;
 }): Promise<Response> {
   // post the chat message
@@ -64,7 +76,7 @@ export async function createGeminiChatStream(args: {
       Accept: "text/event-stream",
     },
     body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: args.message }] }],
+      contents: toGeminiContents(args.messages),
     }),
     signal: args.signal,
   });

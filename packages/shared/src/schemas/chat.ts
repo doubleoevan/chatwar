@@ -6,9 +6,14 @@ export const chatParamsSchema = z.object({
   providerId: providerIdSchema,
 });
 
+export const chatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: NonEmptyString,
+});
+
 export const chatRequestSchema = z.object({
   modelId: NonEmptyString,
-  message: NonEmptyString,
+  messages: z.array(chatMessageSchema).min(1),
 });
 
 // Each streamed line is one JSON object

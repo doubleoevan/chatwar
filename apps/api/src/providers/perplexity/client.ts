@@ -1,3 +1,5 @@
+import { ChatMessage } from "@chatwar/shared";
+
 export type PerplexityModel = {
   id: string;
   object: "model";
@@ -59,7 +61,7 @@ export async function validatePerplexityApiKey(apiKey: string): Promise<void> {
 export async function createPerplexityChatStream(args: {
   apiKey: string;
   modelId: string;
-  message: string;
+  messages: ChatMessage[];
   signal?: AbortSignal;
 }): Promise<Response> {
   // post the chat message
@@ -72,8 +74,8 @@ export async function createPerplexityChatStream(args: {
     },
     body: JSON.stringify({
       model: args.modelId,
+      messages: args.messages,
       stream: true,
-      messages: [{ role: "user", content: args.message }],
     }),
     signal: args.signal,
   });

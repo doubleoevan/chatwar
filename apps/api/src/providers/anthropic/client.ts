@@ -1,3 +1,5 @@
+import { ChatMessage } from "@chatwar/shared";
+
 export type AnthropicModel = {
   id: string;
   type: "model";
@@ -37,7 +39,7 @@ export async function getAnthropicModels(args: {
 export async function createAnthropicChatStream(args: {
   apiKey: string;
   modelId: string;
-  message: string;
+  messages: ChatMessage[];
   maxTokens?: number;
   signal?: AbortSignal;
 }): Promise<Response> {
@@ -52,9 +54,9 @@ export async function createAnthropicChatStream(args: {
     },
     body: JSON.stringify({
       model: args.modelId,
+      messages: args.messages,
       stream: true,
       max_tokens: args.maxTokens ?? 1024,
-      messages: [{ role: "user", content: args.message }],
     }),
     signal: args.signal,
   });

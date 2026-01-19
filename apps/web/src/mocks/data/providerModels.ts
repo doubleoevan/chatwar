@@ -16,7 +16,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           tools: true,
           vision: true,
         },
-        recommended: true,
       },
       {
         id: "gpt-4.1-mini",
@@ -43,7 +42,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           tools: true,
           vision: true,
         },
-        recommended: true,
       },
       {
         id: "claude-3-5-haiku-latest",
@@ -70,7 +68,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           tools: true,
           vision: true,
         },
-        recommended: true,
       },
       {
         id: "gemini-1.5-flash",
@@ -96,7 +93,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           streaming: true,
           tools: false,
         },
-        recommended: true,
       },
       {
         id: "grok-2-mini",
@@ -121,7 +117,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           streaming: true,
           tools: true,
         },
-        recommended: true,
       },
       {
         id: "deepseek-coder",
@@ -147,7 +142,6 @@ export const PROVIDER_MODELS: Record<ProviderId, ProviderModels> = {
           streaming: true,
           tools: true,
         },
-        recommended: true,
       },
       {
         id: "sonar-small",

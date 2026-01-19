@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
-import type { ApiError, Model, ProviderId } from "@chatwar/shared";
+import type { ApiError, ChatMessage, Model, ProviderId } from "@chatwar/shared";
 import { streamChat } from "@/api/chat";
 import { ChatContext } from "@/providers/chat/ChatContext";
 import { toApiError } from "@/utils/apiError";
@@ -8,8 +8,6 @@ import { PROVIDER_CONFIGURATIONS } from "@/config/provider-configurations";
 import { useCredentials } from "@/providers/credentials";
 import { typedEntries, typedKeys } from "@/utils/object";
 import { createProviderVote } from "@/api/votes";
-
-export type ChatMessage = { role: "user"; message: string } | { role: "provider"; message: string };
 
 export type ChatState = {
   userMessage: string;
@@ -54,7 +52,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         userMessage: action.message,
         providerChats: {
           ...state.providerChats,
-          [action.providerId]: [...chats, { role: "user", message: action.message }],
+          [action.providerId]: [...chats, { role: "user", content: action.message }],
         },
       };
     }
@@ -90,7 +88,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
         ...state,
         providerChats: {
           ...state.providerChats,
-          [action.providerId]: [...chats, { role: "provider", message: "" }],
+          [action.providerId]: [...chats, { role: "assistant", content: "" }],
         },
       };
     }
@@ -98,12 +96,12 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
     case "APPEND_PROVIDER_MESSAGE": {
       const chats = state.providerChats[action.providerId] ?? [];
       const providerChat = chats[chats.length - 1];
-      if (providerChat?.role !== "provider") {
+      if (providerChat?.role !== "assistant") {
         return {
           ...state,
           providerChats: {
             ...state.providerChats,
-            [action.providerId]: [...chats, { role: "provider", message: action.message }],
+            [action.providerId]: [...chats, { role: "assistant", content: action.message }],
           },
         };
       }
@@ -113,7 +111,7 @@ function reducer(state: ChatState, action: ChatAction): ChatState {
           ...state.providerChats,
           [action.providerId]: [
             ...chats.slice(0, -1),
-            { ...providerChat, message: providerChat.message + action.message },
+            { ...providerChat, content: providerChat.content + action.message },
           ],
         },
       };
@@ -232,6 +230,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
 
       // stream the chat
+      const previousChats = state.providerChats[providerId] ?? [];
+      const userMessage: ChatMessage = { role: "user", content: message };
+      const messages = [...previousChats, userMessage].filter((chat) => !!chat.content.trim());
       dispatch({ type: "ADD_USER_MESSAGE", message, providerId });
       dispatch({ type: "ADD_PROVIDER_MESSAGE", providerId });
       dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
@@ -240,7 +241,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         providerId,
         providerApiKey,
         modelId: model.id,
-        message,
+        messages,
         signal: controller.signal,
         onChunk: (chunk) => {
           dispatch({ type: "APPEND_PROVIDER_MESSAGE", providerId, message: chunk });
@@ -281,13 +282,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
               endpoint: `/api/v1/providers/${providerId}/chat`,
               modelId: model.id,
               modelLabel: model.label,
-              message,
+              messages,
             },
           });
         },
       });
     },
-    [apiKeys, stopProviderChat],
+    [apiKeys, state.providerChats, stopProviderChat],
   );
 
   const selectProviderModel = useCallback((providerId: ProviderId, model: Model) => {

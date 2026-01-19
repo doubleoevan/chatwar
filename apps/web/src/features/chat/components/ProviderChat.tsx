@@ -6,7 +6,7 @@ import { useChat } from "@/providers/chat/useChat";
 import { useAutoScroll } from "@/features/chat/hooks/useAutoScroll";
 import { ChatMessage } from "@/features/chat/components/ChatMessage";
 
-const EMPTY_CHAT_MESSAGES: readonly { role: string; message: string }[] = [];
+const EMPTY_CHAT_MESSAGES: readonly { role: string; content: string }[] = [];
 
 export function ProviderChat({
   provider,
@@ -33,7 +33,7 @@ export function ProviderChat({
 
   // track changes in the current streaming message to trigger autoscroll
   const currentMessage = useMemo(() => {
-    return chatMessages[chatMessages.length - 1]?.message ?? "";
+    return chatMessages[chatMessages.length - 1]?.content ?? "";
   }, [chatMessages]);
 
   // scroll to the bottom if it's near
@@ -156,7 +156,7 @@ export function ProviderChat({
                         : "bg-accent/50 text-foreground",
                     )}
                   >
-                    <ChatMessage text={message.message} />
+                    <ChatMessage text={message.content} />
                   </div>
                 </div>
               );

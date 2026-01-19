@@ -1,3 +1,5 @@
+import { ChatMessage } from "@chatwar/shared";
+
 export type DeepseekModel = {
   id: string;
   object: "model";
@@ -36,7 +38,7 @@ export async function getDeepseekModels(args: {
 export async function createDeepseekChatStream(args: {
   apiKey: string;
   modelId: string;
-  message: string;
+  messages: ChatMessage[];
   signal?: AbortSignal;
 }): Promise<Response> {
   // post the chat message
@@ -50,8 +52,8 @@ export async function createDeepseekChatStream(args: {
     },
     body: JSON.stringify({
       model: args.modelId,
+      messages: args.messages,
       stream: true,
-      messages: [{ role: "user", content: args.message }],
     }),
     signal: args.signal,
   });

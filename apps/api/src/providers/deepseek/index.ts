@@ -11,9 +11,9 @@ export const deepseekAdapter: ProviderAdapter = {
     return normalizeDeepseekModels({ providerId, payload });
   },
 
-  streamChat({ apiKey, modelId, message, signal }) {
+  streamChat({ apiKey, modelId, messages, signal }) {
     async function* stream(): AsyncIterable<string> {
-      const response = await createDeepseekChatStream({ apiKey, modelId, message, signal });
+      const response = await createDeepseekChatStream({ apiKey, modelId, messages, signal });
       yield* streamChatDeltas(response);
     }
     return stream();

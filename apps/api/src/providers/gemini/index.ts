@@ -11,9 +11,9 @@ export const geminiAdapter: ProviderAdapter = {
     return normalizeGeminiModels({ providerId, payload });
   },
 
-  streamChat({ apiKey, modelId, message, signal }) {
+  streamChat({ apiKey, modelId, messages, signal }) {
     async function* stream(): AsyncIterable<string> {
-      const response = await createGeminiChatStream({ apiKey, modelId, message, signal });
+      const response = await createGeminiChatStream({ apiKey, modelId, messages, signal });
       yield* streamGeminiChat(response);
     }
     return stream();
