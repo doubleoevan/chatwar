@@ -3,15 +3,25 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --out-dir dist",
+    "clean": "rm -rf dist",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "react": "^19.2.3",
     "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1"
   }
 }
