@@ -130,6 +130,8 @@ export function VoteModelWinners({
     <div className={cn("p-2 items-center justify-center", className)}>
       {isAnalyticsLoading ? (
         <>Loading...</>
+      ) : votes.length === 0 ? (
+        <>No models yet</>
       ) : (
         <Pie key={refreshCount} data={chartData} options={chartOptions} />
       )}
