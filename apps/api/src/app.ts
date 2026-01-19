@@ -11,6 +11,7 @@ import {
 import { votesRoutes } from "./routes/votes.js";
 import { modelsRoutes } from "./routes/models.js";
 import { chatRoutes } from "./routes/chat.js";
+import { CACHE_HEADER, PROVIDER_API_KEY_HEADER } from "@chatwar/shared";
 
 export function buildApp() {
   const app = Fastify({
@@ -35,47 +36,45 @@ export function buildApp() {
     transform: jsonSchemaTransform,
   });
 
-  // build a normalized CORS allowlist from the CORS_ORIGIN env var
-  const allowlist = new Set(
+  // parse comma-separated allowed origins from the CORS_ORIGIN env var
+  const allowedOrigins = new Set(
     (process.env.CORS_ORIGIN ?? "")
       .split(",")
       .map((origin) => origin.trim())
       .filter(Boolean),
   );
-  if (!allowlist.size && process.env.NODE_ENV === "production") {
-    app.log.warn("CORS_ORIGIN is empty in production");
-  }
 
-  // enforce a strict CORS policy with an explicit origin allowlist
+  // enforce strict CORS in production
+  if (process.env.NODE_ENV === "production" && allowedOrigins.size === 0) {
+    app.log.warn("CORS_ORIGIN is empty in production; no browser origins will be allowed");
+  }
   app.register(cors, {
-    origin: (origin, originCallback) => {
+    origin: (origin, callback) => {
       // allow requests without an Origin header for curl and server-to-server
       if (!origin) {
-        originCallback(null, true);
-        return;
+        return callback(null, true);
       }
-      if (allowlist.has(origin)) {
-        originCallback(null, true);
-        return;
+
+      // allow requests from our CORS_ORIGIN domains
+      if (allowedOrigins.has(origin)) {
+        return callback(null, true);
       }
-      app.log.warn({ origin }, "CORS origin blocked");
-      originCallback(null, false);
+
+      // reject everything else
+      return callback(new Error(`CORS blocked for origin: ${origin}`), false);
     },
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: [
-      "content-type",
-      "x-provider-api-key", // provider api key header
-    ],
+    allowedHeaders: ["content-type", "authorization", PROVIDER_API_KEY_HEADER, CACHE_HEADER],
+    exposedHeaders: [],
     credentials: false,
-    maxAge: 86400, // cache preflight for 24h
+    maxAge: 86400,
   });
 
-  // add compression globally for non-streaming routes
-  app.register(compress, {
-    global: true,
-  });
+  // add compression globally but remember to disable for streaming routes
+  app.register(compress, { global: true });
 
-  // health check route
+  // health check routes
+  app.head("/health", async (_req, reply) => reply.status(200).send());
   app.get("/health", async () => ({ ok: true }));
 
   // routes typed by Zod
