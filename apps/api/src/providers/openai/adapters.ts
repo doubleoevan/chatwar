@@ -13,6 +13,9 @@ const NON_CHAT_MODEL_ID_TOKENS = [
   "whisper",
   "realtime",
   "search", // drop this to support search models
+  "codex",
+  "pro",
+  "sora",
 ] as const;
 const LIMIT_MODELS = 6; // limit the number of models to show
 

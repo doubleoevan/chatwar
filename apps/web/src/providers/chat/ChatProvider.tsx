@@ -244,7 +244,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       // stream the chat
       const previousChats = state.providerChats[providerId] ?? [];
       const userMessage: ChatMessage = { role: "user", content: message };
-      const messages = [...previousChats, userMessage].filter((chat) => !!chat.content.trim());
+      const messages = [...previousChats, userMessage].filter(
+        (chat) => !!chat.content.trim() && chat.role !== "error",
+      );
       dispatch({ type: "ADD_USER_MESSAGE", message, providerId });
       dispatch({ type: "ADD_PROVIDER_MESSAGE", providerId });
       dispatch({ type: "REMOVE_PROVIDER_ERROR", providerId });
