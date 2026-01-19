@@ -7,6 +7,10 @@ export default defineConfig({
   outDir: "dist",
   sourcemap: true,
   clean: true,
+
+  // bundle our workspace packages
+  noExternal: [/^@chatwar\//],
+
   // keep runtime dependencies external to prevent bundling weirdness
   external: ["@prisma/client", "pg", "geoip-lite"],
 });
