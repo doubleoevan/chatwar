@@ -64,12 +64,13 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       };
       try {
         // add headers for streaming
-        reply.raw.writeHead(200, {
-          "Content-Type": "application/x-ndjson; charset=utf-8",
-          "Cache-Control": "no-cache, no-transform",
-          Connection: "keep-alive",
-          "X-Accel-Buffering": "no",
-        });
+        reply
+          .code(200)
+          .header("Content-Type", "application/x-ndjson; charset=utf-8")
+          .header("Cache-Control", "no-cache, no-transform")
+          .header("Connection", "keep-alive")
+          .header("X-Accel-Buffering", "no");
+        // ensure headers go out immediately
         reply.raw.flushHeaders?.();
         started = true;
 
