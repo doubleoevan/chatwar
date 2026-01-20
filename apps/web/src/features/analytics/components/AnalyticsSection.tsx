@@ -29,6 +29,7 @@ export function AnalyticsSection({
 
       <div
         aria-hidden="true"
+        role="presentation"
         className={`
           flex flex-1 
           *:flex *:h-full *:w-full
