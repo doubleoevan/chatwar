@@ -2,6 +2,8 @@
 
 A fight club for LLMs. 🤫
 
+▶ https://chatwar.ai/demo
+
 ## Overview
 
 ChatWar is an AI battleground for comparing large language models.
