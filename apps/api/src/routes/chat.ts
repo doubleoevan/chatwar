@@ -25,7 +25,13 @@ async function toCorsHeaders(
 ): Promise<OutgoingHttpHeaders> {
   const corsOptions = (app as unknown as { corsOptions?: CorsOptionsFunction }).corsOptions;
   const cors = corsOptions ? await corsOptions(request) : undefined;
-  return (cors?.headers ?? {}) as OutgoingHttpHeaders;
+  const headers = { ...(cors?.headers ?? {}) };
+  const origin = request.headers.origin;
+  if (typeof origin === "string" && headers["access-control-allow-origin"] === undefined) {
+    headers["access-control-allow-origin"] = origin;
+    headers["vary"] = "Origin";
+  }
+  return headers;
 }
 
 export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
