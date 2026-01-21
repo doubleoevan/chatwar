@@ -75,7 +75,7 @@ cp apps/api/.env.example apps/api/.env
 Web:
 
 ```bash
-cp apps/web/.env.local.example apps/web/.env.local
+cp apps/web/.env.example apps/web/.env.local
 ```
 
 ## Prisma
