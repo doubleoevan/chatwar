@@ -17,6 +17,7 @@ export const modelsRoutes: FastifyPluginAsyncZod = async (app) => {
         tags: ["Models"],
         summary: "Get models for a provider",
         description: "Returns the models supported by the provider.",
+        security: [{ ProviderApiKey: [] }],
         params: getProviderModelsParamsSchema,
         response: {
           200: providerModelsSchema,

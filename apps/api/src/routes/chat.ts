@@ -35,17 +35,25 @@ async function toCorsHeaders(
 }
 
 export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
-  app.options("/v1/providers/:providerId/chat", async (request, reply) => {
-    const corsHeaders = await toCorsHeaders(app, request);
-    for (const [key, value] of Object.entries(corsHeaders) as Array<
-      [string, OutgoingHttpHeaders[string]]
-    >) {
-      if (value !== undefined) {
-        reply.header(key, value);
+  app.options(
+    "/v1/providers/:providerId/chat",
+    {
+      schema: {
+        hide: true,
+      },
+    },
+    async (request, reply) => {
+      const corsHeaders = await toCorsHeaders(app, request);
+      for (const [key, value] of Object.entries(corsHeaders) as Array<
+        [string, OutgoingHttpHeaders[string]]
+      >) {
+        if (value !== undefined) {
+          reply.header(key, value);
+        }
       }
-    }
-    return reply.code(204).send();
-  });
+      return reply.code(204).send();
+    },
+  );
 
   app.post(
     "/v1/providers/:providerId/chat",
@@ -59,6 +67,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
           Each line is a { chunk: string }. 
           Final line is { done: true }. 
         `,
+        security: [{ ProviderApiKey: [] }],
         params: chatParamsSchema,
         body: chatRequestSchema,
         response: {

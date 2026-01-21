@@ -32,6 +32,15 @@ export function buildApp() {
         description: "ChatWar backend API (models, chat, votes).",
         version: "1.0.0",
       },
+      components: {
+        securitySchemes: {
+          ProviderApiKey: {
+            type: "apiKey",
+            in: "header",
+            name: PROVIDER_API_KEY_HEADER,
+          },
+        },
+      },
     },
     transform: jsonSchemaTransform,
   });
@@ -88,7 +97,9 @@ export function buildApp() {
     uiConfig: {
       docExpansion: "list",
       deepLinking: false,
+      persistAuthorization: true,
     },
   });
+
   return app;
 }
