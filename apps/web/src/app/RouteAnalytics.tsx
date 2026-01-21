@@ -18,9 +18,10 @@ export function RouteAnalytics() {
     }
 
     // notify Google Analytics of a page view
-    window.gtag("config", GA_ID, {
+    window.gtag("event", "page_view", {
       page_path: location.pathname + location.search,
       page_location: window.location.href,
+      page_title: document.title,
     });
   }, [GA_ID, location.pathname, location.search]);
 
