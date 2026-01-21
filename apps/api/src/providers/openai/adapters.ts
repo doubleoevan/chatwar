@@ -16,6 +16,7 @@ const NON_CHAT_MODEL_ID_TOKENS = [
   "codex",
   "pro",
   "sora",
+  "osb-",
 ] as const;
 const LIMIT_MODELS = 6; // limit the number of models to show
 
