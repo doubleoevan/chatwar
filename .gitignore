@@ -68,8 +68,9 @@ web_modules/
 # dotenv environment variable files
 apps/api/.env
 apps/api/.env.local
+apps/api/.env.localserver
 apps/web/.env.local
-apps/web/.env.*.local
+apps/web/.env.localserver
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
