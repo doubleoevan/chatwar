@@ -85,6 +85,11 @@ pnpm --filter @chatwar/api exec prisma migrate dev
 pnpm --filter @chatwar/api exec prisma generate
 ```
 
+## API Contracts
+
+- Swagger UI (local): http://localhost:3001/api-docs
+- Swagger UI (prod): https://api.chatwar.ai/api-docs
+
 ## Production
 
 ```bash
