@@ -38,6 +38,7 @@ Web: http://localhost:5173
 ### Full local stack (API + Postgres)
 
 ```bash
+docker ps # verify docker desktop is running
 pnpm dev:full
 ```
 
@@ -57,6 +58,7 @@ pnpm dev:api
 ## Database
 
 ```bash
+docker ps # verify docker desktop is running
 pnpm db:up
 pnpm db:down
 pnpm db:reset
