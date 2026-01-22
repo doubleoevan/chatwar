@@ -2,7 +2,19 @@ import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm"; // GitHub flavored Markdown
 import rehypeHighlight from "rehype-highlight"; // Code syntax highlighting
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { normalizeMarkdown } from "@/utils/markdown";
+
+// block potential javascript links and XSS
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames ?? []), "br"],
+  attributes: {
+    ...(defaultSchema.attributes ?? {}),
+    a: ["href", "title", "target", "rel"],
+  },
+};
 
 const components: Components = {
   p: (props) => <p className="my-2 leading-[1.65]" {...props} />,
@@ -119,7 +131,11 @@ export function ChatMessage({ text }: { text: string }) {
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
+        rehypePlugins={[
+          rehypeRaw,
+          [rehypeSanitize, sanitizeSchema],
+          [rehypeHighlight, { ignoreMissing: true }],
+        ]}
         components={components}
       >
         {normalizeMarkdown(text)}
