@@ -10,7 +10,9 @@ import { AppProviders } from "@/app/Providers";
 import { enableMocks } from "@/mocks";
 
 // enable mock service worker in dev
-await enableMocks();
+if (import.meta.env.DEV) {
+  await enableMocks();
+}
 
 // bootstrap Google Analytics in prod
 const GA_ID = import.meta.env.VITE_GA_ID;
