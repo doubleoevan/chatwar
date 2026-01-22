@@ -61,7 +61,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (app) => {
       config: { compress: false }, // streaming responses must not be compressed
       schema: {
         tags: ["Chat"],
-        summary: "Stream provider chat response",
+        summary: "Stream a provider chat response",
         description: `
           Streams a newline-delimited JSON response as chunks. 
           Each line is a { chunk: string }. 
