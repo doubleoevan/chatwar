@@ -98,4 +98,4 @@ pnpm build
 pnpm preview
 ```
 
-If you find this useful or learned something new, consider starring the repo ⭐ 
+If you find this useful or learned something new, consider starring the repo ⭐
