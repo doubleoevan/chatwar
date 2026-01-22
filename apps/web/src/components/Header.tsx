@@ -19,6 +19,11 @@ export function Header() {
           <span>ChatWar</span>
         </Link>
 
+        {/* tagline */}
+        <span className="text-sm">
+          A fight club for LLMs. <span className="inline-block text-base">🤫</span>
+        </span>
+
         {/* settings menu */}
         <SettingsMenu />
       </nav>
