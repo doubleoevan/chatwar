@@ -16,7 +16,7 @@ if (import.meta.env.DEV) {
 
 // bootstrap Google Analytics in prod
 const GA_ID = import.meta.env.VITE_GA_ID;
-if (GA_ID && !import.meta.env.DEV) {
+if (GA_ID && import.meta.env.PROD) {
   const scriptSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   const existingScript = document.querySelector<HTMLScriptElement>(`script[src="${scriptSrc}"]`);
   if (!existingScript) {
@@ -29,9 +29,10 @@ if (GA_ID && !import.meta.env.DEV) {
   window.dataLayer = window.dataLayer || [];
   window.gtag =
     window.gtag ||
-    ((...args: Parameters<Window["gtag"]>) => {
-      window?.dataLayer?.push?.(args);
-    });
+    function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      window?.dataLayer?.push?.(arguments);
+    };
 
   window.gtag("js", new Date());
   window.gtag("config", GA_ID, { send_page_view: false });
