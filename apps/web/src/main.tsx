@@ -14,14 +14,6 @@ if (import.meta.env.DEV) {
   await enableMocks();
 }
 
-// ensure no service worker is registered in prod
-if (!import.meta.env.DEV && "serviceWorker" in navigator) {
-  const registrations = await navigator.serviceWorker.getRegistrations();
-  for (const registration of registrations) {
-    await registration.unregister();
-  }
-}
-
 // bootstrap Google Analytics in prod
 const GA_ID = import.meta.env.VITE_GA_ID;
 if (GA_ID && !import.meta.env.DEV) {
