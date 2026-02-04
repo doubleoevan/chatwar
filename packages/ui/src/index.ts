@@ -1,6 +1,3 @@
-// core
-export { cn } from "./lib/cn";
-
 // utils
 export * from "./lib/utils";
 
