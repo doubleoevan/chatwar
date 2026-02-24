@@ -9,7 +9,11 @@ export function Footer() {
         <p>ChatWar is a selfish project for the author’s own personal growth.</p>
         <p>Your API keys stay on your device.</p>
         <p>
-          The code can be found <ExternalLink href={REPO_URL}>here</ExternalLink>.
+          <span>The code can be found </span>
+          <ExternalLink className="text-primary/70" href={REPO_URL}>
+            here
+          </ExternalLink>
+          .
         </p>
       </div>
     </footer>
