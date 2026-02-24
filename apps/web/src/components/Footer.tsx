@@ -10,7 +10,7 @@ export function Footer() {
         <p>Your API keys stay on your device.</p>
         <p>
           <span>The code can be found </span>
-          <ExternalLink className="font-semibold text-primary/70" href={REPO_URL}>
+          <ExternalLink className="font-semibold text-primary dark:text-primary/70" href={REPO_URL}>
             here
           </ExternalLink>
           .
