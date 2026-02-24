@@ -12,7 +12,11 @@ export function Header() {
         {/* logo */}
         <Link
           to="/chat"
-          className="flex items-center gap-2 font-semibold hover:opacity-90"
+          className="
+            flex items-center gap-2
+            font-semibold text-primary
+            hover:opacity-90
+          "
           aria-label="Go to chat"
         >
           <ChatWarIcon />
@@ -20,7 +24,7 @@ export function Header() {
         </Link>
 
         {/* tagline */}
-        <span className="text-sm">
+        <span className="text-sm text-muted-foreground">
           A fight club for LLMs. <span className="inline-block text-base">🤫</span>
         </span>
 

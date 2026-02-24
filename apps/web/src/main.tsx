@@ -4,6 +4,7 @@ import "highlight.js/styles/github.css";
 import "highlight.js/styles/github-dark.css";
 import "@fontsource-variable/inter";
 import "@/index.css";
+import "@/theme.css";
 import "@chatwar/ui/styles.css";
 import App from "@/App";
 import { AppProviders } from "@/app/Providers";
